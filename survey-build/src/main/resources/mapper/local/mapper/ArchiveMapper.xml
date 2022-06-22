@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwch.survey.dao.mapper.ArchiveMapper">
+  <resultMap id="BaseResultMap" type="com.lwch.survey.model.Archive">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="next" jdbcType="VARCHAR" property="next" />
+    <result column="isempty" jdbcType="INTEGER" property="isempty" />
+    <result column="pid" jdbcType="VARCHAR" property="pid" />
+    <result column="caseNumber" jdbcType="VARCHAR" property="casenumber" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, `name`, `next`, isempty, pid, caseNumber, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.lwch.survey.model.ArchiveExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from archive
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from archive
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from archive
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.lwch.survey.model.ArchiveExample">
+    delete from archive
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lwch.survey.model.Archive">
+    insert into archive (id, `name`, `next`, 
+      isempty, pid, caseNumber, 
+      update_time)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{next,jdbcType=VARCHAR}, 
+      #{isempty,jdbcType=INTEGER}, #{pid,jdbcType=VARCHAR}, #{casenumber,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lwch.survey.model.Archive">
+    insert into archive
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="next != null">
+        `next`,
+      </if>
+      <if test="isempty != null">
+        isempty,
+      </if>
+      <if test="pid != null">
+        pid,
+      </if>
+      <if test="casenumber != null">
+        caseNumber,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="next != null">
+        #{next,jdbcType=VARCHAR},
+      </if>
+      <if test="isempty != null">
+        #{isempty,jdbcType=INTEGER},
+      </if>
+      <if test="pid != null">
+        #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="casenumber != null">
+        #{casenumber,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lwch.survey.model.ArchiveExample" resultType="java.lang.Long">
+    select count(*) from archive
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update archive
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        `name` = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.next != null">
+        `next` = #{record.next,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isempty != null">
+        isempty = #{record.isempty,jdbcType=INTEGER},
+      </if>
+      <if test="record.pid != null">
+        pid = #{record.pid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.casenumber != null">
+        caseNumber = #{record.casenumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update archive
+    set id = #{record.id,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      `next` = #{record.next,jdbcType=VARCHAR},
+      isempty = #{record.isempty,jdbcType=INTEGER},
+      pid = #{record.pid,jdbcType=VARCHAR},
+      caseNumber = #{record.casenumber,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lwch.survey.model.Archive">
+    update archive
+    <set>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="next != null">
+        `next` = #{next,jdbcType=VARCHAR},
+      </if>
+      <if test="isempty != null">
+        isempty = #{isempty,jdbcType=INTEGER},
+      </if>
+      <if test="pid != null">
+        pid = #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="casenumber != null">
+        caseNumber = #{casenumber,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lwch.survey.model.Archive">
+    update archive
+    set `name` = #{name,jdbcType=VARCHAR},
+      `next` = #{next,jdbcType=VARCHAR},
+      isempty = #{isempty,jdbcType=INTEGER},
+      pid = #{pid,jdbcType=VARCHAR},
+      caseNumber = #{casenumber,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

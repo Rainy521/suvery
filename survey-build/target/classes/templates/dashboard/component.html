@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+<link href="/js/lib/jqueryui/jquery-ui.min.css" rel="stylesheet">
+<style type="text/css">
+.chart {height:450px;}
+</style>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+      <div class="row">
+      <div class="col-md-6 col-lg-4">
+        <div class="ibox float-e-margins">
+          <div class="ibox-title">
+          配置
+          <div class="ibox-tools">
+              <button id="save" class="btn btn-primary btn-xs">返回</button>
+              <button id="preview" class="btn btn-primary btn-xs">预览</button>
+          </div>
+          </div>
+          <div class="ibox-content">
+             <form class="form-horizontal" id="dataConfigForm">
+              <div class="form-group">
+               <label class="col-sm-3 control-label">数据来源</label>
+               <div class="col-sm-9">
+                <select class="form-control" name="dataType" id="dataType">
+                </select>
+               </div>
+              </div>
+              <div class="hr-line-dashed"></div>
+              <div id="dataConfigs"></div>
+             </form>
+          </div>
+          <div class="ibox-content">
+             <form class="form-horizontal" id="chartConfigForm">
+              <div class="form-group">
+               <label class="col-sm-3 control-label">显示方式</label>
+               <div class="col-sm-9">
+                <select class="form-control" name="chartType" id="chartType">
+                </select>
+               </div>
+              </div>
+              <div class="hr-line-dashed"></div>
+              <div id="chartConfigs"></div>
+             </form>
+     </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-8">
+        <div id="chart">
+        </div>
+      </div>
+      </div>
+    </div>
+
+ <#include "script.ftl"/>
+ <script type="text/javascript" src="/js/lib/jqueryui/jquery-ui.min.js"></script>
+ <script type="text/javascript" src="/js/lib/bootstrap/bootstrapValidator.min.js"></script>
+ <script>
+    $(document).ready(function() {
+        page.dashboard.component.init();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ArchivesStatisticsMapper">
+
+<select id="getStatisticsData" parameterType="com.lwch.survey.pojo.DossierParam" resultType="java.util.HashMap">
+select 
+	chdw as chdw
+	,max(yczs) as fcyczs
+	,max(yczmj) as fcyczmj
+	,max(sczs) as fcsczs
+	,max(sczmj) as fcsczmj
+	,max(zds) as djzds
+	,max(zdmj) as djmj
+	,max(ggzs) as ggzs
+	,max(ggmj) as ggmj
+	,sum(backNum) as backNum
+	from (
+		select 
+		    fg.chdw as chdw
+			, count(CASE WHEN chlx like'%预测%' THEN  0 END) as yczs
+			, sum(CASE WHEN (chlx like'%预测%' and zmj is not null) THEN zmj ELSE 0 END) as yczmj
+			, count(CASE WHEN chlx like'%实测%'  THEN  0 END) as sczs
+			, sum(CASE WHEN (chlx like'%实测%' and zmj is not null) THEN zmj ELSE 0 END) as sczmj
+			, 0 as zds
+			, 0 as zdmj
+			, 0 as ggzs
+			, 0 as ggmj
+			, sum(fg.backNum) as backNum
+		from fcch_gdb fg  
+		where 1=1 and fg.chdw != ''
+				<if test="beginGdrq!=null and beginGdrq!=''">
+						<![CDATA[   and DATE_FORMAT(fg.updateTime, '%Y-%m-%d')>=  DATE_FORMAT(#{beginGdrq}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="endGdrq!=null and endGdrq!=''">
+            <![CDATA[  and DATE_FORMAT(fg.updateTime, '%Y-%m-%d') <= DATE_FORMAT(#{endGdrq}, '%Y-%m-%d')    ]]>
+        </if>
+		group by fg.chdw
+	UNION all
+	
+	select 
+	    ac.chdw as chdw
+	  	, 0  as yczs
+		, 0 as yczmj
+		, 0 as sczs
+		, 0 as sczmj
+		, count(*) as zds
+		, sum(ac.tdsymj) as zdmj
+		, 0 as ggzs
+		, 0 as ggmj
+		, sum(djchgdb.backNum) as backNum
+	from djch_gdb djchgdb left join apply_cadastre ac on djchgdb.apply_id = ac.id 
+	where 1=1 and ac.chdw != ''
+		<if test="beginGdrq!=null and beginGdrq!=''">
+				<![CDATA[   and DATE_FORMAT(djchgdb.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{beginGdrq}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="endGdrq!=null and endGdrq!=''">
+				<![CDATA[  and DATE_FORMAT(djchgdb.update_time, '%Y-%m-%d') <= DATE_FORMAT(#{endGdrq}, '%Y-%m-%d')    ]]>
+		</if>
+	group by ac.chdw
+	UNION all
+	
+	select 
+		  ae.chdw as chdw
+		, 0  as yczs
+		, 0 as yczmj
+		, 0 as sczs
+		, 0 as sczmj
+		, 0 as zds
+		, 0 as zdmj
+		, count(*) as ggzs
+		, sum(ae.zjzmj) as ggmj
+		, sum(gg.backNum) as backNum
+	from gccl_gdb gg left join apply_engineering ae on gg.apply_id = ae.id 
+	where 1=1  and ae.chdw != ''
+		<if test="beginGdrq!=null and beginGdrq!=''">
+			<![CDATA[   and DATE_FORMAT(gg.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{beginGdrq}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="endGdrq!=null and endGdrq!=''">
+				<![CDATA[  and DATE_FORMAT(gg.update_time, '%Y-%m-%d') <= DATE_FORMAT(#{endGdrq}, '%Y-%m-%d')    ]]>
+		</if>
+	group by ae.chdw
+	) as table1 GROUP BY chdw
+	
+	union all
+	
+	select '合计',sum(table2.fcyczs),sum(table2.fcyczmj),sum(table2.fcsczs),sum(table2.fcsczmj),sum(table2.djzds),sum(table2.djmj),sum(table2.ggzs)
+	,sum(table2.ggmj),sum(table2.backNum) from (
+	select 
+	chdw as chdw
+	,max(yczs) as fcyczs
+	,max(yczmj) as fcyczmj
+	,max(sczs) as fcsczs
+	,max(sczmj) as fcsczmj
+	,max(zds) as djzds
+	,max(zdmj) as djmj
+	,max(ggzs) as ggzs
+	,max(ggmj) as ggmj
+	,sum(backNum) as backNum
+	from (
+	select 
+	    fg.chdw as chdw
+		, count(CASE WHEN chlx like'%预测%' THEN  0 END) as yczs
+		, sum(CASE WHEN (chlx like'%预测%' and zmj is not null) THEN zmj ELSE 0 END) as yczmj
+		, count(CASE WHEN chlx like'%实测%'  THEN  0 END) as sczs
+		, sum(CASE WHEN (chlx like'%实测%' and zmj is not null) THEN zmj ELSE 0 END) as sczmj
+		, 0 as zds
+		, 0 as zdmj
+		, 0 as ggzs
+		, 0 as ggmj
+		, sum(fg.backNum) as backNum
+	from fcch_gdb fg  
+	where 1=1 and fg.chdw != '' 
+		<if test="beginGdrq!=null and beginGdrq!=''">
+			<![CDATA[   and DATE_FORMAT(fg.updateTime, '%Y-%m-%d')>=  DATE_FORMAT(#{beginGdrq}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="endGdrq!=null and endGdrq!=''">
+				<![CDATA[  and DATE_FORMAT(fg.updateTime, '%Y-%m-%d') <= DATE_FORMAT(#{endGdrq}, '%Y-%m-%d')    ]]>
+		</if>
+	group by fg.chdw
+	UNION all
+	
+	select 
+	    ac.chdw as chdw
+	  , 0  as yczs
+		, 0 as yczmj
+		, 0 as sczs
+		, 0 as sczmj
+		, count(*) as zds
+		, sum(ac.tdsymj) as zdmj
+		, 0 as ggzs
+		, 0 as ggmj
+		, sum(djchgdb.backNum) as backNum
+	from djch_gdb djchgdb left join apply_cadastre ac on djchgdb.apply_id = ac.id 
+	where 1=1 and ac.chdw != ''
+			<if test="beginGdrq!=null and beginGdrq!=''">
+					<![CDATA[   and DATE_FORMAT(djchgdb.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{beginGdrq}, '%Y-%m-%d')   ]]>
+			</if>
+			<if test="endGdrq!=null and endGdrq!=''">
+					<![CDATA[  and DATE_FORMAT(djchgdb.update_time, '%Y-%m-%d') <= DATE_FORMAT(#{endGdrq}, '%Y-%m-%d')    ]]>
+			</if>
+	group by ac.chdw
+	UNION all
+	
+	select 
+		  ae.chdw as chdw
+		, 0  as yczs
+		, 0 as yczmj
+		, 0 as sczs
+		, 0 as sczmj
+		, 0 as zds
+		, 0 as zdmj
+		, count(*) as ggzs
+		, sum(ae.zjzmj) as ggmj
+		, sum(gg.backNum) as backNum
+	from gccl_gdb gg left join apply_engineering ae on gg.apply_id = ae.id 
+	where 1=1 and ae.chdw != ''
+		<if test="beginGdrq!=null and beginGdrq!=''">
+			<![CDATA[   and DATE_FORMAT(gg.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{beginGdrq}, '%Y-%m-%d')   ]]>
+		</if>
+		<if test="endGdrq!=null and endGdrq!=''">
+				<![CDATA[  and DATE_FORMAT(gg.update_time, '%Y-%m-%d') <= DATE_FORMAT(#{endGdrq}, '%Y-%m-%d')    ]]>
+		</if>
+    group by ae.chdw
+	) as table1 GROUP BY chdw
+	) table2  
+</select>
+<select id="getStatisticsData2" parameterType="com.lwch.survey.pojo.DossierParam" resultType="java.util.HashMap">
+select 
+	chdw as chdw
+	,max(zs) as fczs
+	,max(yczmj) as fcyczmj
+	,max(sczmj) as fcsczmj
+	,max(zds) as djzds
+	,max(zdmj) as djmj
+	,max(ggzs) as ggzs
+	,max(ggmj) as ggmj
+	,sum(backNum) as backNum
+	from (
+		select 
+		    fg.chdw as chdw
+			, count(*) as zs
+			, sum(CASE WHEN (chlx like'%预测%' and zmj is not null) THEN zmj ELSE 0 END) as yczmj
+			, sum(CASE WHEN (chlx like'%实测%' and zmj is not null) THEN zmj ELSE 0 END) as sczmj
+			, 0 as zds
+			, 0 as zdmj
+			, 0 as ggzs
+			, 0 as ggmj
+			, sum(fg.backNum) as backNum
+		from fcch_gdb fg  
+		where 1=1 
+		<if test="beginGdrq!=null and beginGdrq!=''">
+        	<![CDATA[   and DATE_FORMAT(fg.updateTime, '%Y-%m-%d')>=  DATE_FORMAT(#{beginGdrq}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="endGdrq!=null and endGdrq!=''">
+            <![CDATA[  and DATE_FORMAT(fg.updateTime, '%Y-%m-%d') <= DATE_FORMAT(#{endGdrq}, '%Y-%m-%d')    ]]>
+        </if>
+		group by fg.chdw
+	UNION all
+	
+	select 
+	    ac.chdw as chdw
+	  	, 0  as zs
+		, 0 as yczmj
+		, 0 as sczmj
+		, count(*) as zds
+		, sum(ac.tdsymj) as zdmj
+		, 0 as ggzs
+		, 0 as ggmj
+		, sum(djchgdb.backNum) as backNum
+	from djch_gdb djchgdb left join apply_cadastre ac on djchgdb.apply_id = ac.id 
+	where 1=1 
+	 <if test="beginGdrq!=null and beginGdrq!=''">
+       	<![CDATA[   and DATE_FORMAT(djchgdb.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{beginGdrq}, '%Y-%m-%d')   ]]>
+       </if>
+       <if test="endGdrq!=null and endGdrq!=''">
+           <![CDATA[  and DATE_FORMAT(djchgdb.update_time, '%Y-%m-%d') <= DATE_FORMAT(#{endGdrq}, '%Y-%m-%d')    ]]>
+       </if>
+	group by ac.chdw
+	UNION all
+	
+	select 
+		  ae.chdw as chdw
+		, 0  as zs
+		, 0 as yczmj
+		, 0 as sczmj
+		, 0 as zds
+		, 0 as zdmj
+		, count(*) as ggzs
+		, sum(ae.zjzmj) as ggmj
+		, sum(gg.backNum) as backNum
+	from gccl_gdb gg left join apply_engineering ae on gg.apply_id = ae.id 
+	where 1=1 
+		<if test="beginGdrq!=null and beginGdrq!=''">
+        	<![CDATA[   and DATE_FORMAT(gg.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{beginGdrq}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="endGdrq!=null and endGdrq!=''">
+            <![CDATA[  and DATE_FORMAT(gg.update_time, '%Y-%m-%d') <= DATE_FORMAT(#{endGdrq}, '%Y-%m-%d')    ]]>
+        </if>
+	group by ae.chdw
+	) as table1 GROUP BY chdw
+	
+	union all
+	
+	select '合计',sum(table2.fczs),sum(table2.fcyczmj),sum(table2.fcsczmj),sum(table2.djzds),sum(table2.djmj),sum(table2.ggzs)
+	,sum(table2.ggmj),sum(table2.backNum) from (
+	select 
+	chdw as chdw
+	,max(zs) as fczs
+	,max(yczmj) as fcyczmj
+	,max(sczmj) as fcsczmj
+	,max(zds) as djzds
+	,max(zdmj) as djmj
+	,max(ggzs) as ggzs
+	,max(ggmj) as ggmj
+	,sum(backNum) as backNum
+	from (
+	select 
+	    fg.chdw as chdw
+		, count(*) as zs
+		, sum(CASE WHEN (chlx like'%预测%' and zmj is not null) THEN zmj ELSE 0 END) as yczmj
+		, sum(CASE WHEN (chlx like'%实测%' and zmj is not null) THEN zmj ELSE 0 END) as sczmj
+		, 0 as zds
+		, 0 as zdmj
+		, 0 as ggzs
+		, 0 as ggmj
+		, sum(fg.backNum) as backNum
+	from fcch_gdb fg  
+	where 1=1 
+		<if test="beginGdrq!=null and beginGdrq!=''">
+        	<![CDATA[   and DATE_FORMAT(fg.updateTime, '%Y-%m-%d')>=  DATE_FORMAT(#{beginGdrq}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="endGdrq!=null and endGdrq!=''">
+            <![CDATA[  and DATE_FORMAT(fg.updateTime, '%Y-%m-%d') <= DATE_FORMAT(#{endGdrq}, '%Y-%m-%d')    ]]>
+        </if>
+	group by fg.chdw
+	UNION all
+	
+	select 
+	    ac.chdw as chdw
+	  , 0  as zs
+		, 0 as yczmj
+		, 0 as sczmj
+		, count(*) as zds
+		, sum(ac.tdsymj) as zdmj
+		, 0 as ggzs
+		, 0 as ggmj
+		, sum(djchgdb.backNum) as backNum
+	from djch_gdb djchgdb left join apply_cadastre ac on djchgdb.apply_id = ac.id 
+	where 1=1 
+	    <if test="beginGdrq!=null and beginGdrq!=''">
+       	<![CDATA[   and DATE_FORMAT(djchgdb.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{beginGdrq}, '%Y-%m-%d')   ]]>
+       </if>
+       <if test="endGdrq!=null and endGdrq!=''">
+           <![CDATA[  and DATE_FORMAT(djchgdb.update_time, '%Y-%m-%d') <= DATE_FORMAT(#{endGdrq}, '%Y-%m-%d')    ]]>
+       </if>
+	group by ac.chdw
+	UNION all
+	
+	select 
+		  ae.chdw as chdw
+		, 0  as zs
+		, 0 as yczmj
+		, 0 as sczmj
+		, 0 as zds
+		, 0 as zdmj
+		, count(*) as ggzs
+		, sum(ae.zjzmj) as ggmj
+		, sum(gg.backNum) as backNum
+	from gccl_gdb gg left join apply_engineering ae on gg.apply_id = ae.id 
+	where 1=1 
+		<if test="beginGdrq!=null and beginGdrq!=''">
+        	<![CDATA[   and DATE_FORMAT(gg.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{beginGdrq}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="endGdrq!=null and endGdrq!=''">
+            <![CDATA[  and DATE_FORMAT(gg.update_time, '%Y-%m-%d') <= DATE_FORMAT(#{endGdrq}, '%Y-%m-%d')    ]]>
+        </if>
+    group by ae.chdw
+	) as table1 GROUP BY chdw
+	) table2
+</select>
+</mapper>

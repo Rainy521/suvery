@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwch.survey.dao.mapper.ApplyInstrumentMapper">
+  <resultMap id="BaseResultMap" type="com.lwch.survey.model.ApplyInstrument">
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="model" jdbcType="VARCHAR" property="model" />
+    <result column="factory_no" jdbcType="VARCHAR" property="factoryNo" />
+    <result column="number" jdbcType="INTEGER" property="number" />
+    <result column="verification_date" jdbcType="VARCHAR" property="verificationDate" />
+    <result column="mechanism" jdbcType="VARCHAR" property="mechanism" />
+    <result column="certificate_no" jdbcType="VARCHAR" property="certificateNo" />
+    <result column="invoice_no" jdbcType="VARCHAR" property="invoiceNo" />
+    <result column="files" jdbcType="VARCHAR" property="files" />
+    <result column="cognizance" jdbcType="VARCHAR" property="cognizance" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, `name`, model, factory_no, `number`, verification_date, mechanism, certificate_no, 
+    invoice_no, files, cognizance
+  </sql>
+  <select id="selectByExample" parameterType="com.lwch.survey.model.ApplyInstrumentExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from apply_instrumenttation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.lwch.survey.model.ApplyInstrumentExample">
+    delete from apply_instrumenttation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lwch.survey.model.ApplyInstrument">
+    insert into apply_instrumenttation (id, `name`, model, 
+      factory_no, `number`, verification_date, 
+      mechanism, certificate_no, invoice_no, 
+      files, cognizance)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, 
+      #{factoryNo,jdbcType=VARCHAR}, #{number,jdbcType=INTEGER}, #{verificationDate,jdbcType=VARCHAR}, 
+      #{mechanism,jdbcType=VARCHAR}, #{certificateNo,jdbcType=VARCHAR}, #{invoiceNo,jdbcType=VARCHAR}, 
+      #{files,jdbcType=VARCHAR}, #{cognizance,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lwch.survey.model.ApplyInstrument">
+    insert into apply_instrumenttation
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="model != null">
+        model,
+      </if>
+      <if test="factoryNo != null">
+        factory_no,
+      </if>
+      <if test="number != null">
+        `number`,
+      </if>
+      <if test="verificationDate != null">
+        verification_date,
+      </if>
+      <if test="mechanism != null">
+        mechanism,
+      </if>
+      <if test="certificateNo != null">
+        certificate_no,
+      </if>
+      <if test="invoiceNo != null">
+        invoice_no,
+      </if>
+      <if test="files != null">
+        files,
+      </if>
+      <if test="cognizance != null">
+        cognizance,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryNo != null">
+        #{factoryNo,jdbcType=VARCHAR},
+      </if>
+      <if test="number != null">
+        #{number,jdbcType=INTEGER},
+      </if>
+      <if test="verificationDate != null">
+        #{verificationDate,jdbcType=VARCHAR},
+      </if>
+      <if test="mechanism != null">
+        #{mechanism,jdbcType=VARCHAR},
+      </if>
+      <if test="certificateNo != null">
+        #{certificateNo,jdbcType=VARCHAR},
+      </if>
+      <if test="invoiceNo != null">
+        #{invoiceNo,jdbcType=VARCHAR},
+      </if>
+      <if test="files != null">
+        #{files,jdbcType=VARCHAR},
+      </if>
+      <if test="cognizance != null">
+        #{cognizance,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lwch.survey.model.ApplyInstrumentExample" resultType="java.lang.Long">
+    select count(*) from apply_instrumenttation
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update apply_instrumenttation
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        `name` = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.model != null">
+        model = #{record.model,jdbcType=VARCHAR},
+      </if>
+      <if test="record.factoryNo != null">
+        factory_no = #{record.factoryNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.number != null">
+        `number` = #{record.number,jdbcType=INTEGER},
+      </if>
+      <if test="record.verificationDate != null">
+        verification_date = #{record.verificationDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mechanism != null">
+        mechanism = #{record.mechanism,jdbcType=VARCHAR},
+      </if>
+      <if test="record.certificateNo != null">
+        certificate_no = #{record.certificateNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.invoiceNo != null">
+        invoice_no = #{record.invoiceNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.files != null">
+        files = #{record.files,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cognizance != null">
+        cognizance = #{record.cognizance,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update apply_instrumenttation
+    set id = #{record.id,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      model = #{record.model,jdbcType=VARCHAR},
+      factory_no = #{record.factoryNo,jdbcType=VARCHAR},
+      `number` = #{record.number,jdbcType=INTEGER},
+      verification_date = #{record.verificationDate,jdbcType=VARCHAR},
+      mechanism = #{record.mechanism,jdbcType=VARCHAR},
+      certificate_no = #{record.certificateNo,jdbcType=VARCHAR},
+      invoice_no = #{record.invoiceNo,jdbcType=VARCHAR},
+      files = #{record.files,jdbcType=VARCHAR},
+      cognizance = #{record.cognizance,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <insert id="batchInsert">
+    <if test="items.get(0) != null">
+            insert into apply_instrumenttation  (id, `name`, model, 
+        factory_no, `number`, verification_date, 
+        mechanism, certificate_no, invoice_no, 
+        files, cognizance)
+      values
+      <foreach collection="items" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR}, #{item.model,jdbcType=VARCHAR}, 
+        #{item.factoryNo,jdbcType=VARCHAR}, #{item.number,jdbcType=INTEGER}, #{item.verificationDate,jdbcType=VARCHAR}, 
+        #{item.mechanism,jdbcType=VARCHAR}, #{item.certificateNo,jdbcType=VARCHAR}, #{item.invoiceNo,jdbcType=VARCHAR}, 
+        #{item.files,jdbcType=VARCHAR}, #{item.cognizance,jdbcType=VARCHAR})
+      </foreach>
+    </if>
+  </insert>
+</mapper>

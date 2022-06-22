@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <#include "head.ftl"/>
+</head>
+<body>
+    
+    
+        <div class="row">
+                <div class="col-lg-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>房屋权属</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label" >房屋坐落</label>
+                                <div class="col-sm-8">
+                                    <input type="text" id="id" class="form-control" style="display: none;">
+                                    <input type="text" name="location" class="form-control" disabled  >
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">不动产权证号（房产证号）</label>
+                                <div class="col-sm-8">
+                                    <input type="text" name="certificate" class="form-control" disabled >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>申请人情况 </h5>
+                    </div>
+                    <div class="ibox-content">
+                        <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>权利人角色</th>
+                                <th>权利人名称</th>
+                                <th>证件名称</th>
+                                <th>证件号码</th>
+                                <th>联系方式</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subjectTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+                <div class="col-lg-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>房 屋 状 况</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>楼(幢)号</th>
+                                        <th>房号</th>
+                                        <th>建筑结构</th>
+                                        <th>总层数</th>
+                                        <th>所在层</th>
+                                        <th>建筑面积</th>
+                                        <th>套内建筑面积</th>
+                                        <th>分摊建筑面积</th>
+                                        <th>房屋规划用途</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="houseTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        
+        <div class="hr-line-dashed" style=""></div>
+        <div class="row">
+                <div class="col-lg-12" align="center">
+                    <button type="button" class="btn btn-primary downExcelButton pull-center">导出Excel</button>
+                </div>
+        </div>
+    
+    
+    <#include "script.ftl"/>
+    
+    <script>
+        $(document).ready(function(){ 
+            var url="/house";
+            
+            var applyId=getParameterByName('applyid');
+            var taskId=getParameterByName('taskId');
+            
+            var load = function() {
+                //applyId = 1001;
+                if(applyId){
+                    $.ajax({ url: url+"/selectByHouseid?id=" + applyId, success: function(data){
+                            $('#applyInfo .table').find('input[name=id]').val(data.id);
+                            $('#id').val(data.id);
+                            $('input[name=location]').val(data.location);
+                            $('input[name=certificate]').val(data.certificate);
+                            var table = $("#houseTable");
+                            table.empty();
+                            for (var i=0;i<data.listHouse.length;i++)
+                            {
+                                var rowData = data.listHouse[i];
+                                var row = "<tr>"
+                                            + "<td>" + rowData.buildNo + "</td>"
+                                            + "<td>" + rowData.houseNo + "</td>"
+                                            + "<td>" + rowData.buildStructure + "</td>"
+                                            + "<td>" + rowData.layersTotal + "</td>"
+                                            + "<td>" + rowData.layersLocation + "</td>"
+                                            + "<td>" + rowData.buildArea + "</td>"
+                                            + "<td>" + rowData.innerArea + "</td>"
+                                            + "<td>" + rowData.shareArea + "</td>"
+                                            + "<td>" + rowData.planUse + "</td>"
+                                            + '</tr>';
+                                table.append(row);
+                            }
+                            
+                            var table = $("#subjectTable");
+                            table.empty();
+                            for (var i=0;i<data.listSubject.length;i++)
+                            {
+                                var rowData = data.listSubject[i];
+                                
+                                var row = "<tr>"
+                                            + "<td>" + rowData.mold + "</td>"
+                                            + "<td>" + rowData.name + "</td>"
+                                            + "<td>" + rowData.certificateMold + "</td>"
+                                            + "<td>" + rowData.certificate + "</td>"
+                                            + "<td>" + rowData.phone + "</td>"
+                                            + '</tr>';
+                                table.append(row);
+                            }
+                        },
+                        error: function(e,xhr,opt){
+                            layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                        }
+                    });
+                }
+                
+                
+            };
+            $(":checkbox").click(function(){ 
+                if($(this).attr("checked")!=undefined) 
+                { 
+                    $(this).parents('.chk').find(':checkbox').attr("checked",false); 
+                    $(this).attr("checked",true); 
+                } 
+            }); 
+            
+            /*测试Excel导出功能*/
+            $(".downExcelButton").on("click", function() {
+                self.location.href="/exprot/files/"+applyId;
+            });
+            
+            load();
+        }); 
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  </head>
+  <body>
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row">
+        <div class="col-md-12">
+            <div class="form-inline" style="margin-bottom:10px;">
+               <div class="form-group" style="margin-right:10px;">
+                   <label class="control-label">日期</label>
+                   <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                      <input type="text" class="form-control" id="searchDate" style="width:150px;">
+                  </div>
+               </div>
+               <div class="form-group" style="margin-right:10px;">
+                   <label class="control-label">时间段</label>
+                   <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                      <input type="text" class="form-control" id="searchDateRange" style="width:150px;">
+                  </div>
+               </div>
+               <div class="form-group" style="margin-right:10px;">
+                   <label class="control-label">用户名</label>
+                   <div class="input-group">
+                      <input type="text" class="form-control" id="username" style="width:150px;"/>
+                  </div>
+               </div>
+               <div class="form-group" style="margin-right:10px;">
+                   <label class="control-label">URL</label>
+                   <div class="input-group">
+                      <input type="text" class="form-control" id="url"/>
+                  </div>
+               </div>
+               <button id="searchButton" type="button" class="btn btn-primary btn-sm">查询</button>
+            </div>  
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>用户名</th>
+              <th>请求地址</th>
+              <th>请求类型</th>
+              <th>请求参数</th>
+              <th>请求体</th>
+              <th>请求时间</th>
+              <th>耗时</th>
+              <th>结果码</th>
+              <th>请求结果</th>
+              <th>动作</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable">
+          </tbody>
+        </table>
+        
+        <div class="hr-line-dashed"></div>
+        <div class="text-center">
+            <div class="btn-group" id="pagination">
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+    <#include "script.ftl"/>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        var url = "/operationlogs/operations";
+        
+        var pageSize = 10;
+        
+        var time = "";
+        
+        var load = function(pageNum) {
+            pageNum = defaultV(pageNum, 1);
+            time = moment($('#searchDate').val(), 'YYYY-MM-DD').format("YYYY_MM_DD");
+            range = $('#searchDateRange').val();
+            username = $('#username').val();
+            startTime = time + " " +range.split('-')[0];
+            endTime = time + " " +range.split('-')[1];
+            
+            $.ajax({ url: url + "?time=" + time + "&userName=" + username + "&url=" + $('#url').val() + "&pageNum=" + pageNum + "&startTime=" + startTime + "&endTime=" + endTime, success: function(datas){
+                var table = $("#dataTable");
+                var data = datas.data;
+                table.empty();
+                
+                if(data){
+                    $.each(data,function(index, rowData)
+                    {
+                        var row = "<tr><td>" + rowData.id + "</td>"
+                                    + "<td>" + rowData.username + "</td>"
+                                    + "<td>" + rowData.url + "</td>"
+                                    + "<td>" + rowData.requestType + "</td>"
+                                    + "<td>" + rowData.params + "</td>"
+                                    + "<td>" + rowData.body + "</td>"
+                                    + "<td>" + moment(rowData.requestTime).format('YYYY-MM-DD HH:mm:ss') + "</td>"
+                                    + "<td>" + rowData.cost + "ms</td>"
+                                    + "<td>" + rowData.status + "</td>"
+                                    + "<td>" + (rowData.result == 0 ? '成功':'失败') + "</td>"
+                                    + '<td><button type="button" class="btn btn-info btn-xs viewButton">查看详细</button></td>'
+                                    + '</tr>';
+                        table.append(row);
+                    });
+                }
+                
+                pagination(typeof(datas.total)!="undefined"?datas.total:"0", pageNum, pageSize);
+            }});
+        };
+        
+        //初始化 日期
+        initDateRangePicker($('#searchDate'),
+                moment().startOf('day'),
+                moment().startOf('day').add(1, 'days'),
+                {
+                   '今天': [moment().startOf('day'), moment().startOf('day').add(1, 'days')],
+                   '昨天': [moment().startOf('day').subtract(1, 'days'), moment().startOf('day')],
+                }, true, 'YYYY/MM/DD');
+        
+        //初始化 日期范围选择器  
+        initDateRangePicker($('#searchDateRange'),
+                moment().startOf('day'),
+                moment().endOf('day'),
+                {
+                }, false, 'HH:mm:ss');
+        
+        $("#searchButton").on("click", function() {
+            load();
+        });
+        
+        var getSearchDateRange = function() {
+            return getDateRangeConditionByPicker($("#searchDate"));
+        }
+        
+        $("#pagination").on("click", ".pageBtn", function() {
+            load(parseInt($(this).attr("data")));
+        });
+        
+        $("#dataTable").on("click", ".viewButton", function() {
+            var row = $(this).parent().parent();
+            var idTd = row.children().first();
+            var id = idTd.text();
+            
+            layer.open({
+                type: 2,
+                title: '日志详细',
+                area: ['100%', '100%'],
+                content: 'operationdetails.html?id=' + id + "&time=" + time,
+                scrollbar: false
+              });
+        });
+        
+        load();
+    });
+    </script>
+  </body>
+</html>

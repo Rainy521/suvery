@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  <link href="/js/lib/jqueryui/jquery-ui.min.css" rel="stylesheet">
+  <link href="/js/lib/bootstrap/bootstrapValidator.min.css" rel="stylesheet">
+  <style type="text/css">
+   .demo {padding:10px; border: 2px dashed green; border-radius: 4px;}
+   .column {
+       border: 2px solid #DDDDDD;
+       border-radius: 4px 4px 4px 4px;
+       margin: 10px 0;
+       padding: 15px 10px 15px 10px;
+   }
+   .column.selected {
+       border: 2px solid red;
+   }
+  </style>
+  </head>
+  <body>
+    <div class="modal fade" id="userGroupsModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">共享'<font id="sharename"></font>'仪表盘，共享前请确认仪表盘已保存！</h4>
+          </div>
+          <div class="modal-body">
+           <form class="form-horizontal">
+            <div class="form-group">
+             <select multiple class="form-control" id="selectUserGroups">
+             </select>
+            </div>
+           </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveUserGroupsButton">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wrapper wrapper-content">
+      <div class="row m-b-xs">
+        <div class="form-inline">
+        <fieldset class="col-sm-6">
+        <legend><font size="5">布局</font></legend>
+        <div class="col-sm-12">
+            <div class="input-group" style="width: 220px">
+               <input id="colSize" placeholder="输入列宽,一行12列单元" class="form-control" type="number">
+               <span id="draggable" class="input-group-addon">输入</span>
+            </div>
+            <div class="btn-group" role="group">
+            <button id="removeColumn" class="btn btn-primary" type="button">删除</button>
+            <button id="modifyColumn" class="btn btn-primary" type="button">编辑</button>
+            <button id="copyColumn" class="btn btn-primary" type="button">复制</button>
+            <button id="zoomIn" class="btn btn-primary" type="button">增宽</button>
+            <button id="zoomOut" class="btn btn-primary" type="button">缩小</button>
+            </div>
+        </div>
+        </fieldset>
+        <fieldset class="col-sm-6">
+        <legend><font size="5">自定义仪表盘</font></legend>
+        <div class="col-sm-12">
+            <select id="layouts" class="form-control">
+            </select>
+            <div class="btn-group" role="group">
+            <button id="newLayout" class="btn btn-primary" type="button">新增</button>
+            <button id="copyLayout" class="btn btn-primary" type="button">复制</button>
+            <button id="saveLayout" class="btn btn-primary" type="button">保存</button>
+            <button id="shareLayout" class="btn btn-primary" type="button">共享</button>
+            <button id="shareManageLayout" class="btn btn-primary" type="button">共享管理</button>
+            <button id="deleteLayout" class="btn btn-primary" type="button">删除</button>
+            </div>
+        </div>
+        </fieldset>
+        </div>
+      </div>
+      <div class="row demo" id="columns">
+      </div>
+    </div>
+    
+    <#include "script.ftl"/>
+    <script type="text/javascript" src="/js/lib/jqueryui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/js/lib/bootstrap/bootstrapValidator.min.js"></script>
+    <script type="text/javascript" src="/js/lib/bootstrap/bootstrapValidator/zh_CN.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        page.dashboard.layout.init();
+    });
+    </script>
+  </body>
+</html>

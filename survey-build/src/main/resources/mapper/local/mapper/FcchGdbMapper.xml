@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwch.survey.dao.mapper.FcchGdbMapper">
+  <resultMap id="BaseResultMap" type="com.lwch.survey.model.FcchGdb">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="applyId" jdbcType="VARCHAR" property="applyid" />
+    <result column="proName" jdbcType="VARCHAR" property="proname" />
+    <result column="lpzh" jdbcType="VARCHAR" property="lpzh" />
+    <result column="chlx" jdbcType="VARCHAR" property="chlx" />
+    <result column="xmzl" jdbcType="VARCHAR" property="xmzl" />
+    <result column="jsdw" jdbcType="VARCHAR" property="jsdw" />
+    <result column="jsdwCode" jdbcType="VARCHAR" property="jsdwcode" />
+    <result column="lxr" jdbcType="VARCHAR" property="lxr" />
+    <result column="lxdh" jdbcType="VARCHAR" property="lxdh" />
+    <result column="chdw" jdbcType="VARCHAR" property="chdw" />
+    <result column="chdwCode" jdbcType="VARCHAR" property="chdwcode" />
+    <result column="chdwlxr" jdbcType="VARCHAR" property="chdwlxr" />
+    <result column="chdwlxdh" jdbcType="VARCHAR" property="chdwlxdh" />
+    <result column="bdcqzh" jdbcType="VARCHAR" property="bdcqzh" />
+    <result column="ghxkzh" jdbcType="VARCHAR" property="ghxkzh" />
+    <result column="jzjg" jdbcType="VARCHAR" property="jzjg" />
+    <result column="zcs" jdbcType="INTEGER" property="zcs" />
+    <result column="dscs" jdbcType="INTEGER" property="dscs" />
+    <result column="dxcs" jdbcType="INTEGER" property="dxcs" />
+    <result column="ghyt" jdbcType="VARCHAR" property="ghyt" />
+    <result column="zmj" jdbcType="DOUBLE" property="zmj" />
+    <result column="files" jdbcType="VARCHAR" property="files" />
+    <result column="backNum" jdbcType="INTEGER" property="backnum" />
+    <result column="lspzxx" jdbcType="VARCHAR" property="lspzxx" />
+    <result column="lcslid" jdbcType="VARCHAR" property="lcslid" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updatetime" />
+    <result column="applyTime" jdbcType="TIMESTAMP" property="applytime" />
+    <result column="gdno" jdbcType="VARCHAR" property="gdno" />
+    <result column="yxx" jdbcType="INTEGER" property="yxx" />
+    <result column="thcs" jdbcType="INTEGER" property="thcs" />
+    <result column="pzxx" jdbcType="VARCHAR" property="pzxx" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, applyId, proName, lpzh, chlx, xmzl, jsdw, jsdwCode, lxr, lxdh, chdw, chdwCode, 
+    chdwlxr, chdwlxdh, bdcqzh, ghxkzh, jzjg, zcs, dscs, dxcs, ghyt, zmj, files, backNum, 
+    lspzxx, lcslid, remark, updateTime, applyTime, gdno, yxx, thcs, pzxx
+  </sql>
+  <select id="selectByExample" parameterType="com.lwch.survey.model.FcchGdbExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from fcch_gdb
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from fcch_gdb
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from fcch_gdb
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.lwch.survey.model.FcchGdbExample">
+    delete from fcch_gdb
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lwch.survey.model.FcchGdb">
+    insert into fcch_gdb (id, applyId, proName, 
+      lpzh, chlx, xmzl, jsdw, 
+      jsdwCode, lxr, lxdh, 
+      chdw, chdwCode, chdwlxr, 
+      chdwlxdh, bdcqzh, ghxkzh, 
+      jzjg, zcs, dscs, dxcs, 
+      ghyt, zmj, files, backNum, 
+      lspzxx, lcslid, remark, 
+      updateTime, applyTime, gdno, 
+      yxx, thcs, pzxx)
+    values (#{id,jdbcType=INTEGER}, #{applyid,jdbcType=VARCHAR}, #{proname,jdbcType=VARCHAR}, 
+      #{lpzh,jdbcType=VARCHAR}, #{chlx,jdbcType=VARCHAR}, #{xmzl,jdbcType=VARCHAR}, #{jsdw,jdbcType=VARCHAR}, 
+      #{jsdwcode,jdbcType=VARCHAR}, #{lxr,jdbcType=VARCHAR}, #{lxdh,jdbcType=VARCHAR}, 
+      #{chdw,jdbcType=VARCHAR}, #{chdwcode,jdbcType=VARCHAR}, #{chdwlxr,jdbcType=VARCHAR}, 
+      #{chdwlxdh,jdbcType=VARCHAR}, #{bdcqzh,jdbcType=VARCHAR}, #{ghxkzh,jdbcType=VARCHAR}, 
+      #{jzjg,jdbcType=VARCHAR}, #{zcs,jdbcType=INTEGER}, #{dscs,jdbcType=INTEGER}, #{dxcs,jdbcType=INTEGER}, 
+      #{ghyt,jdbcType=VARCHAR}, #{zmj,jdbcType=DOUBLE}, #{files,jdbcType=VARCHAR}, #{backnum,jdbcType=INTEGER}, 
+      #{lspzxx,jdbcType=VARCHAR}, #{lcslid,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{updatetime,jdbcType=TIMESTAMP}, #{applytime,jdbcType=TIMESTAMP}, #{gdno,jdbcType=VARCHAR}, 
+      #{yxx,jdbcType=INTEGER}, #{thcs,jdbcType=INTEGER}, #{pzxx,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lwch.survey.model.FcchGdb">
+    insert into fcch_gdb
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="applyid != null">
+        applyId,
+      </if>
+      <if test="proname != null">
+        proName,
+      </if>
+      <if test="lpzh != null">
+        lpzh,
+      </if>
+      <if test="chlx != null">
+        chlx,
+      </if>
+      <if test="xmzl != null">
+        xmzl,
+      </if>
+      <if test="jsdw != null">
+        jsdw,
+      </if>
+      <if test="jsdwcode != null">
+        jsdwCode,
+      </if>
+      <if test="lxr != null">
+        lxr,
+      </if>
+      <if test="lxdh != null">
+        lxdh,
+      </if>
+      <if test="chdw != null">
+        chdw,
+      </if>
+      <if test="chdwcode != null">
+        chdwCode,
+      </if>
+      <if test="chdwlxr != null">
+        chdwlxr,
+      </if>
+      <if test="chdwlxdh != null">
+        chdwlxdh,
+      </if>
+      <if test="bdcqzh != null">
+        bdcqzh,
+      </if>
+      <if test="ghxkzh != null">
+        ghxkzh,
+      </if>
+      <if test="jzjg != null">
+        jzjg,
+      </if>
+      <if test="zcs != null">
+        zcs,
+      </if>
+      <if test="dscs != null">
+        dscs,
+      </if>
+      <if test="dxcs != null">
+        dxcs,
+      </if>
+      <if test="ghyt != null">
+        ghyt,
+      </if>
+      <if test="zmj != null">
+        zmj,
+      </if>
+      <if test="files != null">
+        files,
+      </if>
+      <if test="backnum != null">
+        backNum,
+      </if>
+      <if test="lspzxx != null">
+        lspzxx,
+      </if>
+      <if test="lcslid != null">
+        lcslid,
+      </if>
+      <if test="remark != null">
+        remark,
+      </if>
+      <if test="updatetime != null">
+        updateTime,
+      </if>
+      <if test="applytime != null">
+        applyTime,
+      </if>
+      <if test="gdno != null">
+        gdno,
+      </if>
+      <if test="yxx != null">
+        yxx,
+      </if>
+      <if test="thcs != null">
+        thcs,
+      </if>
+      <if test="pzxx != null">
+        pzxx,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="applyid != null">
+        #{applyid,jdbcType=VARCHAR},
+      </if>
+      <if test="proname != null">
+        #{proname,jdbcType=VARCHAR},
+      </if>
+      <if test="lpzh != null">
+        #{lpzh,jdbcType=VARCHAR},
+      </if>
+      <if test="chlx != null">
+        #{chlx,jdbcType=VARCHAR},
+      </if>
+      <if test="xmzl != null">
+        #{xmzl,jdbcType=VARCHAR},
+      </if>
+      <if test="jsdw != null">
+        #{jsdw,jdbcType=VARCHAR},
+      </if>
+      <if test="jsdwcode != null">
+        #{jsdwcode,jdbcType=VARCHAR},
+      </if>
+      <if test="lxr != null">
+        #{lxr,jdbcType=VARCHAR},
+      </if>
+      <if test="lxdh != null">
+        #{lxdh,jdbcType=VARCHAR},
+      </if>
+      <if test="chdw != null">
+        #{chdw,jdbcType=VARCHAR},
+      </if>
+      <if test="chdwcode != null">
+        #{chdwcode,jdbcType=VARCHAR},
+      </if>
+      <if test="chdwlxr != null">
+        #{chdwlxr,jdbcType=VARCHAR},
+      </if>
+      <if test="chdwlxdh != null">
+        #{chdwlxdh,jdbcType=VARCHAR},
+      </if>
+      <if test="bdcqzh != null">
+        #{bdcqzh,jdbcType=VARCHAR},
+      </if>
+      <if test="ghxkzh != null">
+        #{ghxkzh,jdbcType=VARCHAR},
+      </if>
+      <if test="jzjg != null">
+        #{jzjg,jdbcType=VARCHAR},
+      </if>
+      <if test="zcs != null">
+        #{zcs,jdbcType=INTEGER},
+      </if>
+      <if test="dscs != null">
+        #{dscs,jdbcType=INTEGER},
+      </if>
+      <if test="dxcs != null">
+        #{dxcs,jdbcType=INTEGER},
+      </if>
+      <if test="ghyt != null">
+        #{ghyt,jdbcType=VARCHAR},
+      </if>
+      <if test="zmj != null">
+        #{zmj,jdbcType=DOUBLE},
+      </if>
+      <if test="files != null">
+        #{files,jdbcType=VARCHAR},
+      </if>
+      <if test="backnum != null">
+        #{backnum,jdbcType=INTEGER},
+      </if>
+      <if test="lspzxx != null">
+        #{lspzxx,jdbcType=VARCHAR},
+      </if>
+      <if test="lcslid != null">
+        #{lcslid,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null">
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applytime != null">
+        #{applytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gdno != null">
+        #{gdno,jdbcType=VARCHAR},
+      </if>
+      <if test="yxx != null">
+        #{yxx,jdbcType=INTEGER},
+      </if>
+      <if test="thcs != null">
+        #{thcs,jdbcType=INTEGER},
+      </if>
+      <if test="pzxx != null">
+        #{pzxx,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lwch.survey.model.FcchGdbExample" resultType="java.lang.Long">
+    select count(*) from fcch_gdb
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update fcch_gdb
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.applyid != null">
+        applyId = #{record.applyid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proname != null">
+        proName = #{record.proname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lpzh != null">
+        lpzh = #{record.lpzh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.chlx != null">
+        chlx = #{record.chlx,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xmzl != null">
+        xmzl = #{record.xmzl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jsdw != null">
+        jsdw = #{record.jsdw,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jsdwcode != null">
+        jsdwCode = #{record.jsdwcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lxr != null">
+        lxr = #{record.lxr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lxdh != null">
+        lxdh = #{record.lxdh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.chdw != null">
+        chdw = #{record.chdw,jdbcType=VARCHAR},
+      </if>
+      <if test="record.chdwcode != null">
+        chdwCode = #{record.chdwcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.chdwlxr != null">
+        chdwlxr = #{record.chdwlxr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.chdwlxdh != null">
+        chdwlxdh = #{record.chdwlxdh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bdcqzh != null">
+        bdcqzh = #{record.bdcqzh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ghxkzh != null">
+        ghxkzh = #{record.ghxkzh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jzjg != null">
+        jzjg = #{record.jzjg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.zcs != null">
+        zcs = #{record.zcs,jdbcType=INTEGER},
+      </if>
+      <if test="record.dscs != null">
+        dscs = #{record.dscs,jdbcType=INTEGER},
+      </if>
+      <if test="record.dxcs != null">
+        dxcs = #{record.dxcs,jdbcType=INTEGER},
+      </if>
+      <if test="record.ghyt != null">
+        ghyt = #{record.ghyt,jdbcType=VARCHAR},
+      </if>
+      <if test="record.zmj != null">
+        zmj = #{record.zmj,jdbcType=DOUBLE},
+      </if>
+      <if test="record.files != null">
+        files = #{record.files,jdbcType=VARCHAR},
+      </if>
+      <if test="record.backnum != null">
+        backNum = #{record.backnum,jdbcType=INTEGER},
+      </if>
+      <if test="record.lspzxx != null">
+        lspzxx = #{record.lspzxx,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lcslid != null">
+        lcslid = #{record.lcslid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remark != null">
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updatetime != null">
+        updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.applytime != null">
+        applyTime = #{record.applytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.gdno != null">
+        gdno = #{record.gdno,jdbcType=VARCHAR},
+      </if>
+      <if test="record.yxx != null">
+        yxx = #{record.yxx,jdbcType=INTEGER},
+      </if>
+      <if test="record.thcs != null">
+        thcs = #{record.thcs,jdbcType=INTEGER},
+      </if>
+      <if test="record.pzxx != null">
+        pzxx = #{record.pzxx,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update fcch_gdb
+    set id = #{record.id,jdbcType=INTEGER},
+      applyId = #{record.applyid,jdbcType=VARCHAR},
+      proName = #{record.proname,jdbcType=VARCHAR},
+      lpzh = #{record.lpzh,jdbcType=VARCHAR},
+      chlx = #{record.chlx,jdbcType=VARCHAR},
+      xmzl = #{record.xmzl,jdbcType=VARCHAR},
+      jsdw = #{record.jsdw,jdbcType=VARCHAR},
+      jsdwCode = #{record.jsdwcode,jdbcType=VARCHAR},
+      lxr = #{record.lxr,jdbcType=VARCHAR},
+      lxdh = #{record.lxdh,jdbcType=VARCHAR},
+      chdw = #{record.chdw,jdbcType=VARCHAR},
+      chdwCode = #{record.chdwcode,jdbcType=VARCHAR},
+      chdwlxr = #{record.chdwlxr,jdbcType=VARCHAR},
+      chdwlxdh = #{record.chdwlxdh,jdbcType=VARCHAR},
+      bdcqzh = #{record.bdcqzh,jdbcType=VARCHAR},
+      ghxkzh = #{record.ghxkzh,jdbcType=VARCHAR},
+      jzjg = #{record.jzjg,jdbcType=VARCHAR},
+      zcs = #{record.zcs,jdbcType=INTEGER},
+      dscs = #{record.dscs,jdbcType=INTEGER},
+      dxcs = #{record.dxcs,jdbcType=INTEGER},
+      ghyt = #{record.ghyt,jdbcType=VARCHAR},
+      zmj = #{record.zmj,jdbcType=DOUBLE},
+      files = #{record.files,jdbcType=VARCHAR},
+      backNum = #{record.backnum,jdbcType=INTEGER},
+      lspzxx = #{record.lspzxx,jdbcType=VARCHAR},
+      lcslid = #{record.lcslid,jdbcType=VARCHAR},
+      remark = #{record.remark,jdbcType=VARCHAR},
+      updateTime = #{record.updatetime,jdbcType=TIMESTAMP},
+      applyTime = #{record.applytime,jdbcType=TIMESTAMP},
+      gdno = #{record.gdno,jdbcType=VARCHAR},
+      yxx = #{record.yxx,jdbcType=INTEGER},
+      thcs = #{record.thcs,jdbcType=INTEGER},
+      pzxx = #{record.pzxx,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lwch.survey.model.FcchGdb">
+    update fcch_gdb
+    <set>
+      <if test="applyid != null">
+        applyId = #{applyid,jdbcType=VARCHAR},
+      </if>
+      <if test="proname != null">
+        proName = #{proname,jdbcType=VARCHAR},
+      </if>
+      <if test="lpzh != null">
+        lpzh = #{lpzh,jdbcType=VARCHAR},
+      </if>
+      <if test="chlx != null">
+        chlx = #{chlx,jdbcType=VARCHAR},
+      </if>
+      <if test="xmzl != null">
+        xmzl = #{xmzl,jdbcType=VARCHAR},
+      </if>
+      <if test="jsdw != null">
+        jsdw = #{jsdw,jdbcType=VARCHAR},
+      </if>
+      <if test="jsdwcode != null">
+        jsdwCode = #{jsdwcode,jdbcType=VARCHAR},
+      </if>
+      <if test="lxr != null">
+        lxr = #{lxr,jdbcType=VARCHAR},
+      </if>
+      <if test="lxdh != null">
+        lxdh = #{lxdh,jdbcType=VARCHAR},
+      </if>
+      <if test="chdw != null">
+        chdw = #{chdw,jdbcType=VARCHAR},
+      </if>
+      <if test="chdwcode != null">
+        chdwCode = #{chdwcode,jdbcType=VARCHAR},
+      </if>
+      <if test="chdwlxr != null">
+        chdwlxr = #{chdwlxr,jdbcType=VARCHAR},
+      </if>
+      <if test="chdwlxdh != null">
+        chdwlxdh = #{chdwlxdh,jdbcType=VARCHAR},
+      </if>
+      <if test="bdcqzh != null">
+        bdcqzh = #{bdcqzh,jdbcType=VARCHAR},
+      </if>
+      <if test="ghxkzh != null">
+        ghxkzh = #{ghxkzh,jdbcType=VARCHAR},
+      </if>
+      <if test="jzjg != null">
+        jzjg = #{jzjg,jdbcType=VARCHAR},
+      </if>
+      <if test="zcs != null">
+        zcs = #{zcs,jdbcType=INTEGER},
+      </if>
+      <if test="dscs != null">
+        dscs = #{dscs,jdbcType=INTEGER},
+      </if>
+      <if test="dxcs != null">
+        dxcs = #{dxcs,jdbcType=INTEGER},
+      </if>
+      <if test="ghyt != null">
+        ghyt = #{ghyt,jdbcType=VARCHAR},
+      </if>
+      <if test="zmj != null">
+        zmj = #{zmj,jdbcType=DOUBLE},
+      </if>
+      <if test="files != null">
+        files = #{files,jdbcType=VARCHAR},
+      </if>
+      <if test="backnum != null">
+        backNum = #{backnum,jdbcType=INTEGER},
+      </if>
+      <if test="lspzxx != null">
+        lspzxx = #{lspzxx,jdbcType=VARCHAR},
+      </if>
+      <if test="lcslid != null">
+        lcslid = #{lcslid,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null">
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null">
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applytime != null">
+        applyTime = #{applytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gdno != null">
+        gdno = #{gdno,jdbcType=VARCHAR},
+      </if>
+      <if test="yxx != null">
+        yxx = #{yxx,jdbcType=INTEGER},
+      </if>
+      <if test="thcs != null">
+        thcs = #{thcs,jdbcType=INTEGER},
+      </if>
+      <if test="pzxx != null">
+        pzxx = #{pzxx,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lwch.survey.model.FcchGdb">
+    update fcch_gdb
+    set applyId = #{applyid,jdbcType=VARCHAR},
+      proName = #{proname,jdbcType=VARCHAR},
+      lpzh = #{lpzh,jdbcType=VARCHAR},
+      chlx = #{chlx,jdbcType=VARCHAR},
+      xmzl = #{xmzl,jdbcType=VARCHAR},
+      jsdw = #{jsdw,jdbcType=VARCHAR},
+      jsdwCode = #{jsdwcode,jdbcType=VARCHAR},
+      lxr = #{lxr,jdbcType=VARCHAR},
+      lxdh = #{lxdh,jdbcType=VARCHAR},
+      chdw = #{chdw,jdbcType=VARCHAR},
+      chdwCode = #{chdwcode,jdbcType=VARCHAR},
+      chdwlxr = #{chdwlxr,jdbcType=VARCHAR},
+      chdwlxdh = #{chdwlxdh,jdbcType=VARCHAR},
+      bdcqzh = #{bdcqzh,jdbcType=VARCHAR},
+      ghxkzh = #{ghxkzh,jdbcType=VARCHAR},
+      jzjg = #{jzjg,jdbcType=VARCHAR},
+      zcs = #{zcs,jdbcType=INTEGER},
+      dscs = #{dscs,jdbcType=INTEGER},
+      dxcs = #{dxcs,jdbcType=INTEGER},
+      ghyt = #{ghyt,jdbcType=VARCHAR},
+      zmj = #{zmj,jdbcType=DOUBLE},
+      files = #{files,jdbcType=VARCHAR},
+      backNum = #{backnum,jdbcType=INTEGER},
+      lspzxx = #{lspzxx,jdbcType=VARCHAR},
+      lcslid = #{lcslid,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      applyTime = #{applytime,jdbcType=TIMESTAMP},
+      gdno = #{gdno,jdbcType=VARCHAR},
+      yxx = #{yxx,jdbcType=INTEGER},
+      thcs = #{thcs,jdbcType=INTEGER},
+      pzxx = #{pzxx,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@types/jquery": "^2.0.45",
+    "@types/moment": "^2.13.0"
+  }
+}

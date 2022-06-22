@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  <style>
+    .float-e-margins{
+        margin-top:55px;
+    }
+    .fixed{
+        position:fixed;
+        top:0;
+        width:100%;
+        padding:20px 0;
+        background:#fff;
+    }
+  </style>
+  </head>
+  <body>
+    <div class="modal fade" id="menuModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">资源</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" id="menuForm">
+                <input type="hidden" class="form-control" name="id" id="id">
+                <div class="form-group">
+                    <label for="name" class="col-sm-2 control-label">资源名称</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="name" id="name" placeholder="(必填)" required="required">
+                    </div>
+
+                    <label for="name" class="col-sm-2 control-label">资源地址</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="url" id="url" placeholder="">
+                    </div>
+
+                    <label for="name" class="col-sm-2 control-label">上级菜单</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="pid" id="pid" placeholder="" readonly="readonly">
+                    </div>
+
+                    <label for="name" class="col-sm-2 control-label">顺序</label>
+                    <div class="col-sm-10">
+                      <input type="number" class="form-control" name="sort" id="sort" min="1" max="99999" placeholder="(必填,最小为1)" required="required">
+                    </div>
+
+                    <label for="name" class="col-sm-2 control-label">样式</label>
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" name="icon" id="icon" placeholder="">
+                    </div>
+                  </div>
+
+                   <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="submit" class="btn btn-primary" id="saveButton">保存</button>
+                    </div>
+                </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row fixed">
+        <div class="col-md-12">
+          <button type="button" class="btn btn-danger  deleteButton pull-right" id="deleteMenuButton">删除菜单</button>
+          <button type="button" class="btn btn-primary newButton pull-right" id="newMenuButton">新增菜单</button>
+        </div>
+      </div>
+      <div class="row">
+        <div id="div1"></div>
+      </div>
+    </div>
+
+    <#include "script.ftl"/>
+    <script src="/js/lib/treegrid/treegrid.js"></script>
+    <script type="text/javascript">
+
+        var url = "/menu";
+        var manageUrl = "/manage/menus";
+
+        function customCheckBox(row, col){
+            return "<input name='menu' type='checkbox'>";
+        }
+
+        function itemClickEvent(id, index, data){
+            jQuery("#currentRow").val(id + ", " + index + ", " + TreeGrid.json2str(data));
+        }
+
+        function expandAll(isOpen){
+            treeGrid.expandAll(isOpen);
+        }
+
+        function loadMenu(){
+            $.get(url).done(function (data) {
+                var config = {
+                    id: "tg1",
+                    width: "800",
+                    renderTo: "div1",
+                    headerAlign: "left",
+                    headerHeight: "30",
+                    dataAlign: "left",
+                    indentation: "40",
+                    folderColumnIndex: "1",
+                    folderOpenIcon: "/img/folderOpen.gif",
+                    folderCloseIcon: "/img/folderClose.gif",
+                    defaultLeafIcon: "/img/defaultLeaf.gif",
+                    itemClick: "itemClickEvent",
+                    doubleClick: "",
+                    expandLayer: 1,
+                    columns:[
+                        {headerText: "", headerAlign: "center", handler: "customCheckBox", dataAlign: "center", width: "20"},
+                        {headerText: "资源名称", dataField: "name", headerAlign: "center"},
+                        {headerText: "ID", dataField: "id",folderHidden:"true",headerAlign: "center"},
+                        {headerText: "资源地址", dataField: "url", headerAlign: "center", dataAlign: "left"},
+                    ],
+                    data:data
+                };
+
+                 //创建一个组件对象  
+                var treeGrid = new TreeGrid(config);
+                treeGrid.show();
+            });
+        }
+
+        loadMenu();
+
+        $("#newMenuButton").on("click", function() {
+            resetForm("menuForm");
+            var con = true;
+            $("#pid").val("");
+            $('input:checkbox[name=menu]:checked').each(function(i){
+                var row = $(this).parent().parent().attr('data');
+                row = eval("("+row+")");
+                $("#pid").val(row.name);
+                if(row.pid && row.pid){
+                    con = false;
+                }
+            });
+            if(!con){
+                layer.alert('所选菜单无法再添加子菜单,请重新选择！');
+                return;
+            }
+
+            $('#menuModal').modal('show');
+        });
+
+        $("#deleteMenuButton").on("click", function() {
+            var selectMenusName = [];
+            var menuIds = [];
+
+            $('input:checkbox[name=menu]:checked').each(function(i){
+                var row = $(this).parent().parent().attr('data');
+                row = eval("("+row+")");
+                menuIds.push(row.id);
+                selectMenusName.push(row.name);
+            });
+
+            if(!$('input:checkbox[name=menu]:checked').length){
+                layer.alert('请选择删除项！');
+                return;
+            }
+
+            layer.confirm("确定删除菜单名" + selectMenusName + "的菜单", {icon: 3, title: "删除菜单"}, function(index){
+                $.ajax({
+                    type:"POST",
+                    url: manageUrl + "/remove",
+                    contentType:"application/json",
+                    data:JSON.stringify(menuIds),
+                    success: function(data){
+                                 layer.alert("删除成功!", {icon: 1, time : 1500});
+                                 loadMenu();
+                             },
+                    error: function(e,xhr,opt){
+                        layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                    }
+                });
+
+                layer.close(index);
+            });
+        });
+
+        $("#saveButton").on("click", function() {
+            var data = {};
+            data.name = $("#name").val();
+            data.url = $("#url").val();
+            $('input:checkbox[name=menu]:checked').each(function(i){
+                var row = $(this).parent().parent().attr('data');
+                row = eval("("+row+")");
+                data.pid = row.id;
+            });
+            data.sort = $("#sort").val();
+            data.icon = $("#icon").val();
+
+            if (!isFormValid("menuForm")) {
+                return;
+            }
+            
+            //if( $("#pid").val() != "" && $("#url").val() == ""){
+            //    layer.alert('新增的二级菜单必须填写url,请重新编辑！');
+            //    return;
+            //}
+            
+            $.ajax({ 
+                type:"POST",
+                url: manageUrl,
+                contentType:"application/json",
+                data:JSON.stringify(data),
+                success: function(data){
+                             layer.alert("保存成功!", {icon: 1, time : 1500});
+                             $('#menuModal').modal('hide');
+                             loadMenu();
+                         },
+                error: function(e,xhr,opt){
+                    layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+        })
+    </script>
+  </body>
+</html>

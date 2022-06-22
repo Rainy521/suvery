@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwch.survey.dao.mapper.JsgcghxkDossierExamineMapper">
+  <resultMap id="BaseResultMap" type="com.lwch.survey.model.JsgcghxkDossierExamine">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="jd_id" jdbcType="INTEGER" property="jdId" />
+    <result column="jsgcghxkz_no" jdbcType="VARCHAR" property="jsgcghxkzNo" />
+    <result column="apply_username" jdbcType="VARCHAR" property="applyUsername" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="is_exist" jdbcType="INTEGER" property="isExist" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, jd_id, jsgcghxkz_no, apply_username, `state`, is_exist, create_time
+  </sql>
+  <select id="selectByExample" parameterType="com.lwch.survey.model.JsgcghxkDossierExamineExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from jsgcghxk_dossier_examine
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from jsgcghxk_dossier_examine
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from jsgcghxk_dossier_examine
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.lwch.survey.model.JsgcghxkDossierExamineExample">
+    delete from jsgcghxk_dossier_examine
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lwch.survey.model.JsgcghxkDossierExamine">
+    insert into jsgcghxk_dossier_examine (id, jd_id, jsgcghxkz_no, 
+      apply_username, `state`, is_exist, 
+      create_time)
+    values (#{id,jdbcType=INTEGER}, #{jdId,jdbcType=INTEGER}, #{jsgcghxkzNo,jdbcType=VARCHAR}, 
+      #{applyUsername,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER}, #{isExist,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lwch.survey.model.JsgcghxkDossierExamine">
+    insert into jsgcghxk_dossier_examine
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="jdId != null">
+        jd_id,
+      </if>
+      <if test="jsgcghxkzNo != null">
+        jsgcghxkz_no,
+      </if>
+      <if test="applyUsername != null">
+        apply_username,
+      </if>
+      <if test="state != null">
+        `state`,
+      </if>
+      <if test="isExist != null">
+        is_exist,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="jdId != null">
+        #{jdId,jdbcType=INTEGER},
+      </if>
+      <if test="jsgcghxkzNo != null">
+        #{jsgcghxkzNo,jdbcType=VARCHAR},
+      </if>
+      <if test="applyUsername != null">
+        #{applyUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="isExist != null">
+        #{isExist,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lwch.survey.model.JsgcghxkDossierExamineExample" resultType="java.lang.Long">
+    select count(*) from jsgcghxk_dossier_examine
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update jsgcghxk_dossier_examine
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.jdId != null">
+        jd_id = #{record.jdId,jdbcType=INTEGER},
+      </if>
+      <if test="record.jsgcghxkzNo != null">
+        jsgcghxkz_no = #{record.jsgcghxkzNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.applyUsername != null">
+        apply_username = #{record.applyUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.state != null">
+        `state` = #{record.state,jdbcType=INTEGER},
+      </if>
+      <if test="record.isExist != null">
+        is_exist = #{record.isExist,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update jsgcghxk_dossier_examine
+    set id = #{record.id,jdbcType=INTEGER},
+      jd_id = #{record.jdId,jdbcType=INTEGER},
+      jsgcghxkz_no = #{record.jsgcghxkzNo,jdbcType=VARCHAR},
+      apply_username = #{record.applyUsername,jdbcType=VARCHAR},
+      `state` = #{record.state,jdbcType=INTEGER},
+      is_exist = #{record.isExist,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lwch.survey.model.JsgcghxkDossierExamine">
+    update jsgcghxk_dossier_examine
+    <set>
+      <if test="jdId != null">
+        jd_id = #{jdId,jdbcType=INTEGER},
+      </if>
+      <if test="jsgcghxkzNo != null">
+        jsgcghxkz_no = #{jsgcghxkzNo,jdbcType=VARCHAR},
+      </if>
+      <if test="applyUsername != null">
+        apply_username = #{applyUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        `state` = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="isExist != null">
+        is_exist = #{isExist,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lwch.survey.model.JsgcghxkDossierExamine">
+    update jsgcghxk_dossier_examine
+    set jd_id = #{jdId,jdbcType=INTEGER},
+      jsgcghxkz_no = #{jsgcghxkzNo,jdbcType=VARCHAR},
+      apply_username = #{applyUsername,jdbcType=VARCHAR},
+      `state` = #{state,jdbcType=INTEGER},
+      is_exist = #{isExist,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

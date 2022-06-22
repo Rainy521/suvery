@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  <style>
+  	#selectUsers{
+  		height:200px;
+  	}
+  	#selectUsers option{
+  		padding:5px 10px;
+  	}
+  </style>
+  </head>
+  <body>
+    <div class="modal fade" id="menuModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">选择菜单</h4>
+          </div>
+          <div class="modal-body" id="menu"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveMenusButton">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="usersModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">选择用户</h4>
+          </div>
+          <div class="modal-body">
+            <!-- 数据展示区域 -->
+            <div class="row" style="margin-top:10px;margin-bottom:10px;">
+            <div class="col-md-12">
+                <div class="input-group col-md-12">
+                <input id="searchContent" type="text" class="form-control" placeholder="输入用户名称">
+                <div class="input-group-btn">
+                    <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+                </div>
+                </div>
+            </div>
+            </div>
+           <form>
+            <div class="form-group">
+             <select multiple class="form-control" id="selectUsers">
+             </select>
+            </div>
+           </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveUsersButton">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="rolesModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">选择角色</h4>
+          </div>
+          <div class="modal-body">
+           <form class="form-horizontal">
+            <div class="form-group">
+             <select multiple class="form-control" id="selectRoles">
+             </select>
+            </div>
+           </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveRolesButton">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wrapper wrapper-content">
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>用户组名</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable">
+          </tbody>
+        </table>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">组员汇总<button type="button" class="btn btn-danger btn-xs pull-right" id="newUserButton">新增组员</button></div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>用户名</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="users">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">角色汇总<button type="button" class="btn btn-danger btn-xs pull-right" id="newRoleButton">新增角色</button></div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>角色名</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="roles">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">菜单汇总<button type="button" class="btn btn-danger btn-xs pull-right" id="newMenuButton">新增菜单</button></div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>名称</th>
+                  <th>URL</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="menus">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <#include "script.ftl"/>
+    <script src="/js/lib/treegrid/treegrid.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        var treeGrid;
+        var url = "/usergroups";
+        var manageUrl = "/manage/usergroup";
+        
+        var id = getParameterByName('id');
+        var userRoles = ['平台管理员'];
+        var groupName;
+        
+        var load = function() {
+            $.ajax({ url: url + "/" + id, success: function(data){
+                var table = $("#dataTable");
+                table.empty();
+                var rowData = data;
+                
+                groupName = rowData.groupName;
+                
+                var row = "<tr><td>" + rowData.id + "</td><td>" + rowData.groupName + "</td></tr>";
+                table.append(row);
+                
+                loadUsers();
+                
+                loadRoles();
+                
+                loadMenus();
+            }});
+        };
+        
+        var users = new Array();
+        var loadUsers = function() {
+            $.ajax({ url: url + "/" + groupName + "/users", success: function(data){
+                var table = $("#users");
+                table.empty();
+                users = [];
+                for (var i=0;i<data.length;i++)
+                {
+                    var rowData = data[i];
+                    users.push(rowData);
+                    var row = "<tr><td>" + rowData + "</td>+ '<td><button type='button' class='btn btn-danger btn-xs deleteButton'>删除</button></td>'</tr>";
+                    table.append(row);
+                }
+                
+                loadSelectUsers();
+            }});
+        };
+        
+        var loadSelectUsers = function() {
+            var search = $("#searchContent").val();
+            $.ajax({ url: "/users?pageSize=" + maxPageSize + "&q=" + encodeURI(search), success: function(data){
+                var select = $("#selectUsers");
+                select.empty();
+                for (var i=0;i<data.length;i++)
+                {
+                    var rowData = data[i];
+                    if ($.inArray(rowData.username, users) == -1) {
+                        var row = '<option value="' + rowData.username + '">' + rowData.username + '</option>';
+                        select.append(row);
+                    }
+                }
+            }});
+        }
+        
+        var roles = new Array();
+        var loadRoles = function() {
+            $.ajax({ url: url + "/" + groupName + "/roles", success: function(data){
+                var table = $("#roles");
+                table.empty();
+                roles = [];
+                for (var i=0;i<data.length;i++)
+                {
+                    var rowData = data[i];
+                    roles.push(rowData.authority);
+                    var row = "<tr><td>" + rowData.authority + "</td>+ '<td><button type='button' class='btn btn-danger btn-xs deleteButton'>删除</button></td>'</tr>";
+                    table.append(row);
+                }
+                loadSelectRoles();
+            }});
+        };
+        
+        /**查询用户组角色分类*/
+        var loadSelectRoles = function() {
+            $.ajax({ url: url+"/selectRoles", success: function(data){
+                var select = $("#selectRoles");
+                select.empty();
+                for (var i=0;i<data.length;i++)
+                {
+                    var rowData = data[i];
+                    if ($.inArray(rowData.roleName, roles) == -1) {
+                        var row = '<option value="' + rowData.roleName + '">' + rowData.roleName + '</option>';
+                        select.append(row);
+                    }
+                }
+            }});
+        }
+        
+        $("#searchButton").on("click", function() {
+        	loadSelectUsers();
+        });
+        
+        /**保存用户组角色*/
+        $("#saveRolesButton").on("click", function() {
+            var data = {};
+            var selectRoles = $("#selectRoles").val();
+            if(selectRoles == null || selectRoles =='undefined' || undefined == ''){
+                layer.alert("请先选择用户组角色! " + '', {icon: 1});
+                return false;
+            }
+            
+            $.ajax({ 
+                type:"POST",
+                url: manageUrl + "/" + groupName + "/users/roles/add",
+                contentType:"application/json",
+                data:JSON.stringify(selectRoles),
+                success: function(data){
+                             layer.alert("保存成功!", {icon: 1, time : 1500});
+                             $('#rolesModal').modal('hide');
+                             loadRoles();
+                         },
+                error: function(e,xhr,opt){
+                    layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+        })
+        
+        /**删除用户组角色*/
+        $("#roles").on("click", ".deleteButton", function() {
+            var row = $(this).parent().parent();
+            var groupRoleTd = row.children().first();
+            var groupRole = groupRoleTd.text();
+            
+            layer.confirm("用户组角色名为" + groupRole, {icon: 3, title: "删除用户组角色名"}, function(index){
+                $.ajax({
+                    type:"POST",
+                    url: manageUrl + "/" + groupName +"/"+groupRole+ "/users/roles/remove",
+                    success: function(data){
+                                 layer.alert("删除成功!", {icon: 1, time : 1500});
+                                 loadRoles();
+                             },
+                    error: function(e,xhr,opt){
+                        layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                    }
+                });
+                
+                layer.close(index);
+            });
+        });
+        
+        var loadMenus = function() {
+            $.ajax({ url: url + "/" + id + "/menus", success: function(data){
+                var table = $("#menus");
+                table.empty();
+                for (var i=0;i<data.length;i++)
+                {
+                    var rowData = data[i];
+                    if(rowData.pid || rowData.url){
+                        var row = "<tr><td>" + rowData.id + "</td><td>" + rowData.name + "</td><td>" + rowData.url + "</td><td><button type='button' class='btn btn-danger btn-xs deleteMenuButton'>删除</button></td></tr>";
+                        table.append(row);
+                    }
+                }
+            }});
+        };
+        
+        $("#newUserButton").on("click", function() {
+            $('#usersModal').modal('show');
+        });
+        
+        $("#newRoleButton").on("click", function() {
+            $('#rolesModal').modal('show');
+        });
+        
+        $("#newMenuButton").on("click", function() {
+            $.get('/self/'+ id +'/undistributed').done(function (data) {
+                var config = {  
+                    id: "tg1",  
+                    width: "800",  
+                    renderTo: "menu",
+                    headerAlign: "left",  
+                    headerHeight: "30",  
+                    dataAlign: "left",  
+                    indentation: "20",  
+                    folderColumnIndex: "1",  
+                    folderOpenIcon: "/img/folderOpen.gif",
+                    folderCloseIcon: "/img/folderClose.gif",
+                    defaultLeafIcon: "/img/defaultLeaf.gif",
+                    itemClick: "itemClickEvent",
+                    doubleClick: "",
+                    expandLayer: 1,  
+                    columns:[  
+                        {headerText: "<input type='checkbox' name='chkAll' class='chkAll' />", headerAlign: "center", handler: "customCheckBox", dataAlign: "center", width: "20"},  
+                        {headerText: "资源名称", dataField: "name", headerAlign: "center"},  
+                        {headerText: "ID", dataField: "id",folderHidden:"true",headerAlign: "center"},  
+                        {headerText: "资源地址", dataField: "url", headerAlign: "center", dataAlign: "left"},  
+                    ],  
+                    data:data
+                };
+                
+                 //创建一个组件对象  
+                treeGrid = new TreeGrid(config);  
+                treeGrid.show();
+                //菜单全选
+                $("input.chkAll").on('click',function(){   
+                    if(this.checked){   
+                        $("#menu :checkbox").prop("checked", true);  
+                    }else{   
+                    $("#menu :checkbox").prop("checked", false);
+                    }   
+                });
+            });  
+            $('#menuModal').modal('show');
+        });
+        
+        $("#saveUsersButton").on("click", function() {
+            var data = {};
+            var selectUsers = $("#selectUsers").val();
+            if(selectUsers == null || selectUsers =='undefined' || undefined == ''){
+                layer.alert("请先选择用户! " + '', {icon: 1});
+                return false;
+            }
+            
+            $.ajax({
+                type:"POST",
+                url: manageUrl + "/" + id + "/users/add/" + ($.inArray(groupName, userRoles) !== -1),
+                contentType:"application/json",
+                data:JSON.stringify(selectUsers),
+                success: function(data){
+                             layer.alert("保存成功!", {icon: 1, time : 1500});
+                             $('#usersModal').modal('hide');
+                             loadUsers();
+                         },
+                error: function(e,xhr,opt){
+                    layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+        })
+        
+        $("#users").on("click", ".deleteButton", function() {
+            var row = $(this).parent().parent();
+            var usernameTd = row.children().first();
+            var username = usernameTd.text();
+            
+            layer.confirm("用户名为" + username, {icon: 3, title: "删除用户"}, function(index){
+                $.ajax({
+                    type:"POST",
+                    url: manageUrl + "/" + id + "/users/remove/" + ($.inArray(groupName, userRoles) !== -1),
+                    contentType:"application/json",
+                    data:JSON.stringify(new Array(username)),
+                    success: function(data){
+                                 layer.alert("删除成功!", {icon: 1, time : 1500});
+                                 loadUsers();
+                             },
+                    error: function(e,xhr,opt){
+                        layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                    }
+                });
+                
+                layer.close(index);
+            });
+        });
+        $("#saveMenusButton").on("click", function() {
+            var spCodesTemp = '';
+            var selectMenus = [];
+            if($('input:checkbox[name=menu]:checked').is(':checked') == false){
+            	layer.alert("请先选择菜单! ", {icon: 1});
+            	return false;
+            }
+               
+            
+            $('input:checkbox[name=menu]:checked').each(function(i){
+                var row = $(this).parent().parent().attr('data');
+                row = eval("("+row+")");
+                if(row.pid){
+                    selectMenus.push(row.pid);
+                }
+                selectMenus.push(row.id);
+             });
+            $.ajax({ 
+                type:"POST",
+                url: manageUrl + "/" + id + "/menus/add",
+                contentType:"application/json",
+                data:JSON.stringify(selectMenus),
+                success: function(data){
+                             layer.alert("保存成功!", {icon: 1, time : 1500});
+                             $('#menuModal').modal('hide');
+                             loadMenus();
+                         },
+                error: function(e,xhr,opt){
+                    layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+        })
+        
+        $("#menus").on("click", ".deleteMenuButton", function() {
+            var row = $(this).parent().parent();
+            var menuIdTd = row.children().first();
+            var menuId = menuIdTd.text();
+            var nameTd = menuIdTd.next();
+            var name = nameTd.text();
+            
+            layer.confirm("菜单名为" + name, {icon: 3, title: "删除菜单"}, function(index){
+                $.ajax({
+                    type:"POST",
+                    url: manageUrl + "/" + id + "/menus/remove",
+                    contentType:"application/json",
+                    data:JSON.stringify(new Array(menuId)),
+                    success: function(data){
+                                 layer.alert("删除成功!", {icon: 1, time : 1500});
+                                 loadMenus();
+                             },
+                    error: function(e,xhr,opt){
+                        layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                    }
+                });
+                
+                layer.close(index);
+            });
+        });
+        
+        var selectedItem = function(){
+            var treeGridItem = treeGrid.getSelectedItem();  
+            if(treeGridItem!=null){  
+                //获取数据行属性值  
+                //alert(treeGridItem.id + ", " + treeGridItem.index + ", " + treeGridItem.data.name);  
+                  
+                //获取父数据行  
+                var parent = treeGridItem.getParent();  
+                if(parent!=null){  
+                    //jQuery("#currentRow").val(parent.data.name);  
+                }  
+                  
+                //获取子数据行集  
+                var children = treeGridItem.getChildren();  
+                if(children!=null && children.length>0){  
+                    jQuery("#currentRow").val(children[0].data.name);  
+                }  
+            }  
+        }  
+        
+        load();
+    });
+    
+    function customCheckBox(row, col){
+        if(row.pid || !row.children.length){
+            return "<input name='menu' type='checkbox'>"; 
+        }
+    }
+    
+    function itemClickEvent(id, index, data){  
+        jQuery("#currentRow").val(id + ", " + index + ", " + TreeGrid.json2str(data));  
+    }
+    </script>
+  </body>
+</html>

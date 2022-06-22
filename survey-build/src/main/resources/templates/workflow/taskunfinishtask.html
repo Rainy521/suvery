@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+</head>
+<body>
+    <div class="modal fade" id="saveModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">消费费用信息</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" id="chargeForm">
+             <input type="text" id="taskid" style="display: none;"/>
+             <input type="text" id="formKey" style="display: none;"/>
+             <input type="text" id="applyid" style="display: none;"/>
+              <div>
+                <table class="table table-bordered" >
+                    <thead>
+                        <tr>
+                           <th>业务名称</th>
+                           <th>支付类型</th>
+                           <th>费用金额</th>
+                           <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody id="chargeInfo" style="border:1px solid #666;"></tbody>
+                </table>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="viewButton">申请资料查看</button>
+          </div>
+          </div>
+      </div>
+    </div>
+    
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>项目名称</th>
+              <th>业务名称</th>
+              <th>环节名称</th>
+              <th>任务开始时间</th>
+              <th>任务结束时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable"></tbody>
+        </table>
+        <div class="hr-line-dashed"></div>
+            <div class="text-center">
+                <div class="btn-group" id="pagination">
+            </div>
+        </div>
+        
+       </div>
+    </div>
+      
+  </div>
+    
+    <#include "script.ftl"/>
+    
+    <script>
+	   
+        $(document).ready(function(){
+             /**初始化事件，加载数据*/
+            var url = "/workFlow";
+            var pageSize = 10;
+            
+            var load = function(pageNum) {
+                pageNum = defaultV(pageNum, 1);
+                $.ajax({ url: url + "/findUnFinishTaskInfo?pageNum=" + pageNum, success: function(data){
+                    var dataTable = $("#dataTable");
+                    dataTable.empty();
+                    for (var i=0;i<data.length;i++)
+                    {
+                        var rowData = data[i];
+                        var endTime = rowData.endTime == null?"任务正在进行":moment(rowData.endTime).format("LLL");
+                        var row = "<tr><td hidden=>" + rowData.id + "</td>"
+                               +"<td hidden=>" + rowData.processDefinitionId + "</td>"
+                               +"<td hidden=>" + rowData.applyId + "</td>"
+                               +"<td hidden=>" + rowData.formKey + "</td>"
+                               +"<td>" + rowData.bsname + "</td>"
+                               +"<td>" + rowData.applyName + "</td>"
+                               +"<td>" + rowData.name + "</td>"
+                               +"<td>" + moment(rowData.startTime).format("LLL") + "</td>"
+                               +"<td>"+endTime+"</td>"
+                               + '<td><button type="button" class="btn btn-info btn-xs diagramTask">查看流程图</button></tr>';
+                               //<button type="button" class="btn btn-info btn-xs viewtask">查看详情</button>
+                       dataTable.append(row);
+                   } 
+               
+                    $.ajax({ url: url + "/findUnFinishTaskInfo/count", success: function(data){
+                        pagination(data, pageNum, pageSize);
+                        }});
+                    }});
+            };
+            
+            $("#pagination").on("click", ".pageBtn", function() {
+                load(parseInt($(this).attr("data")));
+            });
+            
+            $("#dataTable").on("click", ".diagramTask", function() {
+                var pIdTd = $(this).parents('tr').children().first();
+                var pId = pIdTd.text();
+                var processInstanceIdTd = pIdTd.next();
+                var processInstanceId = processInstanceIdTd.text();
+                /*registration_test:1:87504*/
+                layer.open({
+                    title: '查看流程图',
+                    area: ['80%', '100%'],
+                    content: '<img src="/workFlow/'+ pId +'/historyViewPic"></img>',
+                    scrollbar: false
+                });
+            }); 
+            
+            $("#refreshButton").on("click", function() {
+                load();
+            });
+            
+            $("#dataTable").on("click", ".viewtask", function() {
+                 resetForm("chargeForm");
+                 var pidTd=$(this).parents('tr').children().first();
+                 var pid = pidTd.text();
+                 var processDefinitionIdTd = pidTd.next();
+                 var processDefinitionId = processDefinitionIdTd.text();
+                 var applyidTd = processDefinitionIdTd.next();
+                 var applyid = applyidTd.text();
+                 var formKeyTd = applyidTd.next();
+                 var formKey = formKeyTd.text();
+                 $("#applyid").val(applyid);
+                 $("#formKey").val(formKey);
+                 $.ajax({ url: "/workFlow/chargeInfo?applyid=" +applyid, success: function(data){
+                     var table = $("#chargeInfo");
+                     table.empty();
+                     if(data.length==0){
+                         var row = "<tr><td colspan='4'>暂无收费信息</td></tr>";
+                         table.append(row);
+                     }else{
+                         for (var i=0;i<data.length;i++)
+                         {
+                             var rowData = data[i];
+                             var row = "<tr><td hidden=>" + rowData.id + "</td>"
+                                     +"<td hidden=>" + formKey + "</td>"
+                                     +"<td>" + rowData.name + "</td>"
+                                     +"<td>" + rowData.amountType + "</td>"
+                                     +"<td>" + rowData.amount + "</td>"
+                                     +"<td>" + moment(rowData.updateTime).format("LLL") + "</td></tr>";
+                             table.append(row);
+                         } 
+                     }
+                }});
+                $('#saveModal').modal('show');
+            });
+            
+            $("#viewButton").on("click", function() {
+                var applyid = $("#applyid").val();
+                var formKey = $("#formKey").val();
+                
+                layer.open({
+                    type: 2,
+                    title: '查看申请信息审核',
+                    area: ['100%', '100%'],
+                    content: formKey + '?applyid=' + applyid +'&checkuser=' + 1,
+                    scrollbar: false
+                }); 
+            });
+            
+            load();
+        });
+        
+    </script>
+</body>
+</html>

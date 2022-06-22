@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <#include "head.ftl"/>
+    <style type="text/css">
+    .divmatnrdesc{
+       margin-left: 0px;
+       overflow:hidden;
+       white-space:nowrap;
+       text-overflow:ellipsis;
+    }
+    #tooltipdiv {
+        position: absolute;
+        border: 1px solid #333;
+        background: #f7f5d1;
+        padding: 3px 3px 3px 3px;
+        color: #333;
+        display: none;
+        font-size: 10px;
+    }
+</style>
+  </head>
+  <body>
+    <div class="modal fade" id="saveConfigModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">配置项</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" id="configForm">
+              <div class="form-group">
+                <label for="configName" class="col-sm-2 control-label">名称</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="configName" name="configName" placeholder="配置项名(必填)" required="required">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="configType" class="col-sm-2 control-label">类型</label>
+                <div class="col-sm-10">
+                  <select class="form-control" id="configType" name="configType">
+                    <option value="string">string</option>
+                    <option value="boolean">boolean</option>
+                    <option value="long">long</option>
+                    <option value="double">double</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="configValue" class="col-sm-2 control-label">值</label>
+                <div id="append" class="col-sm-10">
+                  <input type="text" class="form-control" id="configValue" name="configValue" placeholder="配置项值(必填)" required="required" data-bv-regexp-message="值与类型不匹配"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" id="configIsArray" name="configIsArray"> 数组
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="configDes" class="col-sm-2 control-label">描述</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="configDes" name="configDes" placeholder="配置项描述">
+                </div>
+              </div>
+              
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveConfigButton">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="input-group">
+            <input id="searchContent" type="text" class="form-control" placeholder="输入配置前缀">
+            <div class="input-group-btn">
+              <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+              <button type="button" class="btn btn-primary newConfigButton">新增配置</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+          <div class="col-md-12">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>配置项</th>
+                <th>配置值</th>
+                <th>类型</th>
+                <th>是否是数组</th>
+                <th>描述</th>
+                <th>最后更新时间</th>
+                <th>动作</th>
+              </tr>
+            </thead>
+            <tbody id="configs">
+            </tbody>
+          </table>
+          </div>
+      </div>
+    </div>
+    
+    <#include "script.ftl"/>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        var load = function() {
+            var prefix = $("#searchContent").val()
+            $.ajax({ url: "/configs?prefix=" + prefix, success: function(data){
+                var configs = data;
+                var table = $("#configs");
+                table.empty();
+                for (var i=0;i<configs.length;i++)
+                {
+                	var config = configs[i];
+                    
+                    var row = "<tr>"
+                                + getTdText(config.name,180) 
+                                + getTdText($.trim(config.value),250) 
+                                + "<td>" + config.type + "</td><td>" + config.isArray + "</td>"
+                                + "<td>" + $.trim(config.des) + "</td><td>" + moment(config.updateTime).format("YYYY-MM-DD HH:ss") + "</td>"
+                                + '<td><button type="button" class="btn btn-danger btn-xs deleteConfigButton">删除</button>'
+                                + '<button type="button" class="btn btn-warning btn-xs updateConfigButton">更新</button></td>'
+                                + '</tr>';
+                    table.append(row);
+                }
+            }});
+        };
+        
+        $("#configType").on("change", function(){
+            switch($("#configType").val()){
+                case 'string':
+                    $("#configValue").attr("pattern", "");
+                    break;
+                case 'boolean':
+                    $("#configValue").attr("pattern", "^true$|^false$");
+                    break;
+                case 'long':
+                    $("#configValue").attr("pattern", "^(-?\\d+)(\\d+)?$");
+                    break;
+                case 'double':
+                    $("#configValue").attr("pattern", "^(-?\\d+)(\\.\\d+)?$");
+                    break;
+            }
+            
+            $('#saveConfigModal').modal('show');
+        })
+        
+        $("#searchButton").on("click", function() {
+            load();
+        });
+        
+        $('div').on('mouseover','.divmatnrdesc', function(e) {
+            _text=$(this).text();
+          _tooltip = "<div id='tooltipdiv'><font style='font-size:13px'> "+_text+"</font></div>";  
+              $("body").append(_tooltip);  
+              $("#tooltipdiv").show();
+           $("#tooltipdiv")
+           .css({
+           "top": (e.pageY+10) + "px",
+           "left":  (e.pageX +10) + "px"
+          }).show("fast");    
+        });
+         
+        $('div').on('mouseout','.divmatnrdesc', function(e) {
+          $("#tooltipdiv").remove();
+        });
+         
+         
+        $('div').on('mousemove','.divmatnrdesc', function(e) {
+          $("#tooltipdiv")
+          .css({
+           "top": (e.pageY+10 ) + "px",
+           "left":  (e.pageX+10)  + "px"
+          }).show();    
+        });
+        
+        $(".newConfigButton").on("click", function() {
+            $("#configName").prop('readonly', false);
+            
+            resetForm("configForm");
+            
+            $('#saveConfigModal').modal('show');
+        });
+        
+        $("#saveConfigButton").on("click", function() {
+            var config = {};
+            config.name = $("#configName").val();
+            config.value = $("#configValue").val();
+            config.isArray = $("#configIsArray").is(":checked");
+            config.type = $("#configType").val();
+            config.des = $("#configDes").val();
+            
+            if (!isFormValid("configForm")) {
+                return;
+            }
+            
+            $.ajax({ 
+                type:"PUT",
+                url: "/manage/configs/" + config.name,
+                contentType:"application/json",
+                data:JSON.stringify(config),
+                success: function(data){
+                             layer.alert("保存成功!", {icon: 1, time : 1500});
+                             $('#saveConfigModal').modal('hide');
+                             load();
+                         },
+                error: function(e,xhr,opt){
+                    layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+        })
+        
+        $("#configs").on("click", ".deleteConfigButton", function() {
+            var row = $(this).parent().parent();
+            var nameTd = row.children().first();
+            var name = nameTd.text();
+            var valueTd = nameTd.next();
+            var value = valueTd.text();
+            
+            layer.confirm("确定删除配置项为" + name + " 的配置 ", {icon: 3, title: "删除配置"}, function(index){
+                $.ajax({
+                    type:"DELETE",
+                    url: "/manage/configs/" + name,
+                    success: function(data){
+                        layer.alert("删除成功!", {icon: 1, time : 1500});
+                        load();
+                    },
+                    error: function(e,xhr,opt){
+                        layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                    }
+                });
+                
+                layer.close(index);
+            });
+        });
+        
+        $("#configs").on("click", ".updateConfigButton", function() {
+            resetForm("configForm");
+            
+            var row = $(this).parent().parent();
+            var nameTd = row.children().first();
+            var name = nameTd.text();
+            var valueTd = nameTd.next();
+            var value = valueTd.text();
+            var typeTd = valueTd.next();
+            var type = typeTd.text();
+            var isArrayTd = typeTd.next();
+            var isArray = isArrayTd.text();
+            var desTd = isArrayTd.next();
+            var des = desTd.text();
+            
+            $("#configName").val(name);
+            $("#configName").prop('readonly', true);
+            
+            $("#configValue").val(value);
+            if (isArray == "true") {
+                $("#configIsArray").prop('checked', true);
+            } else {
+                $("#configIsArray").prop('checked', false);
+            }
+            
+            $("#configType").val(type);
+            $("#configDes").val(des);
+            
+            $('#saveConfigModal').modal('show');
+        });
+        
+        load();
+    });
+    function getTdText(name,size,align){
+        var nameText = name==null?"":name;
+        var auto = 'left';
+        if(align){
+            auto = align;
+        }
+        return "<td style='text-align: " + auto + "; width:"+size+"px'><div class='divmatnrdesc'style='max-width:"+size+"px;'>" + nameText + "</div></td>";
+    }
+    </script>
+  </body>
+</html>

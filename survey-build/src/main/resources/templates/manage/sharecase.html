@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  <style type="text/css">
+      .form-horizontal .form-group {
+            margin-right: 0;
+            margin-left: 0; 
+      }
+      #saveModal select{
+        border: 1px solid #e5e6e7;
+        border-radius: 1px;
+        padding:6px;
+        vertical-align:-webkit-baseline-middle;
+      }
+  </style>
+  </head>
+  <body>
+  
+  <!--用例共享用户信息 数据展示区域 -->
+  <div class="wrapper wrapper-content float-e-margins">
+    <div class="row" style="margin-top:10px;margin-bottom:10px;">
+      <div class="col-md-12">
+        <div class="input-group">
+          <input id="searchContent" type="text" class="form-control" placeholder="输入用户名称">
+          <div class="input-group-btn" style="width:15%">
+            <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+              <th>用户名</th>
+              <th>昵称</th>
+              <th>邮箱</th>
+              <th>联系方式</th>
+              <th>用户类型</th>
+              <th>是否锁定</th>
+              <th>锁定时间</th>
+              <th>密码是否有效</th>
+              <th>密码设置时间</th>
+              <th>操作</th>
+         </tr>
+        </thead>
+        <tbody id="dataTable">
+        </tbody>
+      </table>
+      
+      <div class="hr-line-dashed"></div>
+      <div class="text-center">
+          <div class="btn-group" id="pagination">
+          </div>
+      </div>
+      
+      </div>
+    </div>
+  </div>
+    
+  <#include "script.ftl"/>
+  <script type="text/javascript">
+  $(document).ready(function(){
+        /**初始化事件，加载数据*/
+        var url = "/shares";
+        var typeText = ["平台", "个人", "企业"];
+        var pageSize = 10;
+        
+        var load = function(pageNum) {
+            pageNum = defaultV(pageNum, 1);
+            var search = $("#searchContent").val()
+            $.ajax({ url: url + "/show/users" + "?query=" + encodeURI(search) + "&pageNum=" + pageNum, success: function(data){
+                var table = $("#dataTable");
+                table.empty();
+                for (var i=0;i<data.length;i++)
+                {
+                    var rowData = data[i];
+                    var row = "<tr><td>"+ rowData.username + "</td>"
+					                    + "<td>" + rowData.realname + "</td>"
+					                    + "<td>" + rowData.email + "</td>"
+					                    + "<td>" + rowData.phone + "</td>"
+					                    + "<td>" + typeText[rowData.userType] + "</td>"
+					                    + "<td>" + !rowData.accountNonLocked + "</td>"
+					                    + "<td>" + (rowData.accountNonLocked ? "" : moment(rowData.accountLockedTime).format("LLL")) + "</td>"
+					                    + "<td>" + rowData.credentialsNonExpired + "</td>"
+					                    + "<td>" + (rowData.credentialsNonExpired ? moment(rowData.credentialsEffectiveTime).format("LLL") : "") + "</td>"
+					                    + '<td><button type="button" class="btn btn-warning btn-xs resetNicknameButton">用例共享</button></td>'
+					                    + '</tr>';
+                    table.append(row);
+                }
+                
+                $.ajax({ url: url + "/show/count?query=" + search, success: function(data){
+                    pagination(data, pageNum, pageSize);
+                }});
+            }});
+        };
+      
+      
+      $("#searchButton").on("click", function() {
+          load();
+      });
+      
+      
+      $("#pagination").on("click", ".pageBtn", function() {
+          load(parseInt($(this).attr("data")));
+      });
+      
+      
+     load();
+     
+  });
+  </script>
+  </body>
+</html>

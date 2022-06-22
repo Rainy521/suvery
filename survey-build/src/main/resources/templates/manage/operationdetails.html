@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  </head>
+  <body>
+    <div class="wrapper wrapper-content">
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>用户名</th>
+              <th>请求地址</th>
+              <th>请求类型</th>
+              <th>请求参数</th>
+              <th>请求体</th>
+              <th>请求时间</th>
+              <th>耗时</th>
+              <th>结果码</th>
+              <th>请求结果</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable">
+          </tbody>
+        </table>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">动作描述</div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>用户名</th>
+                  <th>方法描述</th>
+                  <th>参数描述</th>
+                </tr>
+              </thead>
+              <tbody id="descrips">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    
+    <#include "script.ftl"/>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        var url = "/operationlogs";
+        
+        var id = getParameterByName('id');
+        var time = getParameterByName('time');
+        
+        var load = function() {
+            $.ajax({ url: url + "/" + id + "/" + time + "/operation", success: function(data){
+                var table = $("#dataTable");
+                table.empty();
+                var rowData = data;
+                
+                var row = "<tr><td>" + rowData.id + "</td>"
+                            + "<td>" + rowData.username + "</td>"
+                            + "<td>" + rowData.url + "</td>"
+                            + "<td>" + rowData.requestType + "</td>"
+                            + "<td>" + rowData.params + "</td>"
+                            + "<td>" + rowData.body + "</td>"
+                            + "<td>" + moment(rowData.requestTime).format('YYYY-MM-DD HH:mm:ss') + "</td>"
+                            + "<td>" + rowData.cost + "ms</td>"
+                            + "<td>" + rowData.status + "</td>"
+                            + "<td>" + (rowData.result == 0 ? '成功':'失败') + "</td>"
+                            + '</tr>';
+                table.append(row);
+                
+                loadDescrips();
+            }});
+        };
+        
+        var loadDescrips = function() {
+            $.ajax({ url: url + "/" + id + "/" + time + "/description", success: function(rowData){
+                var table = $("#descrips");
+                table.empty();
+                
+                if(rowData.id){
+                    var row = "<tr><td>" + rowData.username + "</td>"
+                            + "<td>" + rowData.methodDescrip + "</td>"
+                            + "<td>" + rowData.paramsDescrip + "</td>"
+                            + '</tr>';
+                            
+                    table.append(row);
+                }
+            }});
+        };
+        
+        load();
+    });
+    </script>
+  </body>
+</html>

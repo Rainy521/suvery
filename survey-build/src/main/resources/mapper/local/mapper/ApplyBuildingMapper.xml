@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwch.survey.dao.mapper.ApplyBuildingMapper">
+  <resultMap id="BaseResultMap" type="com.lwch.survey.model.ApplyBuilding">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="apply_id" jdbcType="VARCHAR" property="applyId" />
+    <result column="project_no" jdbcType="VARCHAR" property="projectNo" />
+    <result column="lpzh" jdbcType="VARCHAR" property="lpzh" />
+    <result column="lpmc" jdbcType="VARCHAR" property="lpmc" />
+    <result column="ghyt" jdbcType="VARCHAR" property="ghyt" />
+    <result column="fwlx" jdbcType="VARCHAR" property="fwlx" />
+    <result column="jznd" jdbcType="VARCHAR" property="jznd" />
+    <result column="jzcc" jdbcType="VARCHAR" property="jzcc" />
+    <result column="jzzmj" jdbcType="DOUBLE" property="jzzmj" />
+    <result column="wwjzmj" jdbcType="DOUBLE" property="wwjzmj" />
+    <result column="hsjzmj" jdbcType="DOUBLE" property="hsjzmj" />
+    <result column="zts" jdbcType="INTEGER" property="zts" />
+    <result column="zcs" jdbcType="INTEGER" property="zcs" />
+    <result column="dscs" jdbcType="INTEGER" property="dscs" />
+    <result column="dxcs" jdbcType="INTEGER" property="dxcs" />
+    <result column="chlx" jdbcType="VARCHAR" property="chlx" />
+    <result column="siff_fileid" jdbcType="VARCHAR" property="siffFileid" />
+    <result column="jzjg" jdbcType="VARCHAR" property="jzjg" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, apply_id, project_no, lpzh, lpmc, ghyt, fwlx, jznd, jzcc, jzzmj, wwjzmj, hsjzmj, 
+    zts, zcs, dscs, dxcs, chlx, siff_fileid, jzjg, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.lwch.survey.model.ApplyBuildingExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from apply_building
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from apply_building
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from apply_building
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.lwch.survey.model.ApplyBuildingExample">
+    delete from apply_building
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lwch.survey.model.ApplyBuilding">
+    insert into apply_building (id, apply_id, project_no, 
+      lpzh, lpmc, ghyt, fwlx, 
+      jznd, jzcc, jzzmj, wwjzmj, 
+      hsjzmj, zts, zcs, dscs, 
+      dxcs, chlx, siff_fileid, 
+      jzjg, update_time)
+    values (#{id,jdbcType=VARCHAR}, #{applyId,jdbcType=VARCHAR}, #{projectNo,jdbcType=VARCHAR}, 
+      #{lpzh,jdbcType=VARCHAR}, #{lpmc,jdbcType=VARCHAR}, #{ghyt,jdbcType=VARCHAR}, #{fwlx,jdbcType=VARCHAR}, 
+      #{jznd,jdbcType=VARCHAR}, #{jzcc,jdbcType=VARCHAR}, #{jzzmj,jdbcType=DOUBLE}, #{wwjzmj,jdbcType=DOUBLE}, 
+      #{hsjzmj,jdbcType=DOUBLE}, #{zts,jdbcType=INTEGER}, #{zcs,jdbcType=INTEGER}, #{dscs,jdbcType=INTEGER}, 
+      #{dxcs,jdbcType=INTEGER}, #{chlx,jdbcType=VARCHAR}, #{siffFileid,jdbcType=VARCHAR}, 
+      #{jzjg,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lwch.survey.model.ApplyBuilding">
+    insert into apply_building
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="applyId != null">
+        apply_id,
+      </if>
+      <if test="projectNo != null">
+        project_no,
+      </if>
+      <if test="lpzh != null">
+        lpzh,
+      </if>
+      <if test="lpmc != null">
+        lpmc,
+      </if>
+      <if test="ghyt != null">
+        ghyt,
+      </if>
+      <if test="fwlx != null">
+        fwlx,
+      </if>
+      <if test="jznd != null">
+        jznd,
+      </if>
+      <if test="jzcc != null">
+        jzcc,
+      </if>
+      <if test="jzzmj != null">
+        jzzmj,
+      </if>
+      <if test="wwjzmj != null">
+        wwjzmj,
+      </if>
+      <if test="hsjzmj != null">
+        hsjzmj,
+      </if>
+      <if test="zts != null">
+        zts,
+      </if>
+      <if test="zcs != null">
+        zcs,
+      </if>
+      <if test="dscs != null">
+        dscs,
+      </if>
+      <if test="dxcs != null">
+        dxcs,
+      </if>
+      <if test="chlx != null">
+        chlx,
+      </if>
+      <if test="siffFileid != null">
+        siff_fileid,
+      </if>
+      <if test="jzjg != null">
+        jzjg,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="applyId != null">
+        #{applyId,jdbcType=VARCHAR},
+      </if>
+      <if test="projectNo != null">
+        #{projectNo,jdbcType=VARCHAR},
+      </if>
+      <if test="lpzh != null">
+        #{lpzh,jdbcType=VARCHAR},
+      </if>
+      <if test="lpmc != null">
+        #{lpmc,jdbcType=VARCHAR},
+      </if>
+      <if test="ghyt != null">
+        #{ghyt,jdbcType=VARCHAR},
+      </if>
+      <if test="fwlx != null">
+        #{fwlx,jdbcType=VARCHAR},
+      </if>
+      <if test="jznd != null">
+        #{jznd,jdbcType=VARCHAR},
+      </if>
+      <if test="jzcc != null">
+        #{jzcc,jdbcType=VARCHAR},
+      </if>
+      <if test="jzzmj != null">
+        #{jzzmj,jdbcType=DOUBLE},
+      </if>
+      <if test="wwjzmj != null">
+        #{wwjzmj,jdbcType=DOUBLE},
+      </if>
+      <if test="hsjzmj != null">
+        #{hsjzmj,jdbcType=DOUBLE},
+      </if>
+      <if test="zts != null">
+        #{zts,jdbcType=INTEGER},
+      </if>
+      <if test="zcs != null">
+        #{zcs,jdbcType=INTEGER},
+      </if>
+      <if test="dscs != null">
+        #{dscs,jdbcType=INTEGER},
+      </if>
+      <if test="dxcs != null">
+        #{dxcs,jdbcType=INTEGER},
+      </if>
+      <if test="chlx != null">
+        #{chlx,jdbcType=VARCHAR},
+      </if>
+      <if test="siffFileid != null">
+        #{siffFileid,jdbcType=VARCHAR},
+      </if>
+      <if test="jzjg != null">
+        #{jzjg,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lwch.survey.model.ApplyBuildingExample" resultType="java.lang.Long">
+    select count(*) from apply_building
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update apply_building
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.applyId != null">
+        apply_id = #{record.applyId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectNo != null">
+        project_no = #{record.projectNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lpzh != null">
+        lpzh = #{record.lpzh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lpmc != null">
+        lpmc = #{record.lpmc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ghyt != null">
+        ghyt = #{record.ghyt,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fwlx != null">
+        fwlx = #{record.fwlx,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jznd != null">
+        jznd = #{record.jznd,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jzcc != null">
+        jzcc = #{record.jzcc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jzzmj != null">
+        jzzmj = #{record.jzzmj,jdbcType=DOUBLE},
+      </if>
+      <if test="record.wwjzmj != null">
+        wwjzmj = #{record.wwjzmj,jdbcType=DOUBLE},
+      </if>
+      <if test="record.hsjzmj != null">
+        hsjzmj = #{record.hsjzmj,jdbcType=DOUBLE},
+      </if>
+      <if test="record.zts != null">
+        zts = #{record.zts,jdbcType=INTEGER},
+      </if>
+      <if test="record.zcs != null">
+        zcs = #{record.zcs,jdbcType=INTEGER},
+      </if>
+      <if test="record.dscs != null">
+        dscs = #{record.dscs,jdbcType=INTEGER},
+      </if>
+      <if test="record.dxcs != null">
+        dxcs = #{record.dxcs,jdbcType=INTEGER},
+      </if>
+      <if test="record.chlx != null">
+        chlx = #{record.chlx,jdbcType=VARCHAR},
+      </if>
+      <if test="record.siffFileid != null">
+        siff_fileid = #{record.siffFileid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jzjg != null">
+        jzjg = #{record.jzjg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update apply_building
+    set id = #{record.id,jdbcType=VARCHAR},
+      apply_id = #{record.applyId,jdbcType=VARCHAR},
+      project_no = #{record.projectNo,jdbcType=VARCHAR},
+      lpzh = #{record.lpzh,jdbcType=VARCHAR},
+      lpmc = #{record.lpmc,jdbcType=VARCHAR},
+      ghyt = #{record.ghyt,jdbcType=VARCHAR},
+      fwlx = #{record.fwlx,jdbcType=VARCHAR},
+      jznd = #{record.jznd,jdbcType=VARCHAR},
+      jzcc = #{record.jzcc,jdbcType=VARCHAR},
+      jzzmj = #{record.jzzmj,jdbcType=DOUBLE},
+      wwjzmj = #{record.wwjzmj,jdbcType=DOUBLE},
+      hsjzmj = #{record.hsjzmj,jdbcType=DOUBLE},
+      zts = #{record.zts,jdbcType=INTEGER},
+      zcs = #{record.zcs,jdbcType=INTEGER},
+      dscs = #{record.dscs,jdbcType=INTEGER},
+      dxcs = #{record.dxcs,jdbcType=INTEGER},
+      chlx = #{record.chlx,jdbcType=VARCHAR},
+      siff_fileid = #{record.siffFileid,jdbcType=VARCHAR},
+      jzjg = #{record.jzjg,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lwch.survey.model.ApplyBuilding">
+    update apply_building
+    <set>
+      <if test="applyId != null">
+        apply_id = #{applyId,jdbcType=VARCHAR},
+      </if>
+      <if test="projectNo != null">
+        project_no = #{projectNo,jdbcType=VARCHAR},
+      </if>
+      <if test="lpzh != null">
+        lpzh = #{lpzh,jdbcType=VARCHAR},
+      </if>
+      <if test="lpmc != null">
+        lpmc = #{lpmc,jdbcType=VARCHAR},
+      </if>
+      <if test="ghyt != null">
+        ghyt = #{ghyt,jdbcType=VARCHAR},
+      </if>
+      <if test="fwlx != null">
+        fwlx = #{fwlx,jdbcType=VARCHAR},
+      </if>
+      <if test="jznd != null">
+        jznd = #{jznd,jdbcType=VARCHAR},
+      </if>
+      <if test="jzcc != null">
+        jzcc = #{jzcc,jdbcType=VARCHAR},
+      </if>
+      <if test="jzzmj != null">
+        jzzmj = #{jzzmj,jdbcType=DOUBLE},
+      </if>
+      <if test="wwjzmj != null">
+        wwjzmj = #{wwjzmj,jdbcType=DOUBLE},
+      </if>
+      <if test="hsjzmj != null">
+        hsjzmj = #{hsjzmj,jdbcType=DOUBLE},
+      </if>
+      <if test="zts != null">
+        zts = #{zts,jdbcType=INTEGER},
+      </if>
+      <if test="zcs != null">
+        zcs = #{zcs,jdbcType=INTEGER},
+      </if>
+      <if test="dscs != null">
+        dscs = #{dscs,jdbcType=INTEGER},
+      </if>
+      <if test="dxcs != null">
+        dxcs = #{dxcs,jdbcType=INTEGER},
+      </if>
+      <if test="chlx != null">
+        chlx = #{chlx,jdbcType=VARCHAR},
+      </if>
+      <if test="siffFileid != null">
+        siff_fileid = #{siffFileid,jdbcType=VARCHAR},
+      </if>
+      <if test="jzjg != null">
+        jzjg = #{jzjg,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lwch.survey.model.ApplyBuilding">
+    update apply_building
+    set apply_id = #{applyId,jdbcType=VARCHAR},
+      project_no = #{projectNo,jdbcType=VARCHAR},
+      lpzh = #{lpzh,jdbcType=VARCHAR},
+      lpmc = #{lpmc,jdbcType=VARCHAR},
+      ghyt = #{ghyt,jdbcType=VARCHAR},
+      fwlx = #{fwlx,jdbcType=VARCHAR},
+      jznd = #{jznd,jdbcType=VARCHAR},
+      jzcc = #{jzcc,jdbcType=VARCHAR},
+      jzzmj = #{jzzmj,jdbcType=DOUBLE},
+      wwjzmj = #{wwjzmj,jdbcType=DOUBLE},
+      hsjzmj = #{hsjzmj,jdbcType=DOUBLE},
+      zts = #{zts,jdbcType=INTEGER},
+      zcs = #{zcs,jdbcType=INTEGER},
+      dscs = #{dscs,jdbcType=INTEGER},
+      dxcs = #{dxcs,jdbcType=INTEGER},
+      chlx = #{chlx,jdbcType=VARCHAR},
+      siff_fileid = #{siffFileid,jdbcType=VARCHAR},
+      jzjg = #{jzjg,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <insert id="batchInsert">
+    <if test="items.get(0) != null">
+            insert into apply_building  (id, apply_id, project_no, 
+        lpzh, lpmc, ghyt, fwlx, 
+        jznd, jzcc, jzzmj, wwjzmj, 
+        hsjzmj, zts, zcs, dscs, 
+        dxcs, chlx, siff_fileid, 
+        jzjg, update_time)
+      values
+      <foreach collection="items" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=VARCHAR}, #{item.applyId,jdbcType=VARCHAR}, #{item.projectNo,jdbcType=VARCHAR}, 
+        #{item.lpzh,jdbcType=VARCHAR}, #{item.lpmc,jdbcType=VARCHAR}, #{item.ghyt,jdbcType=VARCHAR}, #{item.fwlx,jdbcType=VARCHAR}, 
+        #{item.jznd,jdbcType=VARCHAR}, #{item.jzcc,jdbcType=VARCHAR}, #{item.jzzmj,jdbcType=DOUBLE}, #{item.wwjzmj,jdbcType=DOUBLE}, 
+        #{item.hsjzmj,jdbcType=DOUBLE}, #{item.zts,jdbcType=INTEGER}, #{item.zcs,jdbcType=INTEGER}, #{item.dscs,jdbcType=INTEGER}, 
+        #{item.dxcs,jdbcType=INTEGER}, #{item.chlx,jdbcType=VARCHAR}, #{item.siffFileid,jdbcType=VARCHAR}, 
+        #{item.jzjg,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP})
+      </foreach>
+    </if>
+  </insert>
+</mapper>

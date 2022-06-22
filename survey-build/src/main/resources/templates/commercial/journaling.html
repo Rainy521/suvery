@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+</head>
+<body>
+
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row" style="margin-top:10px;margin-bottom:10px;">
+        <div class="col-md-12">
+          <div class="input-group">
+            <input id="searchContent" type="text" class="form-control" placeholder="请输入项目名称">
+            <div class="input-group-btn" style="width:15%">
+              <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+              <button type="button" class="btn btn-primary newButton">申请</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+                <th>案件编号</th>
+                <th>申请人</th>
+                <th>坐落</th>
+                <th>测绘类型</th>
+                <th>审核日期</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable"></tbody>
+        </table>
+        
+        <div class="hr-line-dashed"></div>
+        <div class="text-center">
+            <div class="btn-group" id="pagination">
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    <#include "script.ftl"/>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            /**初始化事件，加载数据*/
+            var url = "/journaling";
+            var manageUrl = "/manage/journaling";
+            var pageSize = 10;
+            var operationtype = 0;
+            
+            var load = function(pageNum) {
+                var search = $("#searchContent").val();
+                $.ajax({ url: url + "/commercial?query=" + encodeURI(search) + "&pageNum=" + pageNum , success: function(data){
+                    
+                	var table = $("#dataTable");
+                    table.empty();
+                    for (var i=0;i<data.length;i++)
+                    {
+                        var rowData = data[i];
+                        //var statusId = dataStatus[rowData.id];
+                        
+                        var row = "<tr><td>" + rowData.id +"</td>"
+                                    +"<td>" + "" + "</td>"
+                                    +"<td>" + rowData.projectXmzl + "</td>"
+                                    +"<td>" + rowData.projectType + "</td>"
+                                    +"<td>" + moment(rowData.updateTime).format("YYYY-MM-DD") + "</td>";
+                        table.append(row);
+                    }
+                	
+                	
+                    /* var statusIds = [];
+                    $.each(data, function(i, k) {
+                        statusIds.push(data[i].id);
+                    });
+                    
+                    $.ajax({
+                        url: "/processCommon/statusByids",
+                        type:"POST",
+                        contentType:"application/json",
+                        data: JSON.stringify(statusIds),
+                        success: function(dataStatus){
+                            var table = $("#dataTable");
+                            table.empty();
+                            for (var i=0;i<data.length;i++)
+                            {
+                                var rowData = data[i];
+                                var statusId = dataStatus[rowData.id];
+                                
+                                var row = "<tr><td>" + rowData.id +"</td>"
+                                            +"<td>" + rowData.projectNo + "</td>"
+                                            +"<td>" + rowData.projectName + "</td>"
+                                            +"<td>" + rowData.projectType + "</td>"
+                                            +"<td>" + rowData.projectFzr + "</td>"
+                                            +"<td>" + moment(rowData.expiryTime).format("YYYY-MM-DD") + "</td>";
+                                table.append(row);
+                            }
+                    }}); 
+                    
+                    $.ajax({ url: url + "/count?query=" + search , success: function(data){
+                        pagination(data, pageNum, pageSize);
+                    }});
+                    
+                    */
+                }});
+            };
+            
+            load();
+        });
+    </script>
+</body>
+</html>

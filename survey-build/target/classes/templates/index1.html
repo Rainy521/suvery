@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<#include "head.ftl"/>
+<link rel='Shortcut Icon' type='image/x-icon' href='img/windows.ico'>
+<link href="js/lib/animate/animate.min.css" rel="stylesheet">
+<link rel="stylesheet" href="js/lib/font-awesome-4.7.0/css/font-awesome.css">
+<link href="css/default.css" rel="stylesheet">
+    <style>
+        * {
+            font-family: "Microsoft YaHei", 微软雅黑, "MicrosoftJhengHei", 华文细黑, STHeiti, MingLiu
+        }
+        /*磁贴自定义样式*/
+        .win10-block-content-text {
+            line-height: 44px;
+            text-align: center;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="win10">
+    <div class="desktop">
+        <div id="win10-shortcuts" class="shortcuts-hidden">
+            <#list menus as menu>
+                <#if (menu.children?size>0)>
+                    <!-- <div class="item"><i class="${menu.icon!}"></i><span>${menu.name}</span></div> -->
+                    <#list menu.children as childmenu>
+                     <#if (childmenu.id?? && (childmenu.id!=403 && childmenu.id!=404 && childmenu.id!=503 && childmenu.id!=306))>
+                        <div class="shortcut" onclick="Win10.openUrl('${childmenu.url}','${childmenu.name}')">
+                           <#if (childmenu.icon?? && childmenu.icon?length gt 0)>
+                               <img class="icon" src="img/icon/${childmenu.icon!}">
+                           <#else>
+                               <img class="icon" src="img/icon/28-clip.png">
+                           </#if>
+                           <!-- ${menu.name}- -->
+                           <div class="title">${childmenu.name}</div>
+                       </div>
+                    </#if>
+                    </#list>
+                </#if>
+            </#list>
+            <!-- <div class="shortcut" onclick="Win10.openUrl('/page/manage/config.html','通用配置管理')">
+                <img class="icon" src="img/icon/website.png">
+                <div class="title">通用配置管理</div>
+            </div>
+            <div class="shortcut" onclick="Win10.openUrl('/page/workflow/deployprocess.html','工作流部署')">
+                <img class="icon" src="img/icon/website.png">
+                <div class="title">工作流部署</div>
+            </div>
+            <div class="shortcut" onclick="Win10.openUrl('/page/workflow/taskreceived.html','代办任务')">
+                <img class="icon" src="img/icon/42409.png"/>
+                <div class="title">代办任务</div>
+            </div>
+            <div class="shortcut" onclick="Win10.openUrl('/page/workflow/runtask.html','正在办理')">
+                <img class="icon" src="img/icon/42608.png"/>
+                <div class="title">正在办理</div>
+            </div>
+            <div class="shortcut" onclick="Win10.openUrl('/page/manage/qualification.html','公司管理')">
+                <img class="icon" src="img/icon/blogger.png"/>
+                <div class="title">公司管理</div>
+            </div>
+            <div class="shortcut" onclick="Win10.openUrl('/page/stockroom/apply.html','存量房在线申请')">
+                <img class="icon" src="img/icon/kyzg.png"/>
+                <div class="title">存量房ApplyOnline</div>
+            </div>
+            <div class="shortcut" onclick="Win10.openUrl('/page/aptitude/apply.html','资质在线申请')">
+                <img class="icon" src="img/icon/kyzg.png"/>
+                <div class="title">资质ApplyOnline</div>
+            </div>
+            <div class="shortcut" onclick="Win10.openUrl('/page/commercial/apply.html','项目在线申请')">
+                <img class="icon" src="img/icon/kyzg.png"/>
+                <div class="title">商品房ApplyOnline</div>
+            </div> -->
+        </div>
+        <div id="win10-desktop-scene"></div>
+    </div>
+    <div id="win10-menu" class="hidden">
+        <div class="list win10-menu-hidden animated animated-slideOutLeft">
+        
+            
+            <#list menus as menu>
+                <#if (menu.url?? && menu.url?length gt 0)>
+                
+                </#if>
+                <#if (menu.children?size>0)>
+                    <div class="item"><i class="${menu.icon!}"></i><span>${menu.name}</span></div>
+                    <#list menu.children as childmenu>
+                    <div class="sub-item" onclick="Win10.openUrl('${childmenu.url}','${childmenu.name}')">${childmenu.name}</div>
+                    </#list>
+                </#if>
+            </#list>
+            
+            <div class="item" onclick=" Win10.exit();"><i class="black icon fa fa-power-off fa-fw"></i>注销登录</div>
+        </div>
+        <div id="win10-menu-switcher"></div>
+    </div>
+    <div id="win10_command_center" class="hidden_right">
+        <div class="title">
+            <h4 style="float: left">消息中心 </h4>
+            <span id="win10_btn_command_center_clean_all">全部清除</span>
+        </div>
+        <div class="msgs"></div>
+    </div>
+    <div id="win10_task_bar">
+        <div id="win10_btn_group_left" class="btn_group">
+            <div id="win10_btn_win" class="btn"><span class="fa fa-windows"></span></div>
+            <div class="btn" id="win10-btn-browser"><span class="fa fa-internet-explorer"></span></div>
+        </div>
+        <div id="win10_btn_group_middle" class="btn_group"></div>
+        <div id="win10_btn_group_right" class="btn_group">
+            <div class="btn" id="win10_btn_time">
+                <!--0:00<br/>-->
+                <!--1993/8/13-->
+            </div>
+            <div class="btn" id="win10_btn_command"><span id="win10-msg-nof" class="fa fa-comment-o"></span></div>
+            <div class="btn" id="win10_btn_show_desktop"></div>
+        </div>
+    </div>
+</div>
+
+    <#include "script.ftl"/>
+    
+    <script type="text/javascript" src="/js/win10.js"></script>
+    <script type="text/javascript" src="/js/lib/layer/layer-v3.0.3/layer/layer.js"></script>
+    <script type="text/javascript" src="/js/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript">
+    Win10.onReady(function () {
+
+        //设置壁纸
+        Win10.setBgUrl({
+            main:'img/wallpapers/main.jpg',
+            mobile:'img/wallpapers/mobile.jpg',
+        });
+
+        Win10.setAnimated([
+            'animated flip',
+            'animated bounceIn',
+        ], 0.01);
+
+
+    });
+
+    //该函数可删除 Orz
+    function win10_forgive_me() {
+        Win10.enableFullScreen();
+        layer.alert('点击展示下一版本特性', {}, function(index){
+            var blue=$('<img src="img/presentation/bluescreen.jpg" style="position: fixed;width: 100%;height:100%;top:0;z-index:9999999999" />');
+            setTimeout(function () {
+                $('body').append(blue);
+            },3000);
+            setTimeout(function () {
+                blue.remove();
+                Win10.disableFullScreen();
+                setTimeout(function () {
+                    layer.msg('开个玩笑，别打我');
+
+                },1000);
+            },7000);
+            layer.close(index);
+        });
+
+    }
+    
+    $(document).ready(function(){
+        var loadSelf = function() {
+            $.ajax({
+                url: "/self",
+                success: function(data){
+                    $("#username").text( '(' + data.username + ')');
+                }
+            });
+        };
+        
+        //根据用户，验证是否 是企业下用户，如果是企业下用户，则显示企业名称
+       var loadBsName = function(){
+            $.ajax({
+                url:"/self/selectBsName",
+                success:function(data){
+                    if(!data.accountId){
+                        $("#accountCenter").remove();
+                    }
+                    
+                    if(!data.bsName){
+                        $('#userCenter').remove();
+                        $("#bsname").remove();
+                    }
+                    
+                    $('.nav-label').attr('title',data.bsName)
+                    $("#bsname").text(data.bsName).css('maxWidth',"70px");
+                    $('#accountCenter').attr("href", "page/manage/accountdetails.html?id="+data.accountId);
+                    $('#userCenter').attr("href", "page/manage/busdetails.html?bsname=" + data.bsName);
+                }
+            });
+        }
+        loadSelf();
+        
+        loadBsName();
+      
+        $(".open").on("click", function() {
+            layer.open({
+                type: 2,
+                title: $(this).text(),
+                area: ['600px', '500px'],
+                content: $(this).attr("href"),
+                scrollbar: false
+            });
+            return false;
+        });
+    });
+    </script>
+</body>
+
+</html>

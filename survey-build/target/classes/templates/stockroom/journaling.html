@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+  <style type="text/css">
+        #searchList li{
+            float:left;
+        }
+        #searchList .form-control{
+            display:inline-block;
+            width:180px;
+            margin-left:10px;
+        }
+  </style>
+</head>
+<body>
+
+<div class="wrapper wrapper-content float-e-margins">
+      <div class="row">
+        <div class="col-md-12">
+            <div class="form-inline">
+               <div class="form-group">
+                   <label class="control-label">日期</label>
+                   <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                      <input type="text" class="form-control dateRange calendar" id="searchDate" style="width:200px;">
+                  </div>
+               </div>
+               <div class="form-group">
+                   <label class="control-label">编号</label>
+                   <div class="input-group">
+                      <input type="text" id="id" class="form-control" placeholder="输入案件编号"/>
+                  </div>
+               </div>
+               <div class="form-group">
+                   <label class="control-label">申请人</label>
+                   <div class="input-group">
+                      <input type="text" id="applicant" class="form-control" placeholder="输入申请人"/>
+                  </div>
+               </div>
+               <div class="form-group">
+                   <label class="control-label">坐落</label>
+                   <div class="input-group">
+                      <input type="text" id="location" class="form-control" placeholder="输入坐落"/>
+                  </div>
+               </div>
+               <button id="exportButton" class="btn btn-primary pull-right" type="button">导出</button>
+               <button id="searchButton" type="button" class="btn btn-primary pull-right">查询</button>
+            </div>
+            
+        <div class="hr-line-dashed"></div>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+                <th>案件编号</th>
+                <th>申请人</th>
+                <th>坐落</th>
+                <th>面积</th>
+                <th>测绘类型</th>
+                <th>审核日期</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable"></tbody>
+        </table>
+        
+        <div class="hr-line-dashed"></div>
+        <div class="text-center">
+            <div class="btn-group" id="pagination">
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+
+    <#include "script.ftl"/>
+    <script src="/js/jquery.table2excel.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            /**初始化事件，加载数据*/
+            var url = "/journaling";
+            
+            var load = function() {
+                var id = $("#id").val();
+                var applicant = $("#applicant").val();
+                var location = $("#location").val();
+                var search = $("#searchContent").val();
+                
+                var dateRange = getDateRange($(".dateRange"));
+                
+                $.ajax({ url: url + "/stockroom?id=" + encodeURI(id) 
+                            + "&applicant=" + encodeURI(applicant)
+                            + "&location=" + encodeURI(location)
+                            + '&startTime='+dateRange[0].valueOf()
+                            + '&endTime='+(dateRange[1].valueOf() - 1), success: function(data){
+                    var table = $("#dataTable");
+                    table.empty();
+                    for (var i=0;i<data.length;i++)
+                    {
+                        var rowData = data[i];
+                        var row = "<tr><td>" + rowData.id +"</td>"
+                                    +"<td>" + (rowData.applicant==null?"":rowData.applicant) + "</td>"
+                                    +"<td>" + rowData.location + "</td>"
+                                    +"<td>" + (rowData.areas==null?"":rowData.areas) + "</td>"
+                                    +"<td>" + (rowData.processType==null?"":rowData.processType) + "</td>"
+                                    +"<td>" + moment(rowData.updateTime).format("YYYY-MM-DD") + "</td>";
+                        table.append(row);
+                    }
+                }});
+            };
+            
+            //初始化 日期
+            initDateRangePicker($('#searchDate'),
+                    moment().startOf('day'),
+                    moment().startOf('day').add(1, 'days'),
+                    null, false, 'YYYY/MM/DD');
+            
+            $("#searchButton").on("click", function() {
+                load();
+            });
+            
+            $("#exportButton").click(function(){
+                $("table").table2excel({
+                    exclude: ".noExl",
+                    name: "报表",
+                    filename: "统计报表.xls",
+                    exclude_img: true,
+                    exclude_links: true,
+                    exclude_inputs: true
+                });
+            });
+            
+            load();
+        });
+    </script>
+</body>
+</html>

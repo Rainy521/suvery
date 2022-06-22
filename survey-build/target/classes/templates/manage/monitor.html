@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <#include "head.ftl"/>
+</head>
+<body>
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row">
+        <div class="col-md-12">
+            <div class="form-inline">
+               <div class="form-group">
+                   <label class="control-label">日期</label>
+                   <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                      <input type="text" class="form-control" id="searchDate" style="width:80px;">
+                  </div>
+               </div>
+               <div class="form-group">
+                   <label class="control-label">时间段</label>
+                   <div class="input-group">
+                      <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                      <input type="text" class="form-control" id="searchDateRange" style="width:125px;">
+                  </div>
+               </div>
+               <button id="searchButton" type="button" class="btn btn-primary pull-right">查询</button>
+            </div>  
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+                <th>本机IP地址</th>
+                <th>JVM总内存</th>
+                <th>JVM剩余内存</th>
+                <th>JVM处理器个数</th>
+                <th>Java运行环境版本</th>
+                <th>操作系统</th>
+                <th>操作系统构架</th>
+                <th>内存总量</th>
+                <th>当前内存使用量</th>
+                <th>当前内存剩余量</th>
+                <th>更新时间</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable">
+          </tbody>
+        </table>
+        
+        <div class="hr-line-dashed"></div>
+        <div class="text-center">
+            <div class="btn-group" id="pagination">
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </div> 
+    <#include "script.ftl"/>
+    <script>
+        $(document).ready(function(){
+            var url="/monitors";
+            var pageSize = 10;
+            var search = "";
+            var time = "";
+            var memory= "1048576";
+            var load = function(pageNum) {
+                pageNum = defaultV(pageNum, 1);
+                time = moment($('#searchDate').val(), 'YYYY-MM-DD').format("YYYY_MM_DD");
+                range = $('#searchDateRange').val();
+                startTime = time + " " +range.split('-')[0];
+                endTime = time + " " +range.split('-')[1];
+                $.ajax({ 
+                    url: url + "?time=" + time + "&pageNum=" + pageNum+ "&startTime=" + startTime + "&endTime=" + endTime,
+                    success: function(datas){
+                        var table = $("#dataTable");
+                        var data = datas.data;
+                        table.empty();
+                        if(data){
+                            $.each(data,function(index, rowData){
+                                var row = "<tr><td hidden>" + rowData.id + "</td>"
+                                + "<td>" + rowData.localip + "</td>"
+                                + "<td>" + rowData.jvmMemory + "</td>"
+                                + "<td>" + rowData.surplusMemory + "</td>"
+                                + "<td>" + rowData.processor + "</td>"
+                                + "<td>" + rowData.javaVersion + "</td>"
+                                + "<td>" + rowData.economySystem + "</td>"
+                                + "<td>" + rowData.systemFramework + "</td>"
+                                + "<td>" + rowData.computerMemory + "</td>"
+                                + "<td>" + rowData.currentMemory + "</td>"
+                                + "<td>" + rowData.overplusMemory + "</td>"
+                                + "<td>" + moment(rowData.updateTime).format("YYYY-MM-DD HH:mm:ss") + "</td>"
+                                + '</tr>';
+                                table.append(row);
+                            });
+                        }
+                       pagination(typeof(datas.total)!="undefined"?datas.total:"0", pageNum, pageSize);
+                    }
+                })
+            };
+            
+            
+          //初始化 日期
+            initDateRangePicker($('#searchDate'),
+                    moment().startOf('day'),
+                    moment().startOf('day').add(1, 'days'),
+                    {
+                       '今天': [moment().startOf('day'), moment().startOf('day').add(1, 'days')],
+                       '昨天': [moment().startOf('day').subtract(1, 'days'), moment().startOf('day')],
+                    }, true, 'YYYY/MM/DD');
+            
+            //初始化 日期范围选择器  
+            initDateRangePicker($('#searchDateRange'),
+                    moment().startOf('day'),
+                    moment().endOf('day'),
+                    {
+                    }, false, 'HH:mm:ss');
+            
+            
+            var getSearchDateRange = function() {
+                return getDateRangeConditionByPicker($("#searchDate"));
+            }
+            
+            
+            $("#searchButton").on("click", function() {
+                load();
+            });
+            
+            
+            $("#pagination").on("click", ".pageBtn", function() {
+                load(parseInt($(this).attr("data")));
+            });
+            
+            
+            load();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="tradingcenter" name="交易中心申请" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <userTask id="交易中心申请" name="交易中心申请" activiti:assignee="${userId}"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="交易中心申请"></sequenceFlow>
+    <userTask id="平台受理" name="平台受理" activiti:candidateGroups="9" activiti:formKey="house/applyhouse.html"></userTask>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <userTask id="测绘办理" name="测绘办理" activiti:candidateGroups="9" activiti:formKey="house/applyhouse.html"></userTask>
+    <sequenceFlow id="flow2" sourceRef="交易中心申请" targetRef="平台受理"></sequenceFlow>
+    <sequenceFlow id="flow3" sourceRef="平台受理" targetRef="测绘办理"></sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="测绘办理" targetRef="endevent1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_tradingcenter">
+    <bpmndi:BPMNPlane bpmnElement="tradingcenter" id="BPMNPlane_tradingcenter">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="150.0" y="190.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="交易中心申请" id="BPMNShape_交易中心申请">
+        <omgdc:Bounds height="55.0" width="105.0" x="240.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="平台受理" id="BPMNShape_平台受理">
+        <omgdc:Bounds height="55.0" width="105.0" x="390.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="700.0" y="190.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="测绘办理" id="BPMNShape_测绘办理">
+        <omgdc:Bounds height="55.0" width="105.0" x="540.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="185.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="345.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="390.0" y="207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="495.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="645.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="700.0" y="207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

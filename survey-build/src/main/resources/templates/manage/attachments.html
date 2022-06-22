@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <#include "head.ftl"/>
+  </head>
+  <body>
+    <div class="modal fade" id="saveAnnexModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">配置项</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" id="annexForm">
+              <div class="form-group">
+                <label for="fileName" class="col-sm-2 control-label">附件id</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="id" name="id" placeholder="附件编号(必填)" required="required">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="fileName" class="col-sm-2 control-label">名称</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="fileName" name="fileName" placeholder="附件名称(必填)" required="required">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="fileType" class="col-sm-2 control-label">类型</label>
+                <div class="col-sm-10">
+                  <select class="form-control" id="fileType" name="fileType">
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="filePage" class="col-sm-2 control-label">页数</label>
+                <div id="append" class="col-sm-10">
+                  <input type="number" class="form-control" id="filePage" name="filePage" placeholder="附件页数(必填)" min="1" max="99999" placeholder="(必填,最小为1)"  required="required" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="fileStatus" class="col-sm-2 control-label">是否多选</label>
+                <div class="col-sm-10">
+                  <select class="form-control" id="fileStatus" name="fileStatus">
+                    <option value="0">否</option>
+                    <option value="1">是</option>
+                  </select>
+                </div>
+              </div>
+              
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveAnnexButton">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="input-group">
+            <input id="searchContent" type="text" class="form-control" placeholder="输入附件名称">
+            <div class="input-group-btn">
+              <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+              <button type="button" class="btn btn-primary newAnnexButton">新增附件</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+          <div class="col-md-12">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>附件编号</th>
+                <th>附件名</th>
+                <th>附件类型</th>
+                <th>附件页数</th>
+                <th>附件多选</th>
+                <th>更新时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="dataTable">
+            </tbody>
+          </table>
+          
+           <div class="hr-line-dashed"></div>
+                <div class="text-center">
+                <div class="btn-group" id="pagination">
+                </div>
+          </div>
+          </div>
+      </div>
+    </div>
+    
+    <#include "script.ftl"/>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        var url = "/annex";
+        var manageUrl = "/manage/annex";
+        var pageSize = 10;
+        
+        var load = function(pageNum) {
+            pageNum = defaultV(pageNum, 1);
+            var search = $("#searchContent").val()
+            $.ajax({ url: url + "?query=" + encodeURI(search) + "&pageNum=" + pageNum, success: function(data){
+                var table = $("#dataTable");
+                table.empty();
+                for (var i=0;i<data.length;i++)
+                {
+                    var rowData = data[i];
+                    
+                    var row = "<tr><td>" + rowData.id + "</td><td style='text-align: left;'>" + rowData.fileName + "</td>"
+                                + "<td>" + rowData.fileType + "</td><td>" + rowData.filePage + "</td>"
+                                + "<td>" + (rowData.fileStatus == 1?"是":"否") + "</td>"
+                                + "<td>" + moment(rowData.updateTime).format("LLL") + "</td>"
+                                + '<td><button type="button" class="btn btn-danger btn-xs deleteConfigButton">删除</button>'
+                                + '<button type="button" class="btn btn-warning btn-xs updateConfigButton">更新</button>'
+                                + '<button type="button" class="btn btn-info btn-xs viewButton">详情</button></td>'
+                                + '</tr>';
+                    table.append(row);
+                }
+            }});
+            
+            $.ajax({ url: url + "/count" , success: function(data){
+                pagination(data, pageNum, pageSize);
+            }});
+        };
+        
+        $("#pagination").on("click", ".pageBtn", function() {
+            load(parseInt($(this).attr("data")));
+        });
+        
+        var loadSysType = function(fileType) {
+            $.ajax({ url: url + "/configs/fileType", success: function(data){
+                
+                var tables = $("#fileType");
+                tables.empty();
+                $.each(data,function(index,obj){
+                    
+                    var arr = obj.value;
+                    var strs= new Array();
+                    strs = arr.split(",");
+                    
+                    tables.append("<option value=''>" + "--请选择--" + "</option>");
+                    
+                    for(var i=0;i<strs.length ;i++){
+                        var rowData = strs[i];
+                        if(fileType == rowData){
+                            tables.append("<option value='"+rowData+"' selected>" + rowData + "</option>");
+                        }else{
+                            tables.append("<option value='"+rowData+"'>" + rowData + "</option>");
+                        }
+                    }
+                });
+            }});
+        };
+        
+        $("#searchButton").on("click", function() {
+            load();
+        });
+        
+        $(".newAnnexButton").on("click", function() {
+            resetForm("annexForm");
+            loadSysType();
+            $("#id").attr("readonly",false);
+            $('#saveAnnexModal').modal('show');
+        });
+        
+        $("#saveAnnexButton").on("click", function() {
+            var data = {};
+            data.id = $("#id").val();
+            data.fileName = $("#fileName").val();
+            data.fileType = $("#fileType").val();
+            data.filePage = $("#filePage").val();
+            data.fileStatus = $("#fileStatus").val();
+            
+            if (!isFormValid("annexForm")) {
+                return;
+            }
+            
+            $.ajax({ 
+                type:"POST",
+                url: manageUrl ,
+                contentType:"application/json",
+                data:JSON.stringify(data),
+                success: function(data){
+                             layer.alert("保存成功!", {icon: 1, time : 1500});
+                             $('#saveAnnexModal').modal('hide');
+                             load();
+                         },
+                error: function(e,xhr,opt){
+                    layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+        })
+        
+        $("#dataTable").on("click", ".deleteConfigButton", function() {
+            var row = $(this).parent().parent();
+            var idTd = row.children().first();
+            var id = idTd.text();
+            var fileNameTd = idTd.next();
+            var fileName = fileNameTd.text();
+            
+            layer.confirm("确定删除名称为" + fileName + " 的附件 ", {icon: 3, title: "删除附件"}, function(index){
+                $.ajax({
+                    type:"DELETE",
+                    url: manageUrl + "/remove/" + id,
+                    success: function(data){
+                        layer.alert("删除成功!", {icon: 1, time : 1500});
+                        load();
+                    },
+                    error: function(e,xhr,opt){
+                        layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                    }
+                });
+                
+                layer.close(index);
+            });
+        });
+        
+        $("#dataTable").on("click", ".viewButton", function() {
+            var idTd = $(this).parent().parent().children().first().text();
+            layer.open({
+                type: 2,
+                title: '附件信息详细',
+                area: ['100%', '100%'],
+                content: 'attachmentsdetails.html?id=' + idTd,
+                scrollbar: false
+              });
+        });
+        
+        $("#dataTable").on("click", ".updateConfigButton", function() {
+            resetForm("annexForm");
+            $("#id").attr("readonly",true);
+            
+            var row = $(this).parent().parent();
+            var idTd = row.children().first();
+            var id = idTd.text();
+            var fileNameTd = idTd.next();
+            var fileName = fileNameTd.text();
+            var fileTypeTd = fileNameTd.next();
+            var fileType = fileTypeTd.text();
+            var filePageTd = fileTypeTd.next();
+            var filePage = filePageTd.text();
+            var fileStatusTd = filePageTd.next();
+            var fileStatus = fileStatusTd.text() == "是"?"1":"0";
+            
+            $("#id").val(id);
+            $("#fileName").val(fileName);
+            $("#filePage").val(filePage);
+            $("#fileStatus").val(fileStatus);
+            
+            loadSysType(fileType);
+            $("#fileType").val(fileType);
+            
+            $('#saveAnnexModal').modal('show');
+        });
+        
+        load();
+    });
+    </script>
+  </body>
+</html>

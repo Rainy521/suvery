@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Access-Control-Allow-Origin" content="*">
+<#include "head.ftl"/>
+</head>
+<body>
+
+    <div class="row" id="showgj" >
+        <div class="form-group col-md-12">
+        <div data-options="modal:true,region:'center',iconCls:'icon-ok'">
+            <div id="content">
+            <OBJECT ID="SIDraw"  WIDTH="100%" HEIGHT=650 CLASSID="CLSID:5BF60617-2A84-48F4-9F55-9D3E42739BEC"></OBJECT>
+            </div>
+        </div>
+        </div>
+    </div>
+<#include "script.ftl"/>
+<script type="text/javascript">
+    var fileid = getParameterByName('fileid');
+    //var f1=parent.document.getElementById("fileid").value;
+    $(document).ready(function(){
+    	console.log(fileid)
+    	//console.log(f1)
+        download(fileid);
+    });
+    
+  //下载
+function download(fileid){
+	console.log(SIDraw)
+    SIDraw.CancelCmd();
+    $.ajax({ url:"/house/configs/systype?configPrefix=house.file.url", success: function(service){
+        SIDraw.DownloadData("http://" + service[0].value +"/open/files/" + fileid, "");
+    }});
+}
+</script>
+</body>
+</html>

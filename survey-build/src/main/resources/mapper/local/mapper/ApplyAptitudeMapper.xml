@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwch.survey.dao.mapper.ApplyAptitudeMapper">
+  <resultMap id="BaseResultMap" type="com.lwch.survey.model.ApplyAptitude">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="cname" jdbcType="VARCHAR" property="cname" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="contacts" jdbcType="VARCHAR" property="contacts" />
+    <result column="aptitude" jdbcType="VARCHAR" property="aptitude" />
+    <result column="expiry_time" jdbcType="VARCHAR" property="expiryTime" />
+    <result column="qyyyzh_no" jdbcType="VARCHAR" property="qyyyzhNo" />
+    <result column="qyzycs" jdbcType="VARCHAR" property="qyzycs" />
+    <result column="qyzz_no" jdbcType="VARCHAR" property="qyzzNo" />
+    <result column="files" jdbcType="VARCHAR" property="files" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="apply_status" jdbcType="INTEGER" property="applyStatus" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, cname, phone, contacts, aptitude, expiry_time, qyyyzh_no, qyzycs, qyzz_no, files, 
+    `status`, apply_status, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.lwch.survey.model.ApplyAptitudeExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from apply_aptitude
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from apply_aptitude
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from apply_aptitude
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.lwch.survey.model.ApplyAptitudeExample">
+    delete from apply_aptitude
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lwch.survey.model.ApplyAptitude">
+    insert into apply_aptitude (id, cname, phone, 
+      contacts, aptitude, expiry_time, 
+      qyyyzh_no, qyzycs, qyzz_no, 
+      files, `status`, apply_status, 
+      update_time)
+    values (#{id,jdbcType=VARCHAR}, #{cname,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{contacts,jdbcType=VARCHAR}, #{aptitude,jdbcType=VARCHAR}, #{expiryTime,jdbcType=VARCHAR}, 
+      #{qyyyzhNo,jdbcType=VARCHAR}, #{qyzycs,jdbcType=VARCHAR}, #{qyzzNo,jdbcType=VARCHAR}, 
+      #{files,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{applyStatus,jdbcType=INTEGER}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lwch.survey.model.ApplyAptitude">
+    insert into apply_aptitude
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="cname != null">
+        cname,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="contacts != null">
+        contacts,
+      </if>
+      <if test="aptitude != null">
+        aptitude,
+      </if>
+      <if test="expiryTime != null">
+        expiry_time,
+      </if>
+      <if test="qyyyzhNo != null">
+        qyyyzh_no,
+      </if>
+      <if test="qyzycs != null">
+        qyzycs,
+      </if>
+      <if test="qyzzNo != null">
+        qyzz_no,
+      </if>
+      <if test="files != null">
+        files,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="applyStatus != null">
+        apply_status,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="cname != null">
+        #{cname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="contacts != null">
+        #{contacts,jdbcType=VARCHAR},
+      </if>
+      <if test="aptitude != null">
+        #{aptitude,jdbcType=VARCHAR},
+      </if>
+      <if test="expiryTime != null">
+        #{expiryTime,jdbcType=VARCHAR},
+      </if>
+      <if test="qyyyzhNo != null">
+        #{qyyyzhNo,jdbcType=VARCHAR},
+      </if>
+      <if test="qyzycs != null">
+        #{qyzycs,jdbcType=VARCHAR},
+      </if>
+      <if test="qyzzNo != null">
+        #{qyzzNo,jdbcType=VARCHAR},
+      </if>
+      <if test="files != null">
+        #{files,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="applyStatus != null">
+        #{applyStatus,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lwch.survey.model.ApplyAptitudeExample" resultType="java.lang.Long">
+    select count(*) from apply_aptitude
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update apply_aptitude
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cname != null">
+        cname = #{record.cname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phone != null">
+        phone = #{record.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contacts != null">
+        contacts = #{record.contacts,jdbcType=VARCHAR},
+      </if>
+      <if test="record.aptitude != null">
+        aptitude = #{record.aptitude,jdbcType=VARCHAR},
+      </if>
+      <if test="record.expiryTime != null">
+        expiry_time = #{record.expiryTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qyyyzhNo != null">
+        qyyyzh_no = #{record.qyyyzhNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qyzycs != null">
+        qyzycs = #{record.qyzycs,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qyzzNo != null">
+        qyzz_no = #{record.qyzzNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.files != null">
+        files = #{record.files,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        `status` = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.applyStatus != null">
+        apply_status = #{record.applyStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update apply_aptitude
+    set id = #{record.id,jdbcType=VARCHAR},
+      cname = #{record.cname,jdbcType=VARCHAR},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      contacts = #{record.contacts,jdbcType=VARCHAR},
+      aptitude = #{record.aptitude,jdbcType=VARCHAR},
+      expiry_time = #{record.expiryTime,jdbcType=VARCHAR},
+      qyyyzh_no = #{record.qyyyzhNo,jdbcType=VARCHAR},
+      qyzycs = #{record.qyzycs,jdbcType=VARCHAR},
+      qyzz_no = #{record.qyzzNo,jdbcType=VARCHAR},
+      files = #{record.files,jdbcType=VARCHAR},
+      `status` = #{record.status,jdbcType=INTEGER},
+      apply_status = #{record.applyStatus,jdbcType=INTEGER},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lwch.survey.model.ApplyAptitude">
+    update apply_aptitude
+    <set>
+      <if test="cname != null">
+        cname = #{cname,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="contacts != null">
+        contacts = #{contacts,jdbcType=VARCHAR},
+      </if>
+      <if test="aptitude != null">
+        aptitude = #{aptitude,jdbcType=VARCHAR},
+      </if>
+      <if test="expiryTime != null">
+        expiry_time = #{expiryTime,jdbcType=VARCHAR},
+      </if>
+      <if test="qyyyzhNo != null">
+        qyyyzh_no = #{qyyyzhNo,jdbcType=VARCHAR},
+      </if>
+      <if test="qyzycs != null">
+        qyzycs = #{qyzycs,jdbcType=VARCHAR},
+      </if>
+      <if test="qyzzNo != null">
+        qyzz_no = #{qyzzNo,jdbcType=VARCHAR},
+      </if>
+      <if test="files != null">
+        files = #{files,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="applyStatus != null">
+        apply_status = #{applyStatus,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lwch.survey.model.ApplyAptitude">
+    update apply_aptitude
+    set cname = #{cname,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      contacts = #{contacts,jdbcType=VARCHAR},
+      aptitude = #{aptitude,jdbcType=VARCHAR},
+      expiry_time = #{expiryTime,jdbcType=VARCHAR},
+      qyyyzh_no = #{qyyyzhNo,jdbcType=VARCHAR},
+      qyzycs = #{qyzycs,jdbcType=VARCHAR},
+      qyzz_no = #{qyzzNo,jdbcType=VARCHAR},
+      files = #{files,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=INTEGER},
+      apply_status = #{applyStatus,jdbcType=INTEGER},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <insert id="batchInsert">
+    <if test="items.get(0) != null">
+            insert into apply_aptitude  (id, cname, phone, 
+        contacts, aptitude, expiry_time, 
+        qyyyzh_no, qyzycs, qyzz_no, 
+        files, `status`, apply_status, 
+        update_time)
+      values
+      <foreach collection="items" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=VARCHAR}, #{item.cname,jdbcType=VARCHAR}, #{item.phone,jdbcType=VARCHAR}, 
+        #{item.contacts,jdbcType=VARCHAR}, #{item.aptitude,jdbcType=VARCHAR}, #{item.expiryTime,jdbcType=VARCHAR}, 
+        #{item.qyyyzhNo,jdbcType=VARCHAR}, #{item.qyzycs,jdbcType=VARCHAR}, #{item.qyzzNo,jdbcType=VARCHAR}, 
+        #{item.files,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.applyStatus,jdbcType=INTEGER}, 
+        #{item.updateTime,jdbcType=TIMESTAMP})
+      </foreach>
+    </if>
+  </insert>
+</mapper>

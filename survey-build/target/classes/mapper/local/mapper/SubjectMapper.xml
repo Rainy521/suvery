@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwch.survey.dao.mapper.SubjectMapper">
+  <resultMap id="BaseResultMap" type="com.lwch.survey.model.Subject">
+    <result column="id" jdbcType="VARCHAR" property="id" />
+    <result column="mold" jdbcType="VARCHAR" property="mold" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="certificate_mold" jdbcType="VARCHAR" property="certificateMold" />
+    <result column="certificate" jdbcType="VARCHAR" property="certificate" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, mold, `name`, certificate_mold, certificate, phone, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.lwch.survey.model.SubjectExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from subject
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.lwch.survey.model.SubjectExample">
+    delete from subject
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lwch.survey.model.Subject">
+    insert into subject (id, mold, `name`, 
+      certificate_mold, certificate, phone, 
+      update_time)
+    values (#{id,jdbcType=VARCHAR}, #{mold,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{certificateMold,jdbcType=VARCHAR}, #{certificate,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lwch.survey.model.Subject">
+    insert into subject
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="mold != null">
+        mold,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="certificateMold != null">
+        certificate_mold,
+      </if>
+      <if test="certificate != null">
+        certificate,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="mold != null">
+        #{mold,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="certificateMold != null">
+        #{certificateMold,jdbcType=VARCHAR},
+      </if>
+      <if test="certificate != null">
+        #{certificate,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lwch.survey.model.SubjectExample" resultType="java.lang.Long">
+    select count(*) from subject
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update subject
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mold != null">
+        mold = #{record.mold,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        `name` = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.certificateMold != null">
+        certificate_mold = #{record.certificateMold,jdbcType=VARCHAR},
+      </if>
+      <if test="record.certificate != null">
+        certificate = #{record.certificate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phone != null">
+        phone = #{record.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update subject
+    set id = #{record.id,jdbcType=VARCHAR},
+      mold = #{record.mold,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      certificate_mold = #{record.certificateMold,jdbcType=VARCHAR},
+      certificate = #{record.certificate,jdbcType=VARCHAR},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+</mapper>

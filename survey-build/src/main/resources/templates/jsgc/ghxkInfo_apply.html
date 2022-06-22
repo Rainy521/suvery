@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+<link href="/css/basic.css" rel="stylesheet">
+<link href="/js/lib/fileinput/fileinput.min.css" rel="stylesheet">
+<style type="text/css">
+    .wizard > .content
+    {
+        background: #eeeeee30;
+    }
+</style>
+</head>
+<body>
+
+ 	<!-- 文件上传 -->
+    <div class="modal fade" id="saveModal">
+        <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <input type="text" name="fileManageId" id="fileManageId" style="display: none;">
+            <h4 class="modal-title">资料信息</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" id="ghxkForm">
+            	<input type="text" name="id" id="id" style="display: none;">
+            	<input type="text" name="applyJdid" id="applyJdid" style="display: none;">
+                <div class="form-group" id="showFileForm">
+                    <label for="codefile" class="col-sm-2 control-label">附件上传</label>
+                    <div class="col-sm-10">
+                        <input type="hidden" name="configFile" id="configFile" placeholder="请上传.rar、.doc文件" required="required">
+                        <a id="configFileDownload" hidden="hidden">下载</a>
+                        <input id="input-configfile" type="file" name="file" multiple class="file-loading">
+                    </div>
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                    	(<span style="color: red;">* 请以压缩文件形式上传 (ZIP格式) 文件</span>)
+                    	<br/>(<span style="color: red;">* 文件大小不超过50M</span>)
+                    </div>
+                </div>
+                
+                
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveButton">保存</button>
+          </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row" style="margin-top:10px;margin-bottom:10px;">
+        <div class="col-md-12">
+          <div class="input-group">
+            <div class="form-inline" style="margin-bottom:10px;">
+               
+                <div class="form-group" style="margin-right:15px;">
+                    <label class="control-label">编号</label>
+                    <div class="input-group">
+                       <input type="text" class="form-control" id="emptyState" style="display: none;" />
+                       <input type="text" class="form-control" id="qXkzNo" style="width:190px;" placeholder="建设工程规划许可证编号"/>
+                   </div>
+                </div>
+                <div class="form-group" style="margin-right:10px;">
+                    <label class="control-label">建设单位</label>
+                    <div class="input-group">
+                       <input type="text" class="form-control" id="qJsdw" style="width:190px;" placeholder="建设单位名称"/>
+                   </div>
+                </div>
+                <div class="form-group" style="margin-right:10px;">
+                    <label class="control-label">项目名称</label>
+                    <div class="input-group">
+                       <input type="text" class="form-control" id="qXmmc" style="width:190px;" placeholder="项目名称"/>
+                   </div>
+                </div>
+                
+                <div class="form-group" style="margin-right:10px;">
+                   <label class="control-label">楼盘幢号</label>
+                    <div class="input-group">
+                       <input type="text" class="form-control" id="qLpzh" style="width:190px;" placeholder="楼盘幢号"/>
+                   	</div>
+                </div>
+               	<button id="searchButton" type="button" class="btn btn-primary btn-sm">查询</button>
+               	<button id="cleanButton" type="button" class="btn btn-primary btn-sm">清空</button>
+               	<!-- 
+               	<button id="addButton" type="button" class="btn btn-primary btn-sm">新增</button>
+             -->
+            </div>  
+          </div>
+        </div>
+     </div>
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+                <th>建设工程规划许可证编号</th>
+                <th>建设单位名称</th>
+                <th>项目名称</th>
+                <th>幢号</th>
+                <th>图纸类型</th>
+                <th>申请机构</th>
+                <th>申请日期</th>
+                <th >状态</th>
+                <!-- <th>备注</th> -->
+                <th>附件</th> 
+                <th>下载申请</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable"></tbody>
+        </table>
+        
+        <div class="hr-line-dashed"></div>
+        <div class="text-center">
+            <div class="btn-group" id="pagination">
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+<#include "script.ftl"/>
+<script src="/js/lib/fileinput/fileinput.min.js"></script>
+<script src="/js/lib/fileinput/fileinput/zh.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+	
+	(function (fileInputId, fileField, validate) {
+        $("#" + fileInputId).fileinput({
+        	allowedFileExtensions: ['zip', 'rar'],//接收的文件后缀
+            language: 'zh', //设置语言
+            showPreview : false, //显示预览 
+            showUpload: false,
+            showRemove:true,
+            maxFileCount: 1,
+            autoReplace:false,
+            uploadUrl: '/files'
+        }).on("filebatchselected", function(event, files) {
+            $(this).fileinput("upload");
+        }).on('filecleared', function(event) {
+            $("#" + fileField).val("");
+            $("#" + fileField + "Download").hide();
+            $("#ghxkForm").data("bootstrapValidator").updateStatus(fileField, "NOT_VALIDATED",  null );
+        }).on("fileuploaded", function(event, data) {
+            if(data.response) {
+                $("#" + fileField).val(data.response.id);
+                $("#" + fileField + "Download").hide();
+                $("#ghxkForm").data("bootstrapValidator").updateStatus(fileField, "NOT_VALIDATED",  null );
+            }
+        });
+    })("input-configfile", "configFile"); 
+	
+	/**初始化事件，加载数据*/
+	var url = "/dossierGhxk";
+	var manageUrl = "/manage/dossierGhxk";
+	var pageSize = 10;
+	var operationtype = 0;
+	var stateTypes = ["未申请","申请中","驳回","成功"];
+            
+    var load = function(pageNum) {
+		pageNum = defaultV(pageNum, 1);
+        
+		if($("#emptyState").val() != "1"){
+			var table = $("#dataTable");
+            table.empty();
+       		table.append("<tr><td colspan='9'>请先查询!</td>");
+       		return;
+		}
+		
+        var param = {};
+       	param.proName = $("#qXmmc").val().trim();
+        param.jsdwmc = $("#qJsdw").val().trim();
+        param.lpzh = $("#qLpzh").val().trim();
+        param.jsgcghxkzNo = $("#qXkzNo").val().trim();
+        
+        if(isEmpty(param.proName)&&isEmpty(param.jsdwmc)
+        		&&isEmpty(param.lpzh)&&isEmpty(param.jsgcghxkzNo)){
+        	layer.msg("查询条件全部为空!");
+        	return;
+        }
+        
+        param.pageNum = pageNum;
+        
+        $.ajax({ type:"POST",
+            url: url + "/cehui/new/query",
+            contentType:"application/json",
+            data:JSON.stringify(param),
+            success: function(obj){
+            	var table = $("#dataTable");
+	            table.empty();
+            	if(obj.http != 200){
+            		table.append("<tr><td colspan='9'>数据加载错误!</td>");
+            		return;
+            	}
+	            
+	            var data = obj.data;
+	            for (var i=0;i<data.length;i++)
+                {
+	            	 var rowData = data[i];
+	            	 
+		             var lpzh = rowData.lpzh == null?"":rowData.lpzh;
+		             var jsgcghxkzNo = rowData.jsgcghxkzNo == null?"":rowData.jsgcghxkzNo;
+		             var jsdwmc = rowData.jsdwmc == null?"":rowData.jsdwmc;
+		             var proName = rowData.proName == null?"":rowData.proName;
+		             var useName = rowData.applyName == null?"":rowData.applyName;
+		             var createTime = rowData.applyTime == null?"":moment(rowData.applyTime).format("YYYY-MM-DD HH:mm:ss");
+		             var remarks = rowData.remarks == null?"":rowData.remarks;
+		             var tzlx = rowData.tzlx == null?"":rowData.tzlx;
+		             
+		             var state = rowData.applyState == null?0:rowData.applyState;
+		             var applyFileId = rowData.applyFileId == null?"":rowData.applyFileId;
+		             var applyId = rowData.applyId == null?"":rowData.applyId;
+		             //+"<td>" + remarks + "</td>"
+		             var row = "<tr><td hidden=>" + rowData.id +"</td>"
+		                         +"<td hidden=>" + applyId + "</td>"
+		                         +"<td>" + jsgcghxkzNo + "</td>"
+		                         +"<td style='text-align: left;'>" + jsdwmc + "</td>"
+		                         +"<td style='text-align: left;'>" + proName + "</td>"
+		                         +"<td>" + lpzh + "</td>"
+		                         +"<td>" + tzlx + "</td>"
+		                         +"<td>" + useName + "</td>"
+		                         +"<td>" + createTime + "</td>"
+		                         +"<td>" + stateTypes[state] + "</td>";
+		                         
+                     row += "<td><button type='button' onclick='uploadFile(\""+ applyId + "\",\"" + rowData.id + "\");' class='btn btn-warning btn-xs downButton'>上传</button>";
+                     if(applyFileId != ""){
+                    	 row += "<button type='button' onclick='downloadFile(\""+applyFileId + "\");' class='btn btn-danger btn-xs downButton'>下载</button>";
+                     }
+                     row += "</td>";
+                   	 row += "<td >";
+                   	 
+	                 if(state == 3){
+			             row += "<button type='button' onclick='downloadFile(\""+rowData.fileId + "\");' class='btn btn-danger btn-xs downButton'>下载</button>";
+	                 }else if(state == 1){
+	                	 row += "<span style='color: green; font-weight: bold;font-size: 10px;'>申请中</span>";
+	                 }else{
+	                	 if(rowData.applyFileId){
+		                	 row += "<button type='button' class='btn btn-info btn-xs applyButton' >申请</button>";
+		                 }else{
+		                	 row += "<span style='color: red; font-weight: bold;font-size: 10px;'>请先上传资料</span>";
+		                 }
+	                 }
+	                 
+		             //row += "<button type='button' class='btn btn-warning btn-xs updateButton'>编辑</button>";
+		                     //+"<button type='button' class='btn btn-danger btn-xs deleteButton'>删除</button></td>"
+		             row += "</tr>";
+		             table.append(row);
+                 }
+            	
+            	pagination(obj.total, pageNum, pageSize);
+            }
+        })
+    	
+	};
+	
+	$("#searchButton").on("click", function() {
+		$("#emptyState").val("1");
+        load();
+    });
+    
+    $("#cleanButton").on("click", function() {
+    	$("#qXmmc").val("");
+        $("#qJsdw").val("");
+        $("#qLpzh").val("");
+        $("#qXkzNo").val("");
+        $("#emptyState").val("");
+    });
+            
+    $("#pagination").on("click", ".pageBtn", function() {
+        load(parseInt($(this).attr("data")));
+    });
+    
+    $("#addButton").on("click", function() {
+       layer.open({
+           type: 2,
+           title: '申请资料下载',
+           area: ['90%', '90%'],
+           content: 'ghxkInfo_apply_edit.html',
+           scrollbar: false,
+           end: function () {
+               location.reload();
+           }
+       });
+    });
+    
+    /*点击添加按钮，进行测试管理信息添加操作*/
+    $("#saveButton").on("click", function() {
+ 	   	$("#saveButton").attr("disabled", true);
+        if (!isFormValid("ghxkForm")) {
+        	$("#saveButton").attr("disabled", false);
+            return;
+        }
+        var data = {};
+        data.id = $("#id").val();
+        data.jdid = $("#applyJdid").val();
+        data.fileId = $("#configFile").val();
+        
+        $.ajax({ 
+            type:"POST",
+            url: "/dossierGhxk/cehui/new/save",
+            contentType:"application/json",
+            data:JSON.stringify(data),
+            success: function(data){
+                layer.alert("保存成功!", {icon: 1, time : 1500});
+                $("#saveButton").attr("disabled", false);
+                $('#saveModal').modal('hide');
+                load();
+            },
+            error: function(e,xhr,opt){
+                layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                $("#saveButton").attr("disabled", false);
+                $('#saveModal').modal('hide');
+            }
+        });
+        
+    });
+    
+    $("#dataTable").on("click", ".applyButton", function() {
+    	var idTd = $(this).parents('tr').children().first();;
+        var id = idTd.next().text();
+        $.ajax({ url: url + "/applyDowning?id=" + encodeURI(id), success: function(data){
+        	if(data){
+        		layer.alert("申请成功!", {icon: 1, time : 1500});
+                load();
+        	}else{
+        		layer.alert("申请失败! ", {icon: 2});
+                load();
+        	}
+        }})
+    })
+    
+    $("#dataTable").on("click", ".updateButton", function() {
+        var idTd = $(this).parents('tr').children().first();;
+        var id = idTd.text();
+        
+        $.ajax({ url: "/dossierGhxk/getOne?id=" + encodeURI(id), success: function(data){
+        	if(data){
+        		 $("#id").val(data.id);
+        	     $("#jsgcghxkzNo").val(data.jsgcghxkzNo);
+        	     $("#jsdwmc").val(data.jsdwmc);
+        	     $("#proName").val(data.proName);
+        	     $("#lpzh").val(data.lpzh);
+        	     $("#configFile").val(data.fileId);
+        	     $('input[name=configFile]').val(data.fileId);
+                 $('.file-caption-name').text(data.fileId);
+                 
+                 $("#jsgcghxkzNo").attr("disabled", true);
+                 $('#showFileForm').hide();
+        	     $('#saveModal').modal('show');
+        	}
+        }});
+    })
+    
+            
+    
+            
+    $("#dataTable").on("click",".deleteButton",function(){
+        var row = $(this).parent().parent();
+        var idTd = row.children().first();
+        var id = idTd.text();
+        var rnameTd = idTd.next().next();
+        var rname = rnameTd.text();
+        
+        layer.confirm("确定删除名称为" + rname +" 的案件？", {icon: 3, title: "删除"}, function(index){
+            $.ajax({
+                type:"DELETE",
+                url: "/dossierGhxk/remove/" + encodeURI(id),
+                success: function(data){
+                    layer.alert("删除成功!", {icon: 1, time : 1500});
+                    load();
+                },
+                error: function(e,xhr,opt){
+                    layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+            
+            layer.close(index);
+        });
+    })
+    
+            
+    load();
+});
+
+function isEmpty(v) {
+    switch (typeof v) {
+    case 'undefined':
+        return true;
+    case 'string':
+        if (v.replace(/(^[ \t\n\r]*)|([ \t\n\r]*$)/g, '').length == 0) return true;
+        break;
+    case 'boolean':
+        if (!v) return true;
+        break;
+    case 'number':
+        if (0 === v || isNaN(v)) return true;
+        break;
+    case 'object':
+        if (null === v || v.length === 0) return true;
+        for (var i in v) {
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+function uploadFile(id,applyJdid){
+	resetForm("ghxkForm");
+    
+	$("#id").val(id);
+	$("#applyJdid").val(applyJdid);
+    $('#saveModal').modal('show');
+}
+</script>
+</body>
+</html>

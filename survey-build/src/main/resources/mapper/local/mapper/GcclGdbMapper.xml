@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwch.survey.dao.mapper.GcclGdbMapper">
+  <resultMap id="BaseResultMap" type="com.lwch.survey.model.GcclGdb">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="apply_id" jdbcType="VARCHAR" property="applyId" />
+    <result column="pro_name" jdbcType="VARCHAR" property="proName" />
+    <result column="pro_xmzl" jdbcType="VARCHAR" property="proXmzl" />
+    <result column="lpzh" jdbcType="VARCHAR" property="lpzh" />
+    <result column="chlx" jdbcType="VARCHAR" property="chlx" />
+    <result column="jsdw" jdbcType="VARCHAR" property="jsdw" />
+    <result column="apply_field" jdbcType="VARCHAR" property="applyField" />
+    <result column="gdno" jdbcType="VARCHAR" property="gdno" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="yxx" jdbcType="INTEGER" property="yxx" />
+    <result column="lcslid" jdbcType="VARCHAR" property="lcslid" />
+    <result column="backNum" jdbcType="INTEGER" property="backnum" />
+    <result column="pzxx" jdbcType="VARCHAR" property="pzxx" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, apply_id, pro_name, pro_xmzl, lpzh, chlx, jsdw, apply_field, gdno, update_time, 
+    yxx, lcslid, backNum, pzxx
+  </sql>
+  <select id="selectByExample" parameterType="com.lwch.survey.model.GcclGdbExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from gccl_gdb
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from gccl_gdb
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from gccl_gdb
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.lwch.survey.model.GcclGdbExample">
+    delete from gccl_gdb
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lwch.survey.model.GcclGdb">
+    insert into gccl_gdb (id, apply_id, pro_name, 
+      pro_xmzl, lpzh, chlx, 
+      jsdw, apply_field, gdno, 
+      update_time, yxx, lcslid, 
+      backNum, pzxx)
+    values (#{id,jdbcType=INTEGER}, #{applyId,jdbcType=VARCHAR}, #{proName,jdbcType=VARCHAR}, 
+      #{proXmzl,jdbcType=VARCHAR}, #{lpzh,jdbcType=VARCHAR}, #{chlx,jdbcType=VARCHAR}, 
+      #{jsdw,jdbcType=VARCHAR}, #{applyField,jdbcType=VARCHAR}, #{gdno,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{yxx,jdbcType=INTEGER}, #{lcslid,jdbcType=VARCHAR}, 
+      #{backnum,jdbcType=INTEGER}, #{pzxx,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lwch.survey.model.GcclGdb">
+    insert into gccl_gdb
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="applyId != null">
+        apply_id,
+      </if>
+      <if test="proName != null">
+        pro_name,
+      </if>
+      <if test="proXmzl != null">
+        pro_xmzl,
+      </if>
+      <if test="lpzh != null">
+        lpzh,
+      </if>
+      <if test="chlx != null">
+        chlx,
+      </if>
+      <if test="jsdw != null">
+        jsdw,
+      </if>
+      <if test="applyField != null">
+        apply_field,
+      </if>
+      <if test="gdno != null">
+        gdno,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="yxx != null">
+        yxx,
+      </if>
+      <if test="lcslid != null">
+        lcslid,
+      </if>
+      <if test="backnum != null">
+        backNum,
+      </if>
+      <if test="pzxx != null">
+        pzxx,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="applyId != null">
+        #{applyId,jdbcType=VARCHAR},
+      </if>
+      <if test="proName != null">
+        #{proName,jdbcType=VARCHAR},
+      </if>
+      <if test="proXmzl != null">
+        #{proXmzl,jdbcType=VARCHAR},
+      </if>
+      <if test="lpzh != null">
+        #{lpzh,jdbcType=VARCHAR},
+      </if>
+      <if test="chlx != null">
+        #{chlx,jdbcType=VARCHAR},
+      </if>
+      <if test="jsdw != null">
+        #{jsdw,jdbcType=VARCHAR},
+      </if>
+      <if test="applyField != null">
+        #{applyField,jdbcType=VARCHAR},
+      </if>
+      <if test="gdno != null">
+        #{gdno,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="yxx != null">
+        #{yxx,jdbcType=INTEGER},
+      </if>
+      <if test="lcslid != null">
+        #{lcslid,jdbcType=VARCHAR},
+      </if>
+      <if test="backnum != null">
+        #{backnum,jdbcType=INTEGER},
+      </if>
+      <if test="pzxx != null">
+        #{pzxx,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lwch.survey.model.GcclGdbExample" resultType="java.lang.Long">
+    select count(*) from gccl_gdb
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update gccl_gdb
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.applyId != null">
+        apply_id = #{record.applyId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proName != null">
+        pro_name = #{record.proName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proXmzl != null">
+        pro_xmzl = #{record.proXmzl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lpzh != null">
+        lpzh = #{record.lpzh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.chlx != null">
+        chlx = #{record.chlx,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jsdw != null">
+        jsdw = #{record.jsdw,jdbcType=VARCHAR},
+      </if>
+      <if test="record.applyField != null">
+        apply_field = #{record.applyField,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gdno != null">
+        gdno = #{record.gdno,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.yxx != null">
+        yxx = #{record.yxx,jdbcType=INTEGER},
+      </if>
+      <if test="record.lcslid != null">
+        lcslid = #{record.lcslid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.backnum != null">
+        backNum = #{record.backnum,jdbcType=INTEGER},
+      </if>
+      <if test="record.pzxx != null">
+        pzxx = #{record.pzxx,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update gccl_gdb
+    set id = #{record.id,jdbcType=INTEGER},
+      apply_id = #{record.applyId,jdbcType=VARCHAR},
+      pro_name = #{record.proName,jdbcType=VARCHAR},
+      pro_xmzl = #{record.proXmzl,jdbcType=VARCHAR},
+      lpzh = #{record.lpzh,jdbcType=VARCHAR},
+      chlx = #{record.chlx,jdbcType=VARCHAR},
+      jsdw = #{record.jsdw,jdbcType=VARCHAR},
+      apply_field = #{record.applyField,jdbcType=VARCHAR},
+      gdno = #{record.gdno,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      yxx = #{record.yxx,jdbcType=INTEGER},
+      lcslid = #{record.lcslid,jdbcType=VARCHAR},
+      backNum = #{record.backnum,jdbcType=INTEGER},
+      pzxx = #{record.pzxx,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lwch.survey.model.GcclGdb">
+    update gccl_gdb
+    <set>
+      <if test="applyId != null">
+        apply_id = #{applyId,jdbcType=VARCHAR},
+      </if>
+      <if test="proName != null">
+        pro_name = #{proName,jdbcType=VARCHAR},
+      </if>
+      <if test="proXmzl != null">
+        pro_xmzl = #{proXmzl,jdbcType=VARCHAR},
+      </if>
+      <if test="lpzh != null">
+        lpzh = #{lpzh,jdbcType=VARCHAR},
+      </if>
+      <if test="chlx != null">
+        chlx = #{chlx,jdbcType=VARCHAR},
+      </if>
+      <if test="jsdw != null">
+        jsdw = #{jsdw,jdbcType=VARCHAR},
+      </if>
+      <if test="applyField != null">
+        apply_field = #{applyField,jdbcType=VARCHAR},
+      </if>
+      <if test="gdno != null">
+        gdno = #{gdno,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="yxx != null">
+        yxx = #{yxx,jdbcType=INTEGER},
+      </if>
+      <if test="lcslid != null">
+        lcslid = #{lcslid,jdbcType=VARCHAR},
+      </if>
+      <if test="backnum != null">
+        backNum = #{backnum,jdbcType=INTEGER},
+      </if>
+      <if test="pzxx != null">
+        pzxx = #{pzxx,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lwch.survey.model.GcclGdb">
+    update gccl_gdb
+    set apply_id = #{applyId,jdbcType=VARCHAR},
+      pro_name = #{proName,jdbcType=VARCHAR},
+      pro_xmzl = #{proXmzl,jdbcType=VARCHAR},
+      lpzh = #{lpzh,jdbcType=VARCHAR},
+      chlx = #{chlx,jdbcType=VARCHAR},
+      jsdw = #{jsdw,jdbcType=VARCHAR},
+      apply_field = #{applyField,jdbcType=VARCHAR},
+      gdno = #{gdno,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      yxx = #{yxx,jdbcType=INTEGER},
+      lcslid = #{lcslid,jdbcType=VARCHAR},
+      backNum = #{backnum,jdbcType=INTEGER},
+      pzxx = #{pzxx,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

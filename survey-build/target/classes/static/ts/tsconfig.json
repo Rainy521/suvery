@@ -1,0 +1,7 @@
+{
+    "compilerOptions": {
+        "outFile": "../js/ts.js",
+        "allowJs": true,
+        "target": "es5"
+    }
+}

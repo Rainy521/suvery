@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwch.survey.dao.mapper.ApplyBuildMapper">
+  <resultMap id="BaseResultMap" type="com.lwch.survey.model.ApplyBuild">
+    <id column="slbh" jdbcType="VARCHAR" property="slbh" />
+    <result column="slsj" jdbcType="VARCHAR" property="slsj" />
+    <result column="chlx" jdbcType="VARCHAR" property="chlx" />
+    <result column="sbr" jdbcType="VARCHAR" property="sbr" />
+    <result column="lpzh" jdbcType="VARCHAR" property="lpzh" />
+    <result column="bdcqzh" jdbcType="VARCHAR" property="bdcqzh" />
+    <result column="ghxkzh" jdbcType="VARCHAR" property="ghxkzh" />
+    <result column="jzjg" jdbcType="VARCHAR" property="jzjg" />
+    <result column="zcs" jdbcType="INTEGER" property="zcs" />
+    <result column="dxcs" jdbcType="INTEGER" property="dxcs" />
+    <result column="dscs" jdbcType="INTEGER" property="dscs" />
+    <result column="ghyt" jdbcType="VARCHAR" property="ghyt" />
+    <result column="zjzmj" jdbcType="DOUBLE" property="zjzmj" />
+    <result column="xmzl" jdbcType="VARCHAR" property="xmzl" />
+    <result column="xmbh" jdbcType="VARCHAR" property="xmbh" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    slbh, slsj, chlx, sbr, lpzh, bdcqzh, ghxkzh, jzjg, zcs, dxcs, dscs, ghyt, zjzmj, 
+    xmzl, xmbh
+  </sql>
+  <select id="selectByExample" parameterType="com.lwch.survey.model.ApplyBuildExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from apply_build
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from apply_build
+    where slbh = #{slbh,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from apply_build
+    where slbh = #{slbh,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.lwch.survey.model.ApplyBuildExample">
+    delete from apply_build
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.lwch.survey.model.ApplyBuild">
+    insert into apply_build (slbh, slsj, chlx, 
+      sbr, lpzh, bdcqzh, 
+      ghxkzh, jzjg, zcs, 
+      dxcs, dscs, ghyt, zjzmj, 
+      xmzl, xmbh)
+    values (#{slbh,jdbcType=VARCHAR}, #{slsj,jdbcType=VARCHAR}, #{chlx,jdbcType=VARCHAR}, 
+      #{sbr,jdbcType=VARCHAR}, #{lpzh,jdbcType=VARCHAR}, #{bdcqzh,jdbcType=VARCHAR}, 
+      #{ghxkzh,jdbcType=VARCHAR}, #{jzjg,jdbcType=VARCHAR}, #{zcs,jdbcType=INTEGER}, 
+      #{dxcs,jdbcType=INTEGER}, #{dscs,jdbcType=INTEGER}, #{ghyt,jdbcType=VARCHAR}, #{zjzmj,jdbcType=DOUBLE}, 
+      #{xmzl,jdbcType=VARCHAR}, #{xmbh,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.lwch.survey.model.ApplyBuild">
+    insert into apply_build
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="slbh != null">
+        slbh,
+      </if>
+      <if test="slsj != null">
+        slsj,
+      </if>
+      <if test="chlx != null">
+        chlx,
+      </if>
+      <if test="sbr != null">
+        sbr,
+      </if>
+      <if test="lpzh != null">
+        lpzh,
+      </if>
+      <if test="bdcqzh != null">
+        bdcqzh,
+      </if>
+      <if test="ghxkzh != null">
+        ghxkzh,
+      </if>
+      <if test="jzjg != null">
+        jzjg,
+      </if>
+      <if test="zcs != null">
+        zcs,
+      </if>
+      <if test="dxcs != null">
+        dxcs,
+      </if>
+      <if test="dscs != null">
+        dscs,
+      </if>
+      <if test="ghyt != null">
+        ghyt,
+      </if>
+      <if test="zjzmj != null">
+        zjzmj,
+      </if>
+      <if test="xmzl != null">
+        xmzl,
+      </if>
+      <if test="xmbh != null">
+        xmbh,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="slbh != null">
+        #{slbh,jdbcType=VARCHAR},
+      </if>
+      <if test="slsj != null">
+        #{slsj,jdbcType=VARCHAR},
+      </if>
+      <if test="chlx != null">
+        #{chlx,jdbcType=VARCHAR},
+      </if>
+      <if test="sbr != null">
+        #{sbr,jdbcType=VARCHAR},
+      </if>
+      <if test="lpzh != null">
+        #{lpzh,jdbcType=VARCHAR},
+      </if>
+      <if test="bdcqzh != null">
+        #{bdcqzh,jdbcType=VARCHAR},
+      </if>
+      <if test="ghxkzh != null">
+        #{ghxkzh,jdbcType=VARCHAR},
+      </if>
+      <if test="jzjg != null">
+        #{jzjg,jdbcType=VARCHAR},
+      </if>
+      <if test="zcs != null">
+        #{zcs,jdbcType=INTEGER},
+      </if>
+      <if test="dxcs != null">
+        #{dxcs,jdbcType=INTEGER},
+      </if>
+      <if test="dscs != null">
+        #{dscs,jdbcType=INTEGER},
+      </if>
+      <if test="ghyt != null">
+        #{ghyt,jdbcType=VARCHAR},
+      </if>
+      <if test="zjzmj != null">
+        #{zjzmj,jdbcType=DOUBLE},
+      </if>
+      <if test="xmzl != null">
+        #{xmzl,jdbcType=VARCHAR},
+      </if>
+      <if test="xmbh != null">
+        #{xmbh,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.lwch.survey.model.ApplyBuildExample" resultType="java.lang.Long">
+    select count(*) from apply_build
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update apply_build
+    <set>
+      <if test="record.slbh != null">
+        slbh = #{record.slbh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.slsj != null">
+        slsj = #{record.slsj,jdbcType=VARCHAR},
+      </if>
+      <if test="record.chlx != null">
+        chlx = #{record.chlx,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sbr != null">
+        sbr = #{record.sbr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lpzh != null">
+        lpzh = #{record.lpzh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bdcqzh != null">
+        bdcqzh = #{record.bdcqzh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ghxkzh != null">
+        ghxkzh = #{record.ghxkzh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jzjg != null">
+        jzjg = #{record.jzjg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.zcs != null">
+        zcs = #{record.zcs,jdbcType=INTEGER},
+      </if>
+      <if test="record.dxcs != null">
+        dxcs = #{record.dxcs,jdbcType=INTEGER},
+      </if>
+      <if test="record.dscs != null">
+        dscs = #{record.dscs,jdbcType=INTEGER},
+      </if>
+      <if test="record.ghyt != null">
+        ghyt = #{record.ghyt,jdbcType=VARCHAR},
+      </if>
+      <if test="record.zjzmj != null">
+        zjzmj = #{record.zjzmj,jdbcType=DOUBLE},
+      </if>
+      <if test="record.xmzl != null">
+        xmzl = #{record.xmzl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xmbh != null">
+        xmbh = #{record.xmbh,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update apply_build
+    set slbh = #{record.slbh,jdbcType=VARCHAR},
+      slsj = #{record.slsj,jdbcType=VARCHAR},
+      chlx = #{record.chlx,jdbcType=VARCHAR},
+      sbr = #{record.sbr,jdbcType=VARCHAR},
+      lpzh = #{record.lpzh,jdbcType=VARCHAR},
+      bdcqzh = #{record.bdcqzh,jdbcType=VARCHAR},
+      ghxkzh = #{record.ghxkzh,jdbcType=VARCHAR},
+      jzjg = #{record.jzjg,jdbcType=VARCHAR},
+      zcs = #{record.zcs,jdbcType=INTEGER},
+      dxcs = #{record.dxcs,jdbcType=INTEGER},
+      dscs = #{record.dscs,jdbcType=INTEGER},
+      ghyt = #{record.ghyt,jdbcType=VARCHAR},
+      zjzmj = #{record.zjzmj,jdbcType=DOUBLE},
+      xmzl = #{record.xmzl,jdbcType=VARCHAR},
+      xmbh = #{record.xmbh,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.lwch.survey.model.ApplyBuild">
+    update apply_build
+    <set>
+      <if test="slsj != null">
+        slsj = #{slsj,jdbcType=VARCHAR},
+      </if>
+      <if test="chlx != null">
+        chlx = #{chlx,jdbcType=VARCHAR},
+      </if>
+      <if test="sbr != null">
+        sbr = #{sbr,jdbcType=VARCHAR},
+      </if>
+      <if test="lpzh != null">
+        lpzh = #{lpzh,jdbcType=VARCHAR},
+      </if>
+      <if test="bdcqzh != null">
+        bdcqzh = #{bdcqzh,jdbcType=VARCHAR},
+      </if>
+      <if test="ghxkzh != null">
+        ghxkzh = #{ghxkzh,jdbcType=VARCHAR},
+      </if>
+      <if test="jzjg != null">
+        jzjg = #{jzjg,jdbcType=VARCHAR},
+      </if>
+      <if test="zcs != null">
+        zcs = #{zcs,jdbcType=INTEGER},
+      </if>
+      <if test="dxcs != null">
+        dxcs = #{dxcs,jdbcType=INTEGER},
+      </if>
+      <if test="dscs != null">
+        dscs = #{dscs,jdbcType=INTEGER},
+      </if>
+      <if test="ghyt != null">
+        ghyt = #{ghyt,jdbcType=VARCHAR},
+      </if>
+      <if test="zjzmj != null">
+        zjzmj = #{zjzmj,jdbcType=DOUBLE},
+      </if>
+      <if test="xmzl != null">
+        xmzl = #{xmzl,jdbcType=VARCHAR},
+      </if>
+      <if test="xmbh != null">
+        xmbh = #{xmbh,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where slbh = #{slbh,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.lwch.survey.model.ApplyBuild">
+    update apply_build
+    set slsj = #{slsj,jdbcType=VARCHAR},
+      chlx = #{chlx,jdbcType=VARCHAR},
+      sbr = #{sbr,jdbcType=VARCHAR},
+      lpzh = #{lpzh,jdbcType=VARCHAR},
+      bdcqzh = #{bdcqzh,jdbcType=VARCHAR},
+      ghxkzh = #{ghxkzh,jdbcType=VARCHAR},
+      jzjg = #{jzjg,jdbcType=VARCHAR},
+      zcs = #{zcs,jdbcType=INTEGER},
+      dxcs = #{dxcs,jdbcType=INTEGER},
+      dscs = #{dscs,jdbcType=INTEGER},
+      ghyt = #{ghyt,jdbcType=VARCHAR},
+      zjzmj = #{zjzmj,jdbcType=DOUBLE},
+      xmzl = #{xmzl,jdbcType=VARCHAR},
+      xmbh = #{xmbh,jdbcType=VARCHAR}
+    where slbh = #{slbh,jdbcType=VARCHAR}
+  </update>
+</mapper>

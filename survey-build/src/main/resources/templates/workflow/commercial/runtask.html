@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+   <style>
+        .table caption{
+            text-align:center;
+            background:#C0C0C0;
+            border:1px solid #666;
+            color:#333;
+            font-weight:bold;
+            line-height:20px;
+        }
+        .table input[type=text]{
+            width:100%;
+            line-height:25px;
+            border:0;
+        }
+        .label-text input[type=checkbox]{
+            margin:0 5px 0 0;
+            vertical-align:text-top;
+        }
+        .label-text input[type=text]{
+            width:60%;
+            border-bottom:1px solid #666;
+        }
+    </style>
+</head>
+<body>
+<div class="modal fade" id="saveModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">批注信息</h4>
+        <input type="text" id="taskid" style="display: none;"/>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" id="formulaForm">
+          <div>
+            <table class="table table-bordered" >
+                <caption>批注信息</caption>
+                <thead>
+                    <tr>
+                       <th>任务环节名称</th>
+                       <th>办理人</th>
+                       <th>批注信息</th>
+                       <th>批注时间</th>
+                    </tr>
+                </thead>
+                <tbody id="processbaseInfo" style="border:1px solid #666;"></tbody>
+            </table>
+          </div>
+          <div class="form-group">
+            <label for="comMessage" class="col-sm-2 control-label">审核意见</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" name="comMessage" id="comMessage" placeholder="请输入您的审批意见">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" id="saveButton">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper wrapper-content float-e-margins">
+  	<div class="row">
+	    <div class="col-md-12">
+	    <table class="table table-bordered">
+	      <thead>
+	        <tr>
+	          <th hidden=""></th>
+	          <th hidden=""></th>
+	          <th hidden=""></th>
+	          <th hidden=""></th>
+	          <th>业务编号</th>
+	          <th>项目名称</th>
+	          <th>幢号</th>
+	          <th>业务名称</th>
+	          <th>环节名称</th>
+	          <th>申请人</th>
+	          <th>办理人</th>
+	          <th>创建时间</th>
+	          <th>操作</th>
+	        </tr>
+	      </thead>
+	      <tbody id="runMyTaskDataTable"></tbody>
+	    </table>
+	    <div class="hr-line-dashed"></div>
+	        <div class="text-center">
+	            <div class="btn-group" id="pagination">
+	        </div>
+	    </div>
+	   </div>
+	</div>
+</div>
+    
+<#include "script.ftl"/>
+<script type="text/javascript">
+$(document).ready(function(){
+    var url = "/workFlow";
+    var pageSize = 10;
+    var load = function(pageNum) {
+        pageNum = defaultV(pageNum, 1);
+        
+        $.ajax({url: url + "/queryMyRunTask?key=commercial&pageNum=" + pageNum, success: function(data){
+             var runMyTaskDataTable = $("#runMyTaskDataTable");
+             runMyTaskDataTable.empty();
+             for (var i = 0;i < data.length;i++){
+                  var rowData = data[i];
+                  var row = "<tr><td hidden=>" + rowData.processInstanceId + "</td>"
+                  + "<td hidden=>" + rowData.taskId + "</td>"
+                  + "<td hidden=>" + rowData.formKey + "</td>"
+                  + "<td hidden=>" + rowData.processDefinitionId + "</td>"
+                  + "<td>" + rowData.applyId + "</td>"
+                  + "<td>" + rowData.applyName + "</td>"
+                  + "<td>" + rowData.applyNo + "</td>"
+                  + "<td>" + rowData.processDefinitionName + "</td>"
+                  + "<td>" + rowData.taskName + "</td>"
+                  + "<td>" + (rowData.applyUser == null?"":rowData.applyUser) + "</td>"
+                  + "<td>"+rowData.assignee+"</td><td>"+moment(rowData.createTime).format("LLL")+"</td>"
+                  + '<td style="text-align:left"><button type="button" class="btn btn-info btn-xs compleTask">办理</button>'
+                  + '<button type="button" class="btn btn-info btn-xs diagramTask">查看流程图</button>'
+                  + '<button type="button" class="btn btn-warning btn-xs commentTask">批注</button>' 
+                  + '<button type="button" class="btn btn-danger btn-xs deleteCompleTask">取消任务</button>';
+                  var buttonList = rowData.buttons;
+                  for (var j = 0;j<buttonList.length;j++){
+                      if(buttonList[j]=='驳回'){
+                         row += '<button type="button" class="btn btn-danger btn-xs submitFlowButton">'+buttonList[j]+'</button>';
+                      }else{
+                         row += '<button type="button" class="btn btn-info btn-xs submitFlowButton">'+buttonList[j]+'</button>';
+                      }
+                      
+                  }
+                  row += '</td></tr>';
+                  runMyTaskDataTable.append(row);
+             }
+             $.ajax({ url: url + "/queryMyRunTask/count?key=commercial", success: function(data){
+                 pagination(data, pageNum, pageSize);
+             }});
+          }
+        });
+    };
+    
+    $("#pagination").on("click", ".pageBtn", function() {
+        load(parseInt($(this).attr("data")));
+    });
+    
+    $("#runMyTaskDataTable").on("click", ".commentTask", function() {
+        resetForm("formulaForm");
+        var taskIdTd = $(this).parents('tr').children().first().next();
+        var taskId = taskIdTd.text();
+        $("#taskid").val(taskId);
+        $.ajax({ url: url + "/findCommentByTaskId?taskId=" +taskId, success: function(dat){
+            var table = $("#processbaseInfo");
+            table.empty();
+            if(dat.length==0){
+                var row = "<tr><td colspan='4'>暂无批注信息</td></tr>";
+                table.append(row);
+            }else{
+                for (var i=0;i<dat.length;i++)
+                {
+                    var rowData = dat[i];
+                    var row = "<tr><td style='display: none;'>" + rowData.taskId + "</td><td>" + rowData.taskName + "</td><td>" + rowData.userId + "</td>"
+                                +"<td>" + rowData.fullMessage + "</td><td>"+(moment(rowData.time).format("LLL"))+"</td></tr>";
+                    table.append(row);
+                }
+            }
+       }});
+       $('#saveModal').modal('show');
+    });
+    
+    $("#saveButton").on("click", function() {
+        var msg = $("#comMessage").val();
+        var taskId = $("#taskid").val();
+        if(msg == null){
+            msg = "无填写审核信息";
+        }
+        $.ajax({url: url + "/saveCommentTask?taskId="+taskId+"&msg=" +encodeURI(msg), 
+            success: function(data){
+                         layer.alert("保存成功!", {icon: 1, time : 1500});
+                         $('#saveModal').modal('hide');
+                         load();
+                     }
+        });
+    });
+    
+    $('#runMyTaskDataTable').on('click','.submitFlowButton',function(){
+        var text=$(this).text();
+        var variable = text;
+        var taskIdTd = $(this).parents('tr').children().first().next();
+        var taskId = taskIdTd.text();
+        var applyIdTd = taskIdTd.next().next().next();
+        var applyId = applyIdTd.text();
+        
+        var compleUrl = url + "/compleTask?taskId="+taskId+"&variable=" +encodeURI(variable)+"&applyId=" +encodeURI(applyId);
+         $.ajax({ 
+              url: compleUrl, 
+              success: function(data){
+                  if(data==1){
+                	  $.ajax({url: "/manage/dossier/save?applyId="+encodeURI(applyId), 
+                          success: function(data){
+                        	  layer.alert("归档成功！", {icon: 1, time : 1500});
+                              load();
+                          }
+                      });
+                      
+                  }else{
+                        layer.alert("任务完成成功！", {icon: 1, time : 1500});
+                        load();
+                  }
+              },
+              error:function(jqXHR, textStatus, errorThrown){
+                  layer.alert("请先办理业务！再转件", {icon: 2,time : 1500});
+              }
+         });
+    });
+   
+    $("#runMyTaskDataTable").on("click", ".compleTask", function() {
+        var pidTd = $(this).parents('tr').children().first();
+        var pid = pidTd.text();
+        var taskIdTd = pidTd.next();
+        var taskId = taskIdTd.text();
+        var formKeyTd = taskIdTd.next();
+        var formKey = formKeyTd.text();
+        var processDefinitionIdTd = formKeyTd.next();
+        var processDefinitionId = processDefinitionIdTd.text();
+        var applyid = processDefinitionIdTd.next().text();
+        
+        layer.open({
+            type: 2,
+            title: '查看业务信息审核',
+            area: ['100%', '100%'],
+            content: formKey + '?applyid=' + applyid + '&taskId=' + taskId +"&processDefinitionId="+processDefinitionId +"&pid="+pid +"&acceptance=1",
+            scrollbar: false
+        });
+        
+    });
+    
+    $("#runMyTaskDataTable").on("click", ".diagramTask", function() {
+        var processInstanceIdTd = $(this).parents('tr').children().first();
+        var processInstanceId = processInstanceIdTd.text();
+        layer.open({
+            title: '查看流程图',
+            area: ['80%', '100%'],
+            content: '<img src="/workFlow/'+ processInstanceId +'/viewPic"></img>',
+            scrollbar: false
+        });
+    }); 
+    
+    $("#runMyTaskDataTable").on("click", ".deleteCompleTask", function() {
+        var taskTd=$(this).parents('tr').children().first().next();
+        var taskId=taskTd.text();
+        var definitionNameTd=taskTd.next().next().next();
+        var taskName=definitionNameTd.next().text();
+        layer.confirm("确定放弃  项目名称为:" +taskName +" 的任务？", {icon: 3, title: "取消任务界面"}, function(index){
+            $.ajax({
+                url: url + "/deleteCompleTask?taskId="+taskId,success: function(data){
+                    layer.alert("取消成功!", {icon: 1, time : 1500});
+                    load();
+                },
+                error: function(e,xhr,opt){
+                    layer.alert("提示： " + e.responseJSON.message, {icon: 2 ,time : 1500});
+                    load();
+                }
+            });
+            layer.close(index);
+        });
+    }); 
+    
+    $("#refreshButton").on("click", function() {
+        load();
+    });
+    
+    load();
+});
+</script>
+</body>
+</html>

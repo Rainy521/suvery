@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+</head>
+<body>
+    <div class="wrapper wrapper-content float-e-margins">
+      <!-- <div class="row" style="margin-top:10px;margin-bottom:10px;">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-primary refresh pull-right" id="refreshButton"><i class="fa fa-refresh"></i>&nbsp; 刷新</button>
+        </div>
+      </div> -->
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>项目名称</th>
+              <th>幢号</th>
+              <th>业务名称</th>
+              <th>环节名称</th>
+              <th>申请人</th>
+              <th>创建时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="runTaskDataTable"></tbody>
+        </table>
+        <div class="hr-line-dashed"></div>
+            <div class="text-center">
+                <div class="btn-group" id="pagination">
+            </div>
+        </div>
+       </div>
+    </div>
+  </div>
+    <#include "script.ftl"/>
+    <script type="text/javascript">
+        $(document).ready(function(){
+             /**初始化事件，加载数据*/
+            var url = "/workFlow";
+            var pageSize = 10;
+            
+            var load = function(pageNum) {
+                pageNum = defaultV(pageNum, 1);
+                var search = "";
+                
+                $.ajax({ url: url+"/queryReceiveTasks?pageNum=" + pageNum, success: function(data){
+                    var runTaskDataTable = $("#runTaskDataTable");
+                    runTaskDataTable.empty();
+                    
+                    for (var i=0;i<data.length;i++)
+                    {
+                        var rowData = data[i];
+                        var row = "<tr><td hidden=>" + rowData.processInstanceId + "</td>"
+                                    +"<td hidden=>" + rowData.taskId + "</td>"
+                                    +"<td hidden=>"+rowData.processDefinitionId+"</td>"
+                                    + "<td>" + (rowData.applyName == null?"":rowData.applyName) + "</td>"
+                                    + "<td>" + (rowData.applyNo == null?"":rowData.applyNo) + "</td>"
+                                    + "<td>" + rowData.processDefinitionName + "</td>"
+                                    +"<td>" + rowData.taskName + "</td>"
+                                    +"<td>" + (rowData.applyUser == null?"":rowData.applyUser) + "</td>"
+                                    +"<td>"+moment(rowData.createTime).format("LLL")+"</td>"
+                                    + '<td><button type="button" class="btn btn-info btn-xs claimTask">接受任务</button></td>'
+                                    + '</tr>';
+                         runTaskDataTable.append(row);
+                    }
+                    
+                    $.ajax({ url: url + "/queryReceiveTasks/count", success: function(data){
+                        pagination(data, pageNum, pageSize);
+                    }});
+                
+                }});
+           };
+           
+            $("#pagination").on("click", ".pageBtn", function() {
+               load(parseInt($(this).attr("data")));
+            });
+           
+            $("#runTaskDataTable").on("click", ".claimTask", function() {
+                var taskId=$(this).parents('tr').children().first().next().text();
+                 $.ajax({ 
+                     url:"/workFlow/claimTask?taskId="+taskId, 
+                     success: function(data){
+                         layer.alert("认领成功！", {icon: 1, time : 1500});
+                         load();
+                    },
+                    error: function(e,xhr,opt){
+                        layer.alert("认领失败! " + e.responseJSON.message, {icon: 2});
+                    }
+                 });
+                
+            });
+            
+            $("#refreshButton").on("click", function() {
+                load();
+            });
+            
+            load();
+        });
+        
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  <style type="text/css">
+      .form-horizontal .form-group {
+            margin-right: 0;
+            margin-left: 0; 
+      }
+      #saveModal select{
+        border: 1px solid #e5e6e7;
+        border-radius: 1px;
+        padding:6px;
+        vertical-align:-webkit-baseline-middle;
+      }
+  </style>
+  </head>
+  <body>
+  
+    <!-- 数据展示区域 -->
+    <div class="wrapper wrapper-content float-e-margins" id="float-e-margins">
+      <div class="row" style="margin-top:10px;margin-bottom:10px;">
+        <div class="col-md-12">
+          <div class="input-group">
+              <input id="searchContent" type="text" class="form-control" placeholder="输入用户名称">
+            <div class="input-group-btn" style="width:15%">
+             <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>用户名</th>
+              <th>昵称</th>
+              <th>邮箱</th>
+              <th>联系电话</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable">
+          </tbody>
+        </table>
+        
+        
+        </div>
+      </div>
+    </div>
+    
+    <#include "script.ftl"/>
+    <script src="/js/lib/distpicker/jsAddress.js"></script>
+    <script src="/js/lib/distpicker/industry.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        /**初始化事件，加载数据*/
+        var url = "/accounts";
+        var manageUrl = "/manage/accounts";
+        var pageSize = 10;
+        var accountid = getParameterByName('accountid');
+        
+        var load = function(pageNum) {
+            pageNum = defaultV(pageNum, 1);
+            var search = $("#searchContent").val();
+            $.ajax({ url: url +"/get/account/user" +"?query=" + search + "&pageNum=" + pageNum, success: function(data){
+            	var table = $("#dataTable");
+                table.empty();
+                for (var i=0;i<data.length;i++)
+                {
+                    var rowData = data[i];
+                    var row = "<tr><td style='display: none;'>"+rowData.id+"</td><td>" + rowData.username + "</td><td>" + rowData.realname + "</td>"
+                                +"<td>"+rowData.email+"</td><td>"+rowData.phone+"</td>"
+                                + '<td><button type="button" class="btn btn-danger btn-xs updateButton">账户分配</button></td>'
+                                + '</tr>';
+                    table.append(row);
+                }
+            }});
+        };
+        
+        $("#searchButton").on("click", function() {
+            load();
+        });
+        
+        
+        $("#pagination").on("click", ".pageBtn", function() {
+            load(parseInt($(this).attr("data")));
+        });
+        
+        $("#dataTable").on("click", ".updateButton", function() {
+        	var row = $(this).parent().parent();
+            var idTd = row.children().first();
+            var username = idTd.next().text();
+            layer.confirm("确定用户 "+username+" 绑定账户 "+accountid+"？", {icon: 3, title: "分配"}, function(index){
+                 $.ajax({
+                     type:"POST",
+                     url: manageUrl+"/account/user/member/add/"+accountid + "/" + username,
+                     contentType:"application/json",
+                     success: function(data){
+                         layer.alert("账户分配成功!", {icon: 1, time : 1500});
+                         parent.location.reload();
+                         parent.layer.close(index);
+                     },
+                     error: function(e,xhr,opt){
+                         layer.alert("账户分配失败! " + e.responseJSON.message, {icon: 2});
+                     }
+                 });
+                 
+                 layer.close(index);
+             });
+       });
+        
+        load();
+        
+    });
+    
+    
+    </script>
+  </body>
+</html>

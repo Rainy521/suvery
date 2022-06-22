@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<#include "head.ftl"/>
+</head>
+
+<body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
+    <div id="wrapper">
+        <!--左侧导航开始-->
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="nav-close"><i class="fa fa-times-circle"></i>
+            </div>
+            <div class="sidebar-collapse">
+            <!-- 
+                <img class="navbar-minimalize" src="/img/logo.jpg"/>
+                 -->
+                <ul class="nav" id="side-menu">
+                    <li class="nav-header">
+                        <a class="dropdown profile-element J_menuItem" data-index="0">
+                            <img alt="image" class="img-circle" src="/img/user.png" style="max-height: 30px"/>
+                            <span class="nav-label" style="display:inline-block">
+                                <span id="bsname" style="max-width:70px;vertical-align:middle;width:120px;display:inline-block;overflow: hidden;text-overflow:ellipsis;white-space: nowrap;font-size:8px;"></span><span id="username"></span>
+                            </span>
+                            <span class="fa arrow"></span>
+                        </a>
+                        
+                        <ul class="nav nav-second-level collapse">
+                            <li><a id="accountCenter" class="J_menuItem" href="javascript:;"><i class=""></i> <span class="nav-label">账户中心</span></a></li>
+                            <li><a id="userCenter" class="J_menuItem" href="javascript:;"><i class=""></i> <span class="nav-label">用户中心</span></a></li>
+                            <li><a class="J_menuItem" href="/page/modifypassword.html"><i class=""></i> <span class="nav-label">修改密码</span></a></li>
+                            <li><a class="J_menuItem" href="/logout"><i class=""></i> <span class="nav-label">安全退出</span></a></li>
+                        </ul>
+                        
+                        <div class="logo-element">
+                        +
+                        </div>
+                    </li>
+                    
+                    <li>
+                        <a class="J_menuItem" href="/page/home.html">
+                            <i class="fa fa-dashboard"></i>
+                            <span class="nav-label">首页</span>
+                        </a>
+                    </li>
+                    
+                    <#list menus as menu>
+                        <#if (menu.url?? && menu.url?length gt 0)>
+                        <li><a class="J_menuItem" href="${menu.url}"><i class="${menu.icon!}"></i> <span class="nav-label">${menu.name}</span></a></li>
+                        </#if>
+                        <#if (menu.children?size>0)>
+                            <li>
+                            <a href="#"><i class="${menu.icon!}"></i> <span class="nav-label">${menu.name}</span><span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level collapse">
+                            <#list menu.children as childmenu>
+                            <li><a class="J_menuItem" href="${childmenu.url}"><i class="${childmenu.icon!}"></i> <span class="nav-label">${childmenu.name}</span></a></li>
+                            </#list>
+                            </ul>
+                            </li>
+                        </#if>
+                    </#list>
+                </ul>
+            </div>
+        </nav>
+        <!--左侧导航结束-->
+        <!--右侧部分开始-->
+        <div id="page-wrapper" class="gray-bg dashbard-1">
+            <div class="row border-bottom">
+            </div>
+            <div class="row content-tabs">
+                <button class="roll-nav roll-left J_tabLeft"><i class="fa fa-backward"></i>
+                </button>
+                <nav class="page-tabs J_menuTabs">
+                    <div class="page-tabs-content">
+                        <a href="javascript:;" class="active J_menuTab homepagelink" data-id="/page/dashboard/dashboard.html">我的仪表盘</a>
+                    </div>
+                </nav>
+                <button class="roll-nav roll-right J_tabRight"><i class="fa fa-forward"></i>
+                </button>
+                <div class="btn-group roll-nav roll-right">
+                    <button class="dropdown J_tabClose" data-toggle="dropdown">关闭操作<span class="caret"></span>
+
+                    </button>
+                    <ul role="menu" class="dropdown-menu dropdown-menu-right">
+                        <li class="J_tabShowActive"><a>定位当前选项卡</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li class="J_tabCloseAll"><a>关闭全部选项卡</a>
+                        </li>
+                        <li class="J_tabCloseOther"><a>关闭其他选项卡</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <a href="/logout" class="roll-nav roll-right J_tabExit"><i class="fa fa-sign-out"></i>退出</a>
+            </div>
+            <div class="row J_mainContent" id="content-main">
+                <iframe id="homepage" class="J_iframe" name="iframe0" width="100%" height="100%" src="/page/dashboard/dashboard.html" frameborder="0" data-id="/page/dashboard/dashboard.html" seamless></iframe>
+            </div>
+            <div class="footer">
+                <div class="pull-right">&copy; 肥东县房产测绘面积管理系统
+                </div>
+            </div>
+        </div>
+        <!--右侧部分结束-->
+    </div>
+    <#include "script.ftl"/>
+    <script src="/js/lib/jquery/jquery.slimscroll.min.js"></script>
+    <script src="/js/lib/metisMenu/metisMenu.js"></script>
+    <script src="/js/contabs.min.js"></script>
+    <script src="/js/hplus.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        var loadSelf = function() {
+            $.ajax({
+                url: "/self",
+                success: function(data){
+                    $("#username").text( '(' + data.username + ')');
+                }
+            });
+        };
+        
+        //根据用户，验证是否 是企业下用户，如果是企业下用户，则显示企业名称
+       var loadBsName = function(){
+            $.ajax({
+                url:"/self/selectBsName",
+                success:function(data){
+                    if(!data.accountId){
+                        $("#accountCenter").remove();
+                    }
+                    
+                    if(!data.bsName){
+                        $('#userCenter').remove();
+                        $("#bsname").remove();
+                    }
+                    
+                    $('.nav-label').attr('title',data.bsName)
+                    $("#bsname").text(data.bsName).css('maxWidth',"70px");
+                    $('#accountCenter').attr("href", "page/manage/accountdetails.html?id="+data.accountId);
+                    $('#userCenter').attr("href", "page/manage/busdetails.html?bsname=" + data.bsName);
+                }
+            });
+        }
+        loadSelf();
+        
+        loadBsName();
+      
+        $(".open").on("click", function() {
+            layer.open({
+                type: 2,
+                title: $(this).text(),
+                area: ['600px', '500px'],
+                content: $(this).attr("href"),
+                scrollbar: false
+            });
+            return false;
+        });
+    });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,118 @@
+/*通用样式*/
+body,div,p,h1,h2,h3,h4,h5,h6,ul,li,a{
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+    font-family:Microsoft YaHei;
+}
+.container{
+    background: url("../img/bg.png") 0 0 no-repeat;
+    background-size: 100% 100%;
+}
+.title{
+    height: 100%;
+    line-height: 150px;
+    padding-left: 15%;
+    color: #03B4B1;
+    font-size: 27px;
+    background:url(../img/logo.png) 100px 45px no-repeat;
+}
+.content{
+    position: relative;
+    width: 100%;
+    /* height: 467px; */
+    background-size: cover;
+}
+.content .register{
+    position: absolute;
+    top: -30px;
+    right: 13%;
+    width:250px;
+    height: 425px;
+    background: #63C1B6;
+    border:1px solid #58B0A6;
+    box-shadow:0 0 15px 5px #fff; 
+}
+.content .portrait{
+    position: absolute;
+    top: 35px;
+    left: 45px;
+    width: 100%;
+    height: 128px;
+    margin-left: -64px;
+    background: url("../img/users.png") 65% 0 no-repeat;
+} 
+.content form{
+    width: 100%;
+    height: 100%;
+    padding: 180px 0 0;
+    background: url("../img/login_bg.png") -23px 0 no-repeat;
+    box-sizing:border-box;
+}
+.content p {
+    width: 200px;
+    margin: 0 auto;
+    height: 60px;
+    line-height: 60px;
+    position:relative;
+}
+.content p img{
+    position:absolute;
+    top:19px;
+    right:8px;
+    width:23px;
+    height:23px;
+}
+
+#rememberme {
+    margin-top: -2px;
+    margin-bottom: 1px;
+    vertical-align: middle;
+}
+
+.content input[type=text],.content input[type=password]{
+    width: 100%;
+    height: 35px;
+    padding: 0 35px 0 20px;
+    background:rgba(255,255,255,0.2);
+    border:1px solid #fff;
+    box-sizing:border-box;
+    border-radius:20px;
+    outline:0;
+}
+.content button{
+    width: 120px;
+    height: 35px;
+    line-height:35px;
+    background: rgba(26,126,114,.7);
+    border-radius:20px;
+    text-align: center;
+    padding: 0;
+    margin-top: 15px;
+    border: 1px solid #21766F;
+    color: #fff;
+    font-size: 16px;
+    box-shadow:0 0 10px 2px #fff;
+    outline:0;
+}
+.footer{
+    width: 100%;
+    height: 120px;
+    line-height: 120px;
+    text-align: center;
+    font-size: 20px;
+    color: #999;
+}
+.err_info{
+    width: 200px;
+    padding:2px;
+    padding-left: 30px;
+    line-height: 20px;
+    margin: 0 auto;
+    border: 1px solid #ff7f7f;
+    background: #FFEBEB;
+    background-image:url("../img/error.png");
+    background-position:5px 5px;
+    background-repeat: no-repeat;
+    box-sizing:border-box;
+}

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="stockroom" name="存量房审核申请" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <userTask id="申请" name="申请" activiti:assignee="${userId}"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="申请"></sequenceFlow>
+    <userTask id="初审" name="初审" activiti:candidateGroups="30" activiti:formKey="applyinfo.html"></userTask>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <userTask id="受理" name="受理" activiti:candidateGroups="9" activiti:formKey="applyinfo.html"></userTask>
+    <sequenceFlow id="flow4" sourceRef="申请" targetRef="受理"></sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="受理" targetRef="初审"></sequenceFlow>
+    <userTask id="审核" name="审核" activiti:candidateGroups="31" activiti:formKey="applyinfo.html"></userTask>
+    <sequenceFlow id="flow6" sourceRef="初审" targetRef="审核"></sequenceFlow>
+    <userTask id="审批" name="审批" activiti:candidateGroups="32" activiti:formKey="applyinfo.html"></userTask>
+    <sequenceFlow id="flow7" sourceRef="审核" targetRef="审批"></sequenceFlow>
+    <sequenceFlow id="flow8" sourceRef="审批" targetRef="endevent2"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_stockroom">
+    <bpmndi:BPMNPlane bpmnElement="stockroom" id="BPMNPlane_stockroom">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="150.0" y="190.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="申请" id="BPMNShape_申请">
+        <omgdc:Bounds height="55.0" width="105.0" x="240.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="初审" id="BPMNShape_初审">
+        <omgdc:Bounds height="55.0" width="105.0" x="540.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="1000.0" y="190.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="受理" id="BPMNShape_受理">
+        <omgdc:Bounds height="55.0" width="105.0" x="390.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="审核" id="BPMNShape_审核">
+        <omgdc:Bounds height="55.0" width="105.0" x="690.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="审批" id="BPMNShape_审批">
+        <omgdc:Bounds height="55.0" width="105.0" x="840.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="185.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="345.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="390.0" y="207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="495.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="645.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="690.0" y="207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="795.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="840.0" y="207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="945.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1000.0" y="207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

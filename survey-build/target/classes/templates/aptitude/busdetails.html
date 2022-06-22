@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  <link href="/js/lib/fileinput/fileinput.min.css" rel="stylesheet">
+  <link href="/js/lib/layer/layui/css/layui.css" rel="stylesheet">
+  <style>
+      #selectUsers{
+          height:200px;
+      }
+      #selectUsers option{
+          padding:5px 10px;
+      }
+      #instrumentForm{
+        margin-left: 60px;
+        margin-bottom: 30px;
+        border-top-width: 10px;
+      }
+  </style>
+  </head>
+  <body>
+    
+    <!-- 添加公司信息 -->
+    <div class="modal fade" id="saveModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">公司信息</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" id="busForm">
+              <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">公司名称</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="companyName" id="companyName" placeholder="公司名称(必填)" pattern="^(?![0-9]|_)[a-zA-Z0-9_\u4e00-\u9fa5]+$" required="required" data-bv-regexp-message="用户名只能包含数字、字母、汉字、下划线，不能以数字、下划线开头" required="required">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="phone" class="col-sm-2 control-label">电话</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" name="phone" id="phone" placeholder="电话(必填)" pattern="^1[3,4,5,7,8]\d{9}$" data-bv-regexp-message="请输入正确的联系方式" required="required">
+                </div>
+                
+                <label for="contacts" class="col-sm-2 control-label">联系人</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" name="contacts" id="contacts" placeholder="联系人(必填)" required="required">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="aptitude" class="col-sm-2 control-label">测绘资质</label>
+                <div class="col-sm-4">
+                  <!-- <input type="text" class="form-control" name="aptitude" id="aptitude" placeholder="测绘资质"> -->
+                  <select class="form-control" id="aptitude"></select>
+                </div>
+                
+                <label for="expiryTime" class="col-sm-2 control-label">有效期限</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control" name="expiryTime" id="expiryTime" placeholder="有效期限(必填)" required="required">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="qyyyzhNo" class="col-sm-2 control-label">营业执照</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="qyyyzhNo" id="qyyyzhNo" placeholder="企业营业执照号码(必填)" required="required">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="qyzycs" class="col-sm-2 control-label">经营场所</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="qyzycs" id="qyzycs" placeholder="经营场所(必填)" required="required">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="qyzzNo" class="col-sm-2 control-label">资质证号</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="qyzzNo" id="qyzzNo" placeholder="企业资质证号(必填)" required="required">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveCompanyButton">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="modal fade" id="usersModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">员工信息</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" id="employeeForm">
+              <div class="form-group">
+                <label for="employeeName" class="col-sm-2 control-label">姓名</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="employeeName" id="employeeName" placeholder="姓名(必填)" required="required">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="sex" class="col-sm-2 control-label">性别</label>
+                <div class="col-sm-4">
+                  <select class="form-control" id="sex">
+                    <option value='男'>男</option>
+                    <option value="女">女</option>
+                  </select>
+                </div>
+                
+                <label for="zzzslx" class="col-sm-2 control-label">证书类型</label>
+                <div class="col-sm-4">
+                  <select class="form-control" id="zzzslx"></select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="email" class="col-sm-2 control-label">电子邮箱</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control email" name="email" id="email" placeholder="电子邮箱(必填)" required="required">
+                </div>
+                
+                <label for="phone" class="col-sm-2 control-label">联系电话</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control phone" name="tephone" id="tephone" pattern="^1[3,4,5,7,8]\d{9}$" data-bv-regexp-message="请输入正确的联系方式"  placeholder="联系电话(必填)" required="required">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="emplyeeExpiryTime" class="col-sm-2 control-label">有效期限</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control phone" name="emplyeeExpiryTime" id="emplyeeExpiryTime" placeholder="有效期限(必填)" required="required">
+                </div>
+              </div>
+              
+               <div class="form-group">
+                <label for="idCard" class="col-sm-2 control-label">身份证</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="idCard" id="idCard" placeholder="身份证(必填)" pattern="^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$" data-bv-regexp-message="请输入正确的身份证" required="required">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="ygzzNo" class="col-sm-2 control-label">资质编号</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="ygzzNo" id="ygzzNo" placeholder="资质编号(必填)" required="required">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="ygzzNo" class="col-sm-2 control-label">登录用户</label>
+                <div class="col-sm-10">
+                  <select class="form-control" id="status">
+                    <option value='0'>否</option>
+                    <option value="1">是</option>
+                  </select>
+                </div>
+              </div>
+              
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveUsersButton">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="wrapper wrapper-content">
+      <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">基本信息<button type="button" class="btn btn-warning btn-xs pull-right" id="newCompanyButton">变更</button></div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                        <th>公司名称</th>
+                        <th>联系人</th>
+                        <th>联系方式</th>
+                        <th>测绘资质</th>
+                        <th>营业执照</th>
+                        <th>经营场所</th>
+                        <th>资质证号</th>
+                        <th>审核时间</th>
+                        <th>到期时间</th>
+                        <th hidden=>文件编号</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+      </div>
+    </div>
+      
+    <div class="wrapper wrapper-content">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel panel-default">
+              <!-- Default panel contents -->
+              <div class="panel-heading">员工汇总<button type="button" class="btn btn-warning btn-xs pull-right" id="newUserButton">变更</button></div>
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>姓名</th>
+                    <th>性别</th>
+                    <th>证书类型</th>
+                    <th>资质证号</th>
+                    <th>电子邮件</th>
+                    <th>联系电话</th>
+                    <th>身份证号</th>
+                    <th>登录用户状态</th>
+                    <th>有效期限</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="users">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+    </div>
+    
+    <div class="wrapper wrapper-content">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel panel-default">
+              <!-- Default panel contents -->
+              <div class="panel-heading">仪器设备信息
+              <button type="button" class="btn btn-warning btn-xs pull-right" style="margin-right: 10px;" id="newInstrumentButton">变更</button></div>
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>设备名称</th>
+                    <th>品牌型号</th>
+                    <th>出厂编号</th>
+                    <th>数量</th>
+                    <th>检定日期</th>
+                    <th>检定机构</th>
+                    <th>检定证书号</th>
+                    <th>发票代码</th>
+                    <th>认定</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="instruments">
+                </tbody>
+              </table>
+              
+              <div class="hr-line-dashed"></div>
+              
+              <div id="baseinfo" style="display: none;">
+              <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend>设备信息详情</legend>
+              </fieldset>
+              <form class="form-horizontal" id="instrumentForm" >
+                  <div class="form-group">
+                      <label for="name" class="col-sm-1 control-label">设备名称</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control" name="name" id="name" placeholder="设备名称(必填)" required="required" >
+                          <input type="text" class="form-control" name="id" id="id" style="display: none;" >
+                      </div>
+                      
+                      <label for="mold" class="col-sm-1 control-label">品牌型号</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control" name="model" id="model" placeholder="品牌型号(必填)" required="required" >
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="factoryNo" class="col-sm-1 control-label">出厂编号</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control" name="factoryNo" id="factoryNo" placeholder="出厂编号(必填)" required="required" >
+                      </div>
+                      
+                      <label for="number" class="col-sm-1 control-label">数量</label>
+                      <div class="col-sm-4">
+                          <input type="number" class="form-control" name="number" id="number" placeholder="数量(必填)" required="required" >
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="verificationDate" class="col-sm-1 control-label">检定日期</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control" name="verificationDate" id="verificationDate" placeholder="检定日期(必填)" required="required" >
+                      </div>
+                      <label for="mechanism" class="col-sm-1 control-label">检定机构</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control" name="mechanism" id="mechanism" placeholder="检定机构(必填)" required="required" >
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="certificateNo" class="col-sm-1 control-label">检定证书号</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control" name="certificateNo" id="certificateNo" placeholder="检定证书号(必填)" required="required" >
+                      </div>
+                      <label for="invoiceNo" class="col-sm-1 control-label">发票代码</label>
+                      <div class="col-sm-4">
+                          <input type="text" class="form-control" name="invoiceNo" id="invoiceNo" placeholder="发票代码(必填)" required="required" >
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="cognizance" class="col-sm-1 control-label">认定状态</label>
+                      <div class="col-sm-4">
+                          <select class="form-control" id="cognizance"></select>
+                      </div>
+                  </div>
+                </form>
+                <div class="modal-footer" style="text-align: center;">
+                    <button type="button" class="btn btn-primary" id="saveButton">保存</button>
+                </div>
+               </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="saveApplyButton">保存</button>
+    </div>
+    
+<#include "script.ftl"/>
+<script src="/js/lib/fileinput/fileinput.min.js"></script>
+<script src="/js/lib/fileinput/fileinput/zh.min.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    
+    <#include "control.ftl"/>
+    
+    var url = "/company";
+    var manageUrl = "/manage/company";
+    var urlUser = "/usergroups";
+    var bsname = getParameterByName('bsname');
+    
+    var pageSize = 5;
+    var pageNum;
+    var load = function() {
+        //pageNum = defaultV(pageNum, 1);
+        $.ajax({ url: url + "/selectByComanyId?bsname=" + bsname, success: function(data){
+            var table = $("#dataTable");
+            table.empty();
+            var rowData = data;
+            $("#expiryTime").val(rowData.expiryTime);
+            var time = moment(rowData.expiryTime).format("YYYY-MM-DD hh:mm:ss");
+            var str = time.toString();
+            str = str.replace("/-/g", "/");
+            var oDate1 = new Date(str);
+            var start = new Date( oDate1.getTime()-31 * 24 * 3600 * 1000);
+            
+            var row = "<tr><td>" + rowData.name + "</td>"
+                    + "<td>" + rowData.contacts + "</td>"
+                    + "<td>" + rowData.phone + "</td>"
+                    + "<td>" + rowData.aptitude + "</td>"
+                    + "<td>" + rowData.qyyyzhNo + "</td>"
+                    + "<td>" + rowData.qyzycs + "</td>"
+                    + "<td>" + rowData.qyzzNo + "</td>"
+                    + "<td>" + moment(start).format("LLL") + "</td>"
+                    + "<td>" + moment(rowData.expiryTime).format("LLL") + "</td>"
+                    + "<td hidden=>" + (rowData.files == null?"0":rowData.files) + "</td>"
+                    + '</tr>';
+            table.append(row);
+        }});
+        loadUsers();
+        loadInstruments();
+    };
+    
+    $("#newCompanyButton").on("click", function() {
+        resetForm("busForm");
+        loadStype("company.aptitude.type","aptitude");
+        $('#saveModal').modal('show');
+    });
+    
+    $("#saveCompanyButton").on("click", function() {
+        var data = {};
+        data.name = $("#companyName").val();
+        data.phone = $('#phone').val();
+        data.contacts = $('#contacts').val();
+        data.aptitude = $('#aptitude').val();
+        data.qyyyzhNo = $('#qyyyzhNo').val();
+        data.qyzycs = $('#qyzycs').val();
+        data.qyzzNo = $('#qyzzNo').val();
+        data.expiryTime = $('#companyExpiryTime').val();
+        if (!isFormValid("busForm")) {
+            return;
+        }
+        
+        var table = $("#dataTable");
+        table.empty();
+        var rowData = data;
+        var time = moment(rowData.expiryTime).format("YYYY-MM-DD hh:mm:ss");
+        var str = time.toString();
+        str = str.replace("/-/g", "/");
+        var oDate1 = new Date(str);
+        var start = new Date( oDate1.getTime()-31 * 24 * 3600 * 1000);
+        var row = "<tr id>= <td>" + rowData.name + "</td>"
+                + "<td>" + rowData.contacts + "</td>"
+                + "<td>" + rowData.phone + "</td>"
+                + "<td>" + rowData.aptitude + "</td>"
+                + "<td>" + rowData.qyyyzhNo + "</td>"
+                + "<td>" + rowData.qyzycs + "</td>"
+                + "<td>" + rowData.qyzzNo + "</td>"
+                + "<td>" + moment(start).format("LLL") + "</td>"
+                + "<td>" + moment(rowData.expiryTime).format("LLL") + "</td>"
+                + "<td hidden>" + rowData.expiryTime + "</td>";
+        table.append(row);
+        $('#saveModal').modal('hide');
+    })
+    
+    var loadUsers = function() {
+        $.ajax({ 
+            url: url + "/users?bsname=" + bsname,success: function(data){
+            var table = $("#users");
+            table.empty();
+            for (var i=0;i<data.length;i++)
+            {
+                var rowData = data[i];
+                var row = "<tr><td hidden=>" + rowData.idCard + "</td>"
+                        + "<td>" + (rowData.name == null?"":rowData.name) + "</td>"
+                        + "<td>" + (rowData.sex == null?"":rowData.sex) + "</td>"
+                        + "<td>" + (rowData.zzzslx == null?"":rowData.zzzslx) + "</td>"
+                        + "<td>" + (rowData.ygzzNo == null?"":rowData.ygzzNo) + "</td>"
+                        + "<td>" + (rowData.email == null?"":rowData.email) + "</td>"
+                        + "<td>" + (rowData.phone == null?"":rowData.phone) + "</td>"
+                        + "<td>" + (rowData.idCard == null?"":rowData.idCard) + "</td>"
+                        + "<td>" + (rowData.status == 0?"否":"是") + "</td>"
+                        + "<td>" + (rowData.expiryTime == null?"":rowData.expiryTime) + "</td>"
+                        + "<td hidden=>" + (rowData.files == null?"0":rowData.files) + "</td>"
+                        + "<td><button type='button' class='btn btn-danger btn-xs deleteButton'>删除</button>"
+                        + "</td></tr>";
+                table.append(row);
+            }
+        }});
+    };
+    
+    $("#newUserButton").on("click", function() {
+        resetForm("employeeForm");
+        loadStype("company.aptitude.type","zzzslx");
+        $('#usersModal').modal('show');
+    });
+    
+    $("#saveUsersButton").on("click", function() {
+        var data = {};
+        data.cname = bsname;
+        data.id = $('#aptitude').val();
+        data.idCard = $('#idCard').val();
+        data.name = $('#employeeName').val();
+        data.sex = $('#sex').val();
+        data.zzzslx = $('#zzzslx').val();
+        data.ygzzNo = $('#ygzzNo').val();
+        data.expiryTime = $('#emplyeeExpiryTime').val();
+        data.email = $('#email').val();
+        data.phone = $('#tephone').val();
+        data.status = $('#status').val();
+        if (!isFormValid("employeeForm")) {
+            return;
+        }
+        
+        var table = $("#users");
+        var rowData = data;
+        var row = "<tr id><td hidden=>" + rowData.idCard + "</td>"
+                + "<td>" + (rowData.name == null?"":rowData.name) + "</td>"
+                + "<td>" + (rowData.sex == null?"":rowData.sex) + "</td>"
+                + "<td>" + (rowData.zzzslx == null?"":rowData.zzzslx) + "</td>"
+                + "<td>" + (rowData.ygzzNo == null?"":rowData.ygzzNo) + "</td>"
+                + "<td>" + (rowData.email == null?"":rowData.email) + "</td>"
+                + "<td>" + (rowData.phone == null?"":rowData.phone) + "</td>"
+                + "<td>" + (rowData.idCard == null?"":rowData.idCard) + "</td>"
+                + "<td>" + (rowData.status == 0?"否":"是") + "</td>"
+                + "<td>" + (rowData.expiryTime == null?"":rowData.expiryTime) + "</td>"
+                + "<td hidden=>" + (rowData.files == null?"0":rowData.files) + "</td>"
+                + "<td><button type='button' class='btn btn-danger btn-xs deleteButton'>删除</button>"
+                + "</td></tr>";
+        table.append(row);
+        $('#usersModal').modal('hide');
+        
+    })
+    
+    $("#users").on("click", ".deleteButton", function() {
+        $(this).parents('tr').remove();
+    });
+    
+    var loadInstruments = function(pageNum) {
+        pageNum = defaultV(pageNum, 1);
+        $.ajax({ 
+            url: url + "/instruments?bsname=" + bsname + "&pageNum=" + pageNum ,success: function(data){
+            var table = $("#instruments");
+            table.empty();
+            for (var i=0;i<data.length;i++)
+            {
+                var rowData = data[i];
+                var row = "<tr><td hidden=>" + rowData.id + "</td>"
+                        + "<td <a onclick='showInstrument(\""+rowData.id+"\");'>" + rowData.name + "</td>"
+                        + "<td>" + rowData.model + "</td>"
+                        + "<td>" + rowData.factoryNo + "</td>"
+                        + "<td>" + rowData.number + "</td>"
+                        + "<td>" + moment(rowData.verificationDate).format("L") + "</td>"
+                        + "<td>" + rowData.mechanism + "</td>"
+                        + "<td>" + rowData.certificateNo + "</td>"
+                        + "<td>" + rowData.invoiceNo + "</td>"
+                        + "<td>" + rowData.cognizance + "</td>"
+                        + "<td hidden=>" + (rowData.files == null?"0":rowData.files) + "</td>"
+                        + "<td><button type='button' class='btn btn-danger btn-xs deleteinstButton'>删除</button>"
+                        + "</td></tr>";
+                table.append(row);
+            }
+        }});
+    };
+    
+    $("#newInstrumentButton").on("click", function() {
+        resetForm("instrumentForm");
+        loadStype("company.cognizance.type","cognizance");
+        $('#baseinfo').show();
+    });
+    
+    
+    $("#saveButton").on("click", function() {
+        var data = {};
+        data.id = $("#id").val();
+        data.name = $("#name").val();
+        data.model = $("#model").val();
+        data.factoryNo = $("#factoryNo").val();
+        data.number = $("#number").val();
+        data.verificationDate = new Date($('#verificationDate').val());
+        data.mechanism =$("#mechanism").val();
+        data.certificateNo = $("#certificateNo").val();
+        data.invoiceNo = $("#invoiceNo").val();
+        data.cognizance = $("#cognizance").val();
+
+        if (!isFormValid("instrumentForm")) {
+            return;
+        } 
+        
+        var table = $("#instruments");
+        var rowData = data;
+        var row = "<tr id><td hidden=>" + rowData.id + "</td>"
+                 + "<td>" + rowData.name + "</td>"
+                 + "<td>" + rowData.model + "</td>"
+                 + "<td>" + rowData.factoryNo + "</td>"
+                 + "<td>" + rowData.number + "</td>"
+                 + "<td>" + moment(rowData.verificationDate).format("L") + "</td>"
+                 + "<td>" + rowData.mechanism + "</td>"
+                 + "<td>" + rowData.certificateNo + "</td>"
+                 + "<td>" + rowData.invoiceNo + "</td>"
+                 + "<td>" + rowData.cognizance + "</td>"
+                 + "<td hidden=>" + (rowData.files == null?"0":rowData.files) + "</td>"
+                 + "<td><button type='button' class='btn btn-danger btn-xs deleteinstButton'>删除</button>"
+                 + "</td></tr>";
+        table.append(row);
+        $("#baseinfo").hide();
+    })
+    
+    $("#instruments").on("click", ".deleteinstButton", function() {
+        $(this).parents('tr').remove();
+    });
+    
+    var loadStype = function(configPrefix,table) {
+       $.ajax({ url:"/house/configs/systype?configPrefix=" + configPrefix, success: function(data){
+           var tables = $("#" + table + "");
+           tables.empty();
+           $.each(data,function(index,obj){
+               var arr = obj.value;
+               var strs= new Array();
+               strs = arr.split(",");
+               for(var i=0;i<strs.length ;i++){
+                   var rowData = strs[i];
+                   tables.append("<option value='"+rowData+"'>" + rowData + "</option>");
+               }
+           });
+       }});
+    };
+    
+    $("#saveApplyButton").on("click", function() {
+        var txt = {};
+        
+        $('#dataTable').find('tr').each(function(i,v){
+            txt.cname = $(v).find("td:eq(0)").text();
+            txt.contacts = $(v).find("td:eq(1)").text();
+            txt.phone = $(v).find("td:eq(2)").text();
+            txt.aptitude = $(v).find("td:eq(3)").text();
+            txt.qyyyzhNo = $(v).find("td:eq(4)").text();
+            txt.qyzycs = $(v).find("td:eq(5)").text();
+            txt.qyzzNo = $(v).find("td:eq(6)").text();
+            txt.expiryTime = $(v).find("td:eq(10)").text();
+            txt.files = $(v).find("td:eq(9)").text();
+         });
+        
+        txt.expiryTime = new Date($('#expiryTime').val());
+        
+        var listEmployeeArray = [];
+        var listInstrumentsArray = [];
+        
+        $('#users').find('tr').each(function(i,v){
+            var listEmployee = {};
+            listEmployee.cname = txt.cname;
+            listEmployee.name = $(v).find("td:eq(1)").text();
+            listEmployee.sex = $(v).find("td:eq(2)").text();
+            listEmployee.zzzslx = $(v).find("td:eq(3)").text();
+            listEmployee.ygzzNo = $(v).find("td:eq(4)").text();
+            listEmployee.email = $(v).find("td:eq(5)").text();
+            listEmployee.phone = $(v).find("td:eq(6)").text();
+            listEmployee.idCard = $(v).find("td:eq(7)").text();
+            listEmployee.status = ($(v).find("td:eq(8)").text()=="是"?"1":"0");
+            listEmployee.expiryTime = $(v).find("td:eq(9)").text();
+            listEmployee.files = $(v).find("td:eq(10)").text();
+            
+            listEmployeeArray.push(listEmployee);
+         });
+        
+        $('#instruments').find('tr').each(function(i,v){
+            var instruments = {};
+            instruments.name = $(v).find("td:eq(1)").text();
+            instruments.model = $(v).find("td:eq(2)").text();
+            instruments.factoryNo = $(v).find("td:eq(3)").text();
+            instruments.number = $(v).find("td:eq(4)").text();
+            instruments.verificationDate = $(v).find("td:eq(5)").text();
+            instruments.mechanism = $(v).find("td:eq(6)").text();
+            instruments.certificateNo = $(v).find("td:eq(7)").text();
+            instruments.invoiceNo = $(v).find("td:eq(8)").text();
+            instruments.cognizance = $(v).find("td:eq(9)").text();
+            instruments.files = $(v).find("td:eq(10)").text();
+            
+            listInstrumentsArray.push(instruments);
+         });
+        
+        txt.listEmployee = listEmployeeArray;
+        txt.instruments = listInstrumentsArray;
+        txt.applyStatus = "1";
+        
+        $.ajax({
+            type:"POST",
+            url:'/manage/applyAptitude',
+            contentType:"application/json",
+            data:JSON.stringify(txt),
+            success: function(data){
+                var index=parent.layer.getFrameIndex(window.name);
+                layer.alert("保存成功!", {icon: 1, closeBtn: 0},
+                    function () {
+                        window.parent.parent.location.reload();
+                        parent.parent.layer.close(index);
+                    } 
+                );
+            },
+            error: function(e,xhr,opt){
+                layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+            }
+        });
+        
+    })
+    
+    var loadSysType = function(aptitude) {
+        $.ajax({ url: url + "/configs/systype", success: function(data){
+            
+            var tables = $("#aptitude");
+            tables.empty();
+            $.each(data,function(index,obj){
+                
+                var arr = obj.value;
+                var strs= new Array();
+                strs = arr.split(",");
+                
+                tables.append("<option value=''>" + "--请选择--" + "</option>");
+                
+                for(var i=0;i<strs.length ;i++){
+                    var rowData = strs[i];
+                    if(aptitude == rowData){
+                        tables.append("<option value='"+rowData+"' selected>" + rowData + "</option>");
+                    }else{
+                        tables.append("<option value='"+rowData+"'>" + rowData + "</option>");
+                    }
+                }
+            });
+        }});
+    };
+    
+    $("#checkAll").click(function(){  
+        var checkAll=$(this).prop('checked');
+        if(checkAll==true){
+            $("#sendForm :checkbox").prop("checked",true);
+        }else{
+            $("#sendForm :checkbox").prop("checked",false); 
+        } 
+    });  
+    
+    load();
+});
+    
+function viewfile(fileId,fileType) {
+    var configPrefixFileUrl = "house.file.url";
+    var configPrefixServer = "house.file.serverurl";
+    
+    $.ajax({ url:"/house/configs/systype?configPrefix=" + configPrefixServer, success: function(service){
+        $.ajax({ url:"/house/configs/systype?configPrefix=" + configPrefixFileUrl, success: function(downfile){
+            var file = "http://" + downfile[0].value + "/open/files/"+fileId;
+            var url = "http://" + service[0].value + "/onlinePreview?url=" + encodeURIComponent(file) + "&fileType=" + fileType;
+            var winHeight = window.document.documentElement.clientHeight-10;
+            window.open(url, "_blank", "height=" + winHeight
+                    + ",top=80,left=80,toolbar=no, menubar=no, scrollbars=yes, resizable=yes"); 
+        }});
+    }});
+}
+
+function showInstrument(id) {
+    if($("#id").val() == id){
+        $("#baseinfo").toggle();
+        return;
+    }
+    
+    $.ajax({ url:"/company/instruments/id?id=" + id, success: function(data){
+    	resetForm("instrumentForm");
+        loadStype("company.cognizance.type","cognizance");
+        $("#id").val(data.id);
+        $("#name").val(data.name);
+        $("#model").val(data.model);
+        $("#factoryNo").val(data.factoryNo);
+        $("#number").val(data.number);
+        $("#verificationDate").val(moment(data.verificationDate).format("LLL"));
+        $("#mechanism").val(data.mechanism);
+        $("#certificateNo").val(data.certificateNo);
+        $("#invoiceNo").val(data.invoiceNo);
+        $("#cognizance").val(data.cognizance);
+        $("#baseinfo").show();
+    }});
+}
+
+var loadStype = function(configPrefix,table) {
+    $.ajax({ url:"/house/configs/systype?configPrefix=" + configPrefix, success: function(data){
+        var tables = $("#" + table + "");
+        tables.empty();
+        $.each(data,function(index,obj){
+            var arr = obj.value;
+            var strs= new Array();
+            strs = arr.split(",");
+            for(var i=0;i<strs.length ;i++){
+                var rowData = strs[i];
+                tables.append("<option value='"+rowData+"'>" + rowData + "</option>");
+            }
+        });
+    }});
+};
+
+</script>
+  </body>
+</html>

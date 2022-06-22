@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  <style>
+    #selectUsers{
+        height:200px;
+    }
+    #selectUsers option{
+        padding:5px 10px;
+    }
+  </style>
+  </head>
+  <body>
+    <div class="modal fade" id="usersModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">选择用户</h4>
+          </div>
+          <div class="modal-body">
+           <form class="form-horizontal">
+            <div class="form-group">
+             <select multiple class="form-control" id="selectUsers">
+             </select>
+            </div>
+           </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveUsersButton">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wrapper wrapper-content">
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>用户名</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable">
+          </tbody>
+        </table>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">分配用户组<button type="button" class="btn btn-danger btn-xs pull-right" id="newUserButton">新增用户组</button></div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>用户组</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="users">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <#include "script.ftl"/>
+    <script src="/js/lib/treegrid/treegrid.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        var treeGrid;
+        var username = getParameterByName('id');
+        var groupName;
+        
+        var load = function() {
+            var table = $("#dataTable");
+            table.empty();
+            
+            var row = "<tr><td>" + "1" + "</td><td>" + username + "</td></tr>";
+            
+            table.append(row);
+            
+            loadUsers();
+        };
+        
+        var users = new Array();
+        var authority = 'enterprise';
+        var loadUsers = function() {
+            $.ajax({ url: "/businesses" + "/" + username + "/user/loadGroupRolesNames", success: function(data){
+                var table = $("#users");
+                table.empty();
+                users = [];
+                for (var i=0;i<data.length;i++)
+                {
+                    var rowData = data[i];
+                    users.push(rowData.groupName);
+                    var row = "<tr><td>" + rowData.groupName + "</td>+ '<td><button type='button' class='btn btn-danger btn-xs deleteButton'>删除</button></td>'</tr>";
+                    table.append(row);
+                }
+                
+                loadSelectUsers();
+            }});
+        };
+        
+        /**查询企业下的用户组角色*/
+        var loadSelectUsers = function() {
+            $.ajax({ url:"/businesses"+ "/" + authority+"/user/loadGroupRoles", success: function(data){
+                var select = $("#selectUsers");
+                select.empty();
+                for (var i=0;i<data.length;i++)
+                {
+                    var rowData = data[i];
+                    if ($.inArray(rowData.groupName, users) == -1) {
+                        var row = '<option value="' + rowData.groupName + '">' + rowData.groupName + '</option>';
+                        select.append(row);
+                    }
+                }
+            }});
+        }
+        
+        /**点击新增企业下的用户组名*/
+        $("#newUserButton").on("click", function() {
+            $('#usersModal').modal('show');
+        });
+      
+        
+        /**保存企业下的用户组角色名*/
+        $("#saveUsersButton").on("click", function() {
+            var data = {};
+            var selectRoles = $("#selectUsers").val();
+            if(selectRoles == null || selectRoles =='undefined' || undefined == ''){
+                layer.alert("请先选择用户组角色! " + '', {icon: 1});
+                return false;
+            }
+            $.ajax({ 
+                type:"POST",
+                url: "/manage/businesses" + "/"+username+"/roles/add",
+                contentType:"application/json",
+                data:JSON.stringify(selectRoles),
+                success: function(data){
+                             layer.alert("保存成功!", {icon: 1, time : 1500});
+                             $('#usersModal').modal('hide');
+                             loadUsers();
+                         },
+                error: function(e,xhr,opt){
+                    layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+        })
+        
+        /**删除用户组角色*/
+        $("#users").on("click", ".deleteButton", function() {
+            var row = $(this).parent().parent();
+            var groupRoleTd = row.children().first();
+            var groupRole = groupRoleTd.text();
+            
+            layer.confirm("用户组为" + groupRole, {icon: 3, title: "删除用户组"}, function(index){
+                $.ajax({
+                    type:"DELETE",
+                    url: "/manage/businesses" +"/"+groupRole+"/"+username+ "/roles/remove",
+                    success: function(data){
+                                 layer.alert("删除成功!", {icon: 1, time : 1500});
+                                 loadUsers();
+                             },
+                    error: function(e,xhr,opt){
+                        layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                    }
+                });
+                
+                layer.close(index);
+            });
+        });
+        
+        load();
+    });
+    </script>
+  </body>
+</html>

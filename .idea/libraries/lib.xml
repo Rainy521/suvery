@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/survey-build/lib/Oracle_10g_10.2.0.4_JDBC_ojdbc14.jar!/" />
+      <root url="jar://$PROJECT_DIR$/survey-build/lib/ojdbc8-1.10.jar!/" />
+      <root url="jar://$PROJECT_DIR$/survey-build/lib/orai18n.jar!/" />
+      <root url="jar://$PROJECT_DIR$/survey-build/lib/orai18n-1.10.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Access-Control-Allow-Origin" content="*">
+<#include "head.ftl"/>
+</head>
+<body>
+
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row" style="margin-top:10px;margin-bottom:10px;">
+        <div class="col-md-12">
+          <div class="input-group">
+            <input id="searchContent" type="text" class="form-control" placeholder="请输入项目名称">
+            <div class="input-group-btn" style="width:15%">
+              <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+              <button id="addButton" type="button" class="btn btn-primary" data-loading-text='提交中...'>申请幢户</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="hr-line-dashed"></div>
+      <div class="row">
+        <div id="div1"></div>
+      </div>
+    </div>
+<#include "script.ftl"/>
+<script src="/js/lib/treegrid/treegrid.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        /**初始化事件，加载数据*/
+        $.ajax({ url:"/house/configs/systype?configPrefix=commodity.synchronize.url", success: function(service){
+            var url = "http://" + service[0].value +"/synchrodata";
+            var pageSize = 10;
+            var operationtype = 0;
+            console.log(url)
+            var load = function() {
+            	var search = $("#searchContent").val();
+                $.get(url + "/queryProject?query=" + encodeURI(search)).done(function (data) {
+                    var config = {
+                        id: "tg1",
+                        width: "800",
+                        renderTo: "div1",
+                        headerAlign: "left",
+                        headerHeight: "30",
+                        dataAlign: "left",
+                        indentation: "40",
+                        folderColumnIndex: "3",
+                        folderOpenIcon: "/img/folderOpen.gif",
+                        folderCloseIcon: "/img/folderClose.gif",
+                        defaultLeafIcon: "/img/defaultLeaf.gif",
+                        itemClick: "itemClickEvent",
+                        doubleClick: "",
+                        expandLayer: 1,
+                        columns:[
+                            {headerText: "", headerAlign: "center", handler: "customCheckBox", dataAlign: "center", width: "20"},
+                            {headerText: "项目编号", dataField: "projectId", folderHidden:"true",  headerAlign: "center"},
+                            {headerText: "楼盘id", dataField: "houseNo", folderHidden:"true",  headerAlign: "center"},
+                            {headerText: "项目名称", dataField: "projectName",  headerAlign: "center"},
+                            {headerText: "楼盘幢号", dataField: "buildingAnnotation", headerAlign: "center"},
+                            {headerText: "规划用途", dataField: "buildingUse", headerAlign: "center"},
+                            {headerText: "建筑结构", dataField: "buildingStructure", headerAlign: "center"},
+                        ],
+                        data:data
+                    };
+
+                     //创建一个组件对象  
+                    var treeGrid = new TreeGrid(config);
+                    treeGrid.show();
+                });
+            };
+            
+            $("#dataTable").on("click", ".viewButton", function() {
+                var projectId = $(this).parents('tr').children().first().text();
+                loadMenu(projectId);
+            });
+            
+            $("#addButton").on("click", function() {
+                var selectProjectIds = [];
+                var houseNos = [];
+
+                $('input:checkbox[name=houseno]:checked').each(function(i){
+                    var row = $(this).parent().parent().attr('data');
+                    row = eval("("+row+")");
+                    houseNos.push(row.houseNo);
+                    selectProjectIds.push(row.projectId);
+                });
+                
+                selectProjectIds.sort();//排序
+                jQuery.unique(selectProjectIds);//去重
+                
+                if(!$('input:checkbox[name=houseno]:checked').length){
+                    layer.alert('请选择申请的幢户！');
+                    return;
+                }
+                
+                if(selectProjectIds.length > 1){
+                    layer.alert('只能申请一个项目下的幢户信息！');
+                    return;
+                }
+                
+                var $btn = $(this).button('loading');
+                
+                $.ajax({ 
+                    url: url + "/synchrodata/" + selectProjectIds[0] ,
+                    type:"POST",
+                    contentType:"application/json",
+                    data: JSON.stringify(houseNos),
+                    success: function(txt){
+                        $.ajax({
+                            type:"POST",
+                            url:'/manage/commodityHouse',
+                            contentType:"application/json",
+                            data:JSON.stringify(txt),
+                            success: function(data){
+                                var index=parent.layer.getFrameIndex(window.name);
+                                layer.alert("保存成功!", {icon: 1, closeBtn: 0},
+                                    function () {
+                                        window.parent.location.reload();
+                                        parent.layer.close(index);
+                                    } 
+                                );
+                                $btn.button('reset')
+                            },
+                            error: function(e,xhr,opt){
+                                layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                                $btn.button('reset')
+                            }
+                        }); 
+                   },
+                   error: function(e,xhr,opt){
+                       layer.alert("申请失败! " , {icon: 2});
+                       $btn.button('reset')
+                   }
+                });
+            });
+            
+            $("#searchButton").on("click", function() {
+                load();
+            });
+            
+            $("#pagination").on("click", ".pageBtn", function() {
+                load(parseInt($(this).attr("data")));
+            });
+            
+            load();
+        
+        }});
+    });
+    
+function customCheckBox(row, col){
+    return "<input name='houseno' type='checkbox'>";
+}
+
+function itemClickEvent(id, index, data){
+    jQuery("#currentRow").val(id + ", " + index + ", " + TreeGrid.json2str(data));
+}
+
+function expandAll(isOpen){
+    treeGrid.expandAll(isOpen);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+  <style type="text/css">
+        #searchList li{
+            float:left;
+        }
+        #searchList .form-control{
+            display:inline-block;
+            width:180px;
+            margin-left:10px;
+        }
+        .form-control[disabled]{background-color: white;}
+  </style>
+</head>
+<body>
+<!-- 文件上传 -->
+<div class="modal fade" id="saveModal">
+    <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <input type="text" name="fileManageId" id="fileManageId" style="display: none;">
+        <h4 class="modal-title">资料信息</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" id="ghxkForm">
+        	
+        	<div class="form-group" >
+                <label class="col-sm-2 control-label">编号</label>
+                <div class="col-sm-10">
+                 <input type="text" name="id" id="id" style="display: none;">
+                 <input type="text" class="form-control" id="jsgcghxkzNo" placeholder="建设工程规划许可证编号(必填)" required="required">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-sm-2 control-label">建设单位</label>
+                <div class="col-sm-10">
+                	<input type="text" class="form-control" name="jsdwmc" id="jsdwmc" placeholder="建设单位名称(必填)" required="required">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-sm-2 control-label">项目名称</label>
+                <div class="col-sm-10">
+                	<input type="text" class="form-control" name="proName" id="proName" placeholder="项目名称(必填)" required="required" >
+               	</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-sm-2 control-label">幢号</label>
+                <div class="col-sm-10">
+                	<input type="text" class="form-control" name="lpzh" id="lpzh" placeholder="楼盘幢号(必填)" required="required">
+               	</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-sm-2 control-label">图纸类型</label>
+                <div class="col-sm-10">
+                	<input type="text" class="form-control" name="tzlx" id="tzlx" placeholder="图纸类型(必填)" required="required">
+               	</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-sm-2 control-label">备注</label>
+                <div class="col-sm-10">
+                	<input type="text" class="form-control" name="remarks" id="remarks" placeholder="" >
+               	</div>
+            </div>
+            
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+      </div>
+    </div>
+    </div>
+</div>
+<div class="wrapper wrapper-content float-e-margins">
+  <div class="row" style="margin-top:10px;margin-bottom:10px;">
+    <div class="col-md-12">
+        <ul class="list-unstyled" id="searchList">
+            <li>
+                <label for="id" class="control-label">编号</label>
+                <input type="text" id="ap_jsgcghxkzNo" name="ap_jsgcghxkzNo" class="form-control" placeholder="建设工程规划许可证编号"/>
+            </li>
+            <li>
+                <label for="name" class="control-label" style="margin-left: 15px;">  申请单位</label>
+                <input type="text" id="applyUsername" name="applyUsername" class="form-control" placeholder="申请单位"/>
+            </li>
+            <li>
+                <label for="name" class="control-label" style="margin-left: 15px;">  有效性</label>
+            	<select name="isExist" id="isExist" class="form-control">
+                	<option value="0">有效</option>
+                	<option value="1">无效</option>
+               	</select>
+            </li>
+            <li>
+                <div class="input-group-btn" style="width:auto;left: 10px;">
+                    <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+                </div>
+            </li>
+        </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th style="text-align: left;">建设工程规划许可证编号</th>
+          <th>申请下载用户</th>
+          <th>申请时间 </th>
+          <th>申请资料查看</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="dataTable"></tbody>
+    </table>
+    
+    <div class="hr-line-dashed"></div>
+    <div class="text-center">
+        <div class="btn-group" id="pagination">
+        </div>
+    </div>
+    
+    </div>
+  </div>
+</div>
+<#include "script.ftl"/>
+<script type="text/javascript">
+$(document).ready(function(){
+     /**初始化事件，加载数据*/
+    var url = "/house";
+    var manageUrl = "/manage/house";
+    var pageSize = 10;
+    var operationtype = 0;
+    
+    var load = function(pageNum) {
+        pageNum = defaultV(pageNum, 1);
+        var param = {};
+       	param.isExist = $("#isExist").val().trim();
+        param.applyUsername = $("#applyUsername").val().trim();
+        param.jsgcghxkzNo = $("#ap_jsgcghxkzNo").val().trim();
+        param.pageNum = pageNum;
+        
+        $.ajax({ type:"POST",
+            url:  "/dossierGhxk/examine/query",
+            contentType:"application/json",
+            data:JSON.stringify(param),
+            success: function(obj){
+            	var table = $("#dataTable");
+	            table.empty();
+	            
+	            var data = obj.data;
+	            for (var i=0;i<data.length;i++)
+                {
+		             var rowData = data[i];
+		             var jsgcghxkzNo = rowData.jsgcghxkzNo == null?"":rowData.jsgcghxkzNo;
+		             var applyUsername = rowData.applyUsername == null?"":rowData.applyUsername;
+		             var createTime = rowData.createTime == null?"":moment(rowData.createTime).format("YYYY-MM-DD HH:mm:ss");
+
+		             var proName = rowData.proName == null?"":rowData.proName;
+		             var useName = rowData.useName == null?"":rowData.useName;
+		             var remarks = rowData.remarks == null?"":rowData.remarks;
+		             var isExist = rowData.isExist == null?"":rowData.isExist;
+		             var state = rowData.state == null?"":rowData.state;
+		             
+		             //+"<td>" + remarks + "</td>"
+		             //+"<td><button type='button' onclick='downloadFile(\""+rowData.fileId + "\");' class='btn btn-danger btn-xs downButton'>下载</button></td>";
+		             var row = "<tr><td hidden=>" + rowData.id +"</td>"
+		                         +"<td hidden=>" + rowData.jdId + "</td>"
+		                         +"<td style='text-align: left;'>" + jsgcghxkzNo + "</td>"
+		                         +"<td>" + applyUsername + "</td>"
+		                         +"<td>" + createTime + "</td>" ;
+	                 row += "<td ><button type='button' class='btn btn-warning btn-xs viewButton'>查看</button>";
+	                 if(rowData.fileId != ''){
+		                 row += "<button type='button' onclick='downloadFile(\""+rowData.fileId + "\");' class='btn btn-danger btn-xs downButton'>下载</button>";
+	                 }
+	                 row += "</td><td >";
+	                 if(isExist == 0){
+		                 row += "<button type='button' class='btn btn-info btn-xs agreeButtong'>同意</button>";
+			             row += "<button type='button' class='btn btn-danger btn-xs rejectButton'>驳回</button>";
+			                     //+"<button type='button' class='btn btn-danger btn-xs deleteButton'>删除</button></td>"
+	                 }else{
+	                	 row += (state==2?"<span style='color: red; font-weight: bold;'>驳回":
+	                		 "<span style='color: green; font-weight: bold;'>同意") + "</span>";
+	                 }
+	                 row += "</td></tr>";
+		             table.append(row);
+                 }
+            	
+            	pagination(obj.total, pageNum, pageSize);
+            }
+        })
+    };
+    
+    $("#searchButton").on("click", function() {
+        load();
+    });
+    
+    $("#pagination").on("click", ".pageBtn", function() {
+        load(parseInt($(this).attr("data")));
+    });
+    
+    $("#dataTable").on("click", ".viewButton", function() {
+    	var idTd = $(this).parents('tr').children().first();;
+        var jdId = idTd.next().text();
+        $.ajax({ url: "/dossierGhxk/cehui/getOne?id=" + encodeURI(jdId), success: function(data){
+        	if(data){
+        		 $("#id").val(data.id);
+        	     $("#jsgcghxkzNo").val(data.jsgcghxkzNo);
+        	     $("#jsdwmc").val(data.jsdwmc);
+        	     $("#proName").val(data.proName);
+        	     $("#lpzh").val(data.lpzh);
+        	     $("#tzlx").val(data.tzlx);
+                 
+        	     $('#ghxkForm').find('input').attr('disabled',true);
+        	     $('#saveModal').modal('show');
+        	}
+        }});
+    });
+    
+    $("#dataTable").on("click", ".agreeButtong", function() {
+    	var idTd = $(this).parents('tr').children().first();;
+        var idId = idTd.text();
+        var state = 1;
+        
+        var param = {};
+        param.examineId = Number(idId);
+        param.state = state;
+        
+        console.log(param)
+        $.ajax({ type:"POST",
+            url:  "/dossierGhxk/examine/operation",
+            contentType:"application/json",
+            data:JSON.stringify(param),
+            success: function(obj){
+            	if(obj.http == 200){
+            		layer.alert("操作成功！", {icon: 1, time : 1500});
+                    load();
+            	}else{
+            		layer.alert("操作失败! " , {icon: 2});
+            	}
+            	
+            }
+        });
+        
+    });
+    
+    $("#dataTable").on("click", ".rejectButton", function() {
+    	var idTd = $(this).parents('tr').children().first();;
+        var idId = idTd.text();
+        var state = 2;
+        
+        var param = {};
+        param.examineId = Number(idId);
+        param.state = state;
+        
+        console.log(param)
+        $.ajax({ type:"POST",
+            url:  "/dossierGhxk/examine/operation",
+            contentType:"application/json",
+            data:JSON.stringify(param),
+            success: function(obj){
+            	if(obj.http == 200){
+            		layer.alert("操作成功！", {icon: 1, time : 1500});
+                    load();
+            	}else{
+            		layer.alert("操作失败! " , {icon: 2});
+            	}
+            	
+            }
+        });
+        
+    });
+    
+    
+    
+    load();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <#include "head.ftl"/>
+    <link href="/css/basic.css" rel="stylesheet">
+    <link href="/css/jquery.steps.css" rel="stylesheet">
+    <link href="/js/lib/fileinput/fileinput.min.css" rel="stylesheet">
+    <link href="/css/accept.css" rel="stylesheet">
+    <style type="text/css">
+        .wizard > .content
+        {
+            background: #eeeeee30;
+        }
+        #baseinfo .form-group{
+        	margin-left: 2px;
+    		margin-right: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 文件上传 -->
+    <div class="modal fade" id="saveModal">
+        <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <input type="text" name="fileManageId" id="fileManageId" style="display: none;">
+            <h4 class="modal-title">文件信息</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" id="fileForm">
+                <div class="form-group">
+                    <label for="codefile" class="col-sm-2 control-label">文件上传</label>
+                    <div class="col-sm-10">
+                        <input type="hidden" name="configFile" id="configFile" placeholder="请上传.rar、.doc文件" required="required">
+                        <a id="configFileDownload" hidden="hidden">下载</a>
+                        <input id="input-configfile" type="file" name="file" multiple class="file-loading">
+                    </div>
+                </div>
+            </form>
+          </div>
+        </div>
+        </div>
+    </div>
+    
+    <div class="ibox-content" id="baseinfo">
+        <form id="form" action="#" class="wizard-big form-horizontal">
+            <h1>项目基本信息</h1>
+            <fieldset>
+                <div class="form-group">
+                <input name="id" id="id" style="display: none;" type="text" >
+                    <label for="projectName" class="col-sm-2 control-label">项目名称</label>
+                     <div class="col-sm-4">
+                        <input name="projectName" type="text" class="form-control required">
+                     </div>
+                     
+                    <label for="projectXmzl" class="col-sm-1 control-label">项目坐落</label>
+                   	<div class="col-sm-5">
+                       <input name="projectXmzl" type="text" class="form-control required">
+                   	</div> 
+                     
+                </div>
+                <div class="form-group">
+                   <label for="certificate" class="col-sm-2 control-label">建设单位</label>
+                   <div class="col-sm-4">
+                       <input name="projectFzr" type="text" class="form-control required">
+                   </div>
+                   
+                   <label for="contacts" class="col-sm-1 control-label">信用代码</label>
+                   <div class="col-sm-5">
+                   	 <input type="text"  name="creditCode" id ="creditCode" class="form-control"/>
+                   </div>
+                   
+                </div>
+                
+                <div class="form-group">
+                   <label for="lxdh" class="col-sm-2 control-label">联系人</label>
+                   <div class="col-sm-4">
+                      <input name="lxr" type="text" class="form-control">
+                   </div>
+                   <label for="lxdh" class="col-sm-1 control-label">联系电话</label>
+                   <div class="col-sm-5">
+                      <input name="lxdh" type="text" class="form-control ">
+                   </div>
+                </div>
+                <hr/>
+                
+                <div class="form-group">
+               		<label for="contacts" class="col-sm-2 control-label">测绘单位</label>
+                    <div class="col-sm-4">
+                   	  <input type="text" name="sldw" id ="sldw" class="form-control"/>
+                    </div>
+	                   
+                    <label for="contacts" class="col-sm-1 control-label">信用代码</label>
+                    <div class="col-sm-5">
+                   	  <input type="text" name="slcreditCode" id ="slcreditCode" class="form-control" />
+                    </div>
+	                   
+	                  <!--  <label for="certificate" class="col-sm-1 control-label">证件号码</label>
+	                   <div class="col-sm-2">
+	                       <input name="slzjhm" type="text" class="form-control required">
+	                   </div> -->
+                </div>
+                
+                <div class="form-group">
+                	<label for="certificate" class="col-sm-2 control-label">联系人</label>
+                    <div class="col-sm-4">
+                       <input name="sllxr" type="text" class="form-control">
+                    </div>
+                    
+                    <label for="lxdh" class="col-sm-1 control-label">联系电话</label>
+                    <div class="col-sm-5">
+                        <input name="sldh" type="text" class="form-control ">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="expiryTime" class="col-sm-2 control-label">备注</label>
+                     <div class="col-sm-10">
+                     	<textarea class="form-control layui-textarea layui-hide" name="projectGk" id = "projectGk"></textarea>
+                        <!-- <input name="projectGk" type="textarea" class="form-control"> -->
+                     </div>
+                </div>
+            </fieldset>
+            
+            <h1>幢基本信息</h1>
+            <fieldset>
+                 <!-- 
+                <div class="form-group" >
+                    <label for="cname" class="col-sm-2 control-label">受理编号</label>
+                    <div class="col-sm-10">
+                        <input readOnly="readOnly" style="width:87%;display:inline-block;" name="projectNo" type="text" class="form-control ">
+                        <button type='button' id="xmbhsh" class='btn btn-info deleteUserButton' style="width:12%;vertical-align:baseline;background:#1AB394;">生成编号</button>
+                    </div>
+                </div>
+                -->
+                <div class="form-group">
+                     
+                     <label for="chlx" class="col-sm-2 control-label">测绘类型</label>
+                     <div class="col-sm-4">
+                        <select name="chlx" id="chlx" class="form-control"></select>
+                     </div>
+                     
+                     <label for="lpzh" class="col-sm-1 control-label">幢号</label>
+                     <div class="col-sm-5">
+                        <input name="lpzh" type="text" class="form-control">
+                     </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="bdcqzh" class="col-sm-2 control-label">不动产权证号</label>
+                     <div class="col-sm-4">
+                        <input name="bdcqzh" type="text" class="form-control">
+                     </div>
+                     
+                     <label for="ghxkzh" class="col-sm-1 control-label" style="font-size: 11px">规划许可证号</label>
+                     <div class="col-sm-5">
+                        <input name="ghxkzh" type="text" class="form-control">
+                     </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contacts" class="col-sm-2 control-label">建筑结构</label>
+                     <div class="col-sm-4">
+                        <select name="jzjg" id ="jzjg" class="form-control"></select>
+                     </div>
+                     
+                     <label for="contacts" class="col-sm-1 control-label">总层数</label>
+                     <div class="col-sm-5">
+                        <input name="zcs" type="number" class="form-control" >
+                     </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contacts" class="col-sm-2 control-label">地下层数</label>
+                     <div class="col-sm-4">
+                        <input name="dxcs" type="number" class="form-control" >
+                     </div>
+                     
+                     <label for="contacts" class="col-sm-1 control-label">地上层数</label>
+                     <div class="col-sm-5">
+                        <input name="dscs" type="number" class="form-control" >
+                     </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contacts" class="col-sm-2 control-label">规划用途</label>
+                     <div class="col-sm-4">
+                        <input type="text" name="ghyt" id="ghyt" type="text" class="form-control"/>
+                     </div>
+                     
+                     <label for="zjzmj" class="col-sm-1 control-label">总建筑面积</label>
+                     <div class="col-sm-5">
+                        <input name="zjzmj" type="number" class="form-control">
+                     </div>
+                </div>
+                
+                <div class="form-group" >
+                    <label for="xmzl" class="col-sm-2 control-label">项目坐落</label>
+                    <div class="col-sm-10">
+                        <input readOnly="readOnly" name="xmzl" type="text" class="form-control ">
+                    </div>
+                </div>
+                
+                
+            </fieldset> 
+            
+           
+           <h1>附件列表</h1>
+           <fieldset>
+                <div class="row">
+                   <div class="form-group col-md-10">
+                       <div class="bs-example" data-example-id="hoverable-table">
+                       <table class="table table-hover" id="filestable">
+                           <thead>
+                           <tr>
+                               <th width="350px;">附件名称</th>
+                               <th>上传类型</th>
+                               <th width="200px;">操作</th>
+                           </tr>
+                           </thead>
+                           <tbody id="files">
+                           </tbody>
+                       </table>
+                       </div>
+                   </div>
+               </div>
+           </fieldset>
+        </form>
+    </div>
+<#include "script.ftl"/>
+<script src="/js/lib/fileinput/fileinput.min.js"></script>
+<script src="/js/lib/fileinput/fileinput/zh.min.js"></script>
+<script src="/js/jquery.steps.min.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/message_cn.js"></script>
+<script type="text/javascript">
+var id = getParameterByName('applyid');
+$(document).ready(function(){
+   initMesage();
+   loadStype("commodity.house.chlx","chlx");
+   loadStype("house.buildStructure.type","jzjg");
+   $('#id').val(id);
+   var index = 0;
+   if(id){
+	   index = 2;
+   }
+   $("#form").steps({
+        bodyTag: "fieldset",
+        labels: {
+            finish:"保存",
+            next:"下一步",
+            previous:"上一步"
+        },
+        startIndex:index,
+        onStepChanging: function (event, currentIndex, newIndex)
+        {
+            if (currentIndex > newIndex)
+            {
+                return true;
+            }
+            var form = $(this);
+
+            if (currentIndex < newIndex)
+            {
+                $(".body:eq(" + newIndex + ") label.error", form).remove();
+                $(".body:eq(" + newIndex + ") .error", form).removeClass("error");
+            }
+
+            form.validate().settings.ignore = ":disabled,:hidden";
+
+            return form.valid();
+        },
+        onStepChanged: function (event, currentIndex, priorIndex)
+        {
+        	if(currentIndex==0){
+        		$("div.actions ul li.download").remove();
+        		$("div.actions ul").prepend('<li class="download" aria-disabled="false"><a href="javascript:void(0)" onclick="saveData(1);" >保存</a></li>');
+       		}
+       	   	if(currentIndex==1){
+     			$('input[name=xmzl]').val($('input[name=projectXmzl]').val())
+     			$("div.actions ul li.download").remove();
+     			$("div.actions ul").prepend('<li class="download" aria-disabled="false"><a href="javascript:void(0)" onclick="saveData(1);" >保存</a></li>');
+       		}
+	       	if(currentIndex==2){
+	       		$("div.actions ul li.download").remove();
+	        }
+        },
+        onFinishing: function (event, currentIndex)
+        {
+            
+            var form = $(this);
+
+            form.validate().settings.ignore = ":disabled";
+
+            return form.valid();
+        },
+        onFinished: function (event, currentIndex)
+        {
+        	saveData(0);
+        },
+        onInit:function(event, currentIndex, priorIndex){
+        	if(currentIndex==0){
+        		$("div.actions ul").prepend('<li class="download" aria-disabled="false"><a href="javascript:void(0)" onclick="saveData(1);" >保存</a></li>');
+           	}
+        }
+    }).validate({
+        errorPlacement: function (error, element)
+        {
+            element.before(error); 
+        }
+    }); 
+   
+   
+   /* 
+  $("#xmbhsh").on("click", function() {
+	   if(id){
+		   layer.alert("编号不能修改! ", {icon: 1});
+		   return;
+	   }
+       $.ajax({ url:"/commodityHouse/randomXmbh",dataType:"html", success: function(data){
+           $('input[name=projectNo]').val(data)
+       },error: function(e,xhr,opt){
+           layer.alert("生成失败! ", {icon: 2});
+       }
+       });
+   });
+    
+    $('#slsj').daterangepicker({
+      singleDatePicker: true,//设置为单个的datepicker，而不是有区间的datepicker 默认false
+      showDropdowns: true,//当设置值为true的时候，允许年份和月份通过下拉框的形式选择 默认false
+      autoUpdateInput: true,//1.当设置为false的时候,不给与默认值(当前时间)2.选择时间时,失去鼠标焦点,不会给与默认值 默认true
+      timePicker24Hour : true,//设置小时为24小时制 默认false
+      timePicker :true,//可选中时分 默认false
+      locale: {
+          applyLabel: "确定",
+          cancelLabel: "取消",
+          format: "YYYY-MM-DD HH:mm",
+          separator: " - ",
+          daysOfWeek: ["日","一","二","三","四","五","六"],
+          monthNames: ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"]
+      }
+ 		                  
+	}).on('cancel.daterangepicker', function(ev, picker) {
+      $('#slsj').val('')
+	})
+	$('#slsj').val('')
+	 */
+});
+
+
+</script>
+<script>
+var url = "/commodityHouse";
+var manageUrl = "/manage/commodityHouse";
+var id = getParameterByName('applyid');
+ 
+if(id){
+	/* 
+	$('#baseinfo').find('input,textarea,select').attr('readOnly',true);
+	$('#baseinfo').find('select').attr('disabled',true);
+	 */
+} 
+
+var insertUrl;
+$('#id').val(id);
+var mapfile = {};
+var load = function() {
+
+    var key = "commercial";
+    $.ajax({ url:"/workFlow/filesByKey?key="+key, success: function(data){
+        $.ajax({url:"/house/file/id?applyid=" + encodeURI(id),success: function(dataFile){
+            var filestable = $("#files");
+            filestable.empty();
+            for (var i=0;i<data.length;i++)
+            {
+                var rowData = data[i];
+                
+                if(!rowData){
+                    continue;
+                }
+                
+                var files ;
+                var siffFile;
+                if(mapfile[rowData.id] == null){
+                	files = dataFile[rowData.id];
+                	siffFile = dataFile[rowData.id] === undefined?undefined:dataFile[rowData.id][0].fileId;
+                }else{
+                	files = mapfile[rowData.id];
+                	siffFile = mapfile[rowData.id];
+                }
+                
+                var filebutton = "";
+                
+                if(rowData.fileType !== 'jpg'){
+                	var btnfile = "<button type='button' onclick='downloadFile(\""+siffFile + "\");' class='btn btn-danger btn-xs'>下载</button>";
+               	 	filebutton += files === undefined?"": btnfile;
+                }
+                
+                if(rowData.fileType === 'jpg'){
+                    if(jQuery.isArray(files)){
+                        filebutton += files === undefined?"":"<button type='button' onclick='viewJpgFile(" + JSON.stringify(files) + "," + JSON.stringify(rowData.fileType) + ");' class='btn btn-info btn-xs viewButton'>预览</button>";
+                    }else{
+                        filebutton += files === undefined?"":"<button type='button' onclick='viewfile(\""+files + "\",\""+rowData.fileType+"\");' class='btn btn-info btn-xs viewButton'>预览</button>";
+                    }
+                }else if(rowData.fileType === 'siff'){
+                	filebutton += files === undefined?"":"<button type='button' onclick='openCad(\""+siffFile + "\");' class='btn btn-info btn-xs'>预览</button>";
+                }else if(rowData.fileType === 'dwg'){
+                	//filebutton += files === undefined?"":"<button type='button' onclick='openCad(\""+siffFile + "\");' class='btn btn-info btn-xs'>预览</button>";
+                }else{
+                    filebutton += files === undefined?"":"<button type='button' onclick='viewfile(\""+siffFile + "\",\""+rowData.fileType+"\");' class='btn btn-info btn-xs viewButton'>预览</button>";
+                }
+               
+                var row = "<tr><td hidden=>" + rowData.id +"</td><td hidden=>" + JSON.stringify(files) + "</td>"
+                        + "<td style='text-align: left;'>" + rowData.fileName + "</td><td>" + rowData.fileType + "</td>"
+                    row += "<td style='text-align: right;'>" + filebutton
+                        + "<button type='button' class='btn btn-warning btn-xs loadButton'>上传</button></td>"
+                        + "</tr>";
+                filestable.append(row);
+            }
+        }});
+        
+        $("#files ").on("click", ".loadButton", function() {
+            var fileManageId = $(this).parents('tr').children().first().text();
+            var allowedFileExtensions = $(this).parents('tr').children().first().next().next().next().text();
+           
+            if(allowedFileExtensions == "jpg"){
+                var fileInput = $('<form class="form-horizontal" id="fileForm">'
+                        + '<div class="form-group">'
+                        + '<label for="codefile" class="col-sm-2 control-label">文件上传</label>'
+                        + '<div class="col-sm-10">'
+                        + '<input type="hidden" name="configFile" id="configFile" placeholder="请上传.rar、.doc文件" required="required">'
+                        + '<a id="configFileDownload" hidden="hidden">下载</a>'
+                        + '<input id="input-configfile" multiple type="file" data-show-caption="true" name="file" multiple class="file-loading">'
+                        + '</div>'
+                        + '</div>'
+                        + '</form>');
+                
+                var content = $('#saveModal .modal-body');
+                content.empty();
+                content.append(fileInput);
+                
+                var qs = "";
+                (function (fileInputId, fileField, validate) {
+                    $("#" + fileInputId).fileinput({
+                        language: 'zh', //设置语言
+                        allowedFileExtensions: ['jpg','png'],//接收的文件后缀
+                        uploadAsync: true, //默认异步上传
+                        showUpload: false, //是否显示上传按钮
+                        showRemove : true, //显示移除按钮
+                        showPreview : false, //是否显示预览
+                        showCaption: false,//是否显示标题
+                        browseClass: "btn btn-primary", //按钮样式
+                        enctype: 'multipart/form-data',
+                        validateInitialCount:true,
+                        previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
+                        msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
+                        uploadUrl: '/files/insert'
+                    }).on("filebatchselected", function(event, files) {
+                        $(this).fileinput("upload");
+                        qs = [];
+                    }).on('filecleared', function(event) {
+                        $("#" + fileField).val("");
+                        qs = [];
+                        $("#" + fileField + "Download").hide();
+                    }).on("fileuploaded", function(event, data) {
+                        if(data.response) {
+                            if(qs == "" || qs =='null'){
+                                qs += data.response;
+                            }else{
+                                qs += "," + data.response;
+                            }
+                            console.log(qs)
+                            mapfile[fileManageId] = qs;
+                            $("#" + fileField).val(qs);
+                            $("#" + fileField + "Download").hide();
+                            $('#saveModal').modal('hide');
+                            load();
+                        }
+                    });
+                })("input-configfile", "configFile");
+            }else{
+                var fileInput = $('<form class="form-horizontal" id="fileForm">'
+                        + '<div class="form-group">'
+                        + '<label for="codefile" class="col-sm-2 control-label">文件上传</label>'
+                        + '<div class="col-sm-10">'
+                        + '<input type="hidden" name="configFile" id="configFile" placeholder="请上传.rar、.doc文件" required="required">'
+                        + '<a id="configFileDownload" hidden="hidden">下载</a>'
+                        + '<input id="input-configfile" type="file" name="file" multiple class="file-loading">'
+                        + '</div>'
+                        + '</div>'
+                        + '</form>');
+                
+                var content = $('#saveModal .modal-body');
+                content.empty();
+                content.append(fileInput);
+                
+                (function (fileInputId, fileField, validate) {
+                    $("#" + fileInputId).fileinput({
+                        language: 'zh', //设置语言
+                        allowedFileExtensions: [allowedFileExtensions],//接收的文件后缀
+                        msgInvalidFileExtension: '不正确的文件扩展名 "{name}". 只支持 "{extensions}"格式的文件.',
+                        msgValidationError: '类型不正确',
+                        elErrorContainer: '#kartik-file-errors',
+                        showPreview : false, //显示预览 
+                        showUpload: false,
+                        showRemove:true,
+                        maxFileCount: 1,
+                        autoReplace:false,
+                        uploadUrl: '/files'
+                    }).on("filebatchselected", function(event, files) {
+                        $(this).fileinput("upload");
+                    }).on('filecleared', function(event) {
+                        $("#" + fileField).val("");
+                        $("#" + fileField + "Download").hide();
+                    }).on("fileuploaded", function(event, data) {
+                        if(data.response) {
+                            mapfile[fileManageId] = data.response.id;
+                            $("#" + fileField).val(data.response.id);
+                            $("#" + fileField + "Download").hide();
+                            $('#saveModal').modal('hide');
+                            load();
+                    }});
+                })("input-configfile", "configFile");
+            }
+       
+           $('#saveModal').modal('show');
+           $('input[name=fileManageId]').val(fileManageId)
+        });
+        
+    }});
+
+    loadStype("commodityhouse.project.projectType","projectType");
+    
+    if(id){
+         $.ajax({ url: url+"/selectByApplyId?id="+encodeURI(id), success: function(obj){
+            $('input[name=id]').val(obj.id)
+            $('input[name=projectNo]').val(obj.projectNo)
+            $("#projectNo").val(obj.projectNo);
+            $('input[name=projectName]').val(obj.projectName)
+            $('input[name=projectType]').val(obj.projectType)
+            $('input[name=projectFzr]').val(obj.projectFzr)
+            $('#projectGk').val(obj.projectGk == null ?"":obj.projectGk)
+            $('input[name=lxdh]').val(obj.lxdh)
+            $('input[name=lxr]').val(obj.lxr)
+            $('input[name=sldw]').val(obj.sldw)
+            $('input[name=slzjhm]').val(obj.slzjhm)
+            $('input[name=sllxr]').val(obj.sllxr)
+            $('input[name=sldh]').val(obj.sldh)
+            $('input[name=projectXmzl]').val(obj.projectXmzl)
+            $('input[name=creditCode]').val(obj.creditCode)
+            $('input[name=slcreditCode]').val(obj.slcreditCode)
+            
+            $('input[name=slbh]').val(obj.applyBuild.slbh);
+            $('input[name=slsj]').val(obj.applyBuild.slsj);
+            $('input[name=chlx]').val(obj.applyBuild.chlx);
+            $('input[name=sbr]').val(obj.applyBuild.sbr);
+            $('input[name=lpzh]').val(obj.applyBuild.lpzh);
+            $('input[name=bdcqzh]').val(obj.applyBuild.bdcqzh);
+            $('input[name=ghxkzh]').val(obj.applyBuild.ghxkzh);
+            $('input[name=jzjg]').val(obj.applyBuild.jzjg);
+            $('input[name=zcs]').val(obj.applyBuild.zcs);
+            $('input[name=dxcs]').val(obj.applyBuild.dxcs);
+            $('input[name=dscs]').val(obj.applyBuild.dscs);
+            $('input[name=ghyt]').val(obj.applyBuild.ghyt);
+            $('input[name=zjzmj]').val(obj.applyBuild.zjzmj);
+            $('input[name=xmzl]').val(obj.applyBuild.xmzl);
+            
+            loadStype("commodityhouse.project.projectType","projectType",obj.projectType);
+            loadStype("commodity.house.chlx","chlx",obj.applyBuild.chlx);
+            loadStype("house.buildStructure.type","jzjg",obj.applyBuild.jzjg);
+        }}); 
+         
+    }
+    
+};
+
+function saveData(type){
+	   var txt=$('#form').serializeObject();
+	    
+	   var build = {};
+	   build.slbh = txt.projectNo;
+	   build.slsj = txt.slsj;
+	   build.chlx = txt.chlx;
+	   build.sbr = txt.sbr;
+	   build.lpzh = txt.lpzh;
+	   build.bdcqzh = txt.bdcqzh;
+	   build.ghxkzh = txt.ghxkzh;
+	   build.jzjg = txt.jzjg;
+	   build.zcs = txt.zcs;
+	   build.dxcs = txt.dxcs;
+	   build.dscs = txt.dscs;
+	   build.ghyt = txt.ghyt;
+	   build.zjzmj = txt.zjzmj;
+	   build.xmzl = txt.xmzl;
+	   
+	   txt.projectType = txt.chlx;
+	   txt.applyBuild = build;
+	   
+	   var listMemberArray = [];
+	   var houseArray = [];
+	   var fileArray = [];
+	    
+	   $('#files').find('tr').each(function(i,v){
+	       var listFileType = {};
+	       
+	       if(isJSON($(v).find("td:eq(1)").text())){
+	           var jsonFile = JSON.parse($(v).find("td:eq(1)").text());
+	           
+	           for(var i=0; i < jsonFile.length; i++){
+	               var listFileType = {};
+	           
+	               listFileType.applyid = jsonFile[i].applyid;
+	               listFileType.fileManageId = jsonFile[i].fileManageId;
+	               listFileType.fileId = jsonFile[i].fileId;
+	               
+	               fileArray.push(listFileType);
+	           }
+	       }else{
+	           
+	           if($(v).find("td:eq(1)").text() !== "undefined"){
+	               listFileType.applyid = id;
+	               listFileType.fileManageId = $(v).find("td:eq(0)").text();
+	               listFileType.fileId = eval("("+$(v).find("td:eq(1)").text()+")");
+	               fileArray.push(listFileType);
+	           }
+	       }
+	    });
+	   txt.listFiles = fileArray;
+	    
+	   $.ajax({
+	       type:"POST",
+	       url:'/manage/commodityHouse',
+	       contentType:"application/json",
+	       data:JSON.stringify(txt),
+	       success: function(data){
+	    	   if(data.http == 200){
+	    		   $("#id").val(data.data);
+	    		   var index=parent.layer.getFrameIndex(window.name);
+		           if(type == 1){
+		        	   layer.alert("保存成功! " , {icon: 1});
+		           }else{
+			           layer.alert("保存成功!", {icon: 1, closeBtn: 0},
+			               function () {
+			                   window.parent.location.reload();
+			                   parent.layer.close(index);
+			               } 
+			           );
+		           }
+	    	   }else{
+	    		   layer.alert("保存失败! " , {icon: 2});
+	    	   }
+	           
+	       },
+	       error: function(e,xhr,opt){
+	           layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+	       }
+	   });
+	}
+
+var loadStype = function(configPrefix,table,aptitude) {
+    $.ajax({ url:"/house/configs/systype?configPrefix=" + configPrefix, success: function(data){
+        var tables = $("#" + table + "");
+        tables.empty();
+        $.each(data,function(index,obj){
+            var arr = obj.value;
+            var strs= new Array();
+            strs = arr.split(",");
+            for(var i=0;i<strs.length ;i++){
+                var rowData = strs[i];
+               	if(typeof(aptitude) == 'undefined' || aptitude == null){
+               		aptitude = "-fail";
+               	}
+                if(aptitude == rowData){
+                    tables.append("<option value='"+rowData+"' selected>" + rowData + "</option>");
+                }else{
+                    tables.append("<option value='"+rowData+"'>" + rowData + "</option>");
+                }
+            }
+        });
+    }});
+};
+
+var loadBuildNos = function(table,params) {
+    var tables = $("#" + table + "");
+    tables.empty();
+    $("#buildings").find('tr').each(function(i,v){
+        var lpzh = $(v).find("td:eq(2)").text();
+        if(params == lpzh){
+            tables.append("<option value='"+lpzh+"' selected>" + lpzh + "</option>");
+        }else{
+            tables.append("<option value='"+lpzh+"'>" + lpzh + "</option>");
+        }
+     });
+};
+
+function isJSON(str) {
+    if (typeof str == 'string') {
+        try {
+            var obj=JSON.parse(str);
+            if(typeof obj == 'object' && obj ){
+                return true;
+            }else{
+                return false;
+            }
+        } catch(e) {
+            return false;
+        }
+    }
+}
+
+function download(fileId,configPrefixServer){
+    SIDraw.CancelCmd();
+    $.ajax({ url:"/house/configs/systype?configPrefix=" + configPrefixServer, success: function(service){
+        SIDraw.DownloadData("http://" + service[0].value +"/open/files/" + fileId, "");
+    }});
+}
+
+
+function openCad(fileId){
+    layer.open({
+      type: 2, //Layer提供了5种层类型。可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）,
+      shade:0.1, //遮罩层透明度
+      area:['100%','100%'], //弹出层宽高
+      title:'CAD图查看',//弹出层标题
+      content: ['cad.html?fileid='+fileId, 'no']
+    });
+}
+
+load();
+</script>
+</body>
+</html>

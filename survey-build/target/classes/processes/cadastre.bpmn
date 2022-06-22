@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="cadastre" name="地籍测绘系统流程" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <userTask id="申请" name="申请" activiti:assignee="${userId}" activiti:formKey="/page/cadastre/edit.html"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="申请"></sequenceFlow>
+    <userTask id="审核" name="审核" activiti:candidateGroups="51" activiti:formKey="applyinfo.html"></userTask>
+    <sequenceFlow id="flow2" sourceRef="申请" targetRef="审核"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow3" name="同意" sourceRef="审核" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${opinion=="同意"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow4" name="驳回" sourceRef="审核" targetRef="申请">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${opinion=="驳回"}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_cadastre">
+    <bpmndi:BPMNPlane bpmnElement="cadastre" id="BPMNPlane_cadastre">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="150.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="申请" id="BPMNShape_申请">
+        <omgdc:Bounds height="55.0" width="105.0" x="230.0" y="290.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="审核" id="BPMNShape_审核">
+        <omgdc:Bounds height="55.0" width="105.0" x="380.0" y="290.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="560.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="185.0" y="317.0"></omgdi:waypoint>
+        <omgdi:waypoint x="230.0" y="317.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="335.0" y="317.0"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0" y="317.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="485.0" y="317.0"></omgdi:waypoint>
+        <omgdi:waypoint x="560.0" y="317.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="32.0" x="499.0" y="285.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="432.0" y="290.0"></omgdi:waypoint>
+        <omgdi:waypoint x="432.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="354.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="282.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="282.0" y="290.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="32.0" x="330.0" y="261.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+<link href="/js/lib/footable/footable.core.css" rel="stylesheet">
+<link href="/js/lib/bootstrap/font-awesome.css" rel="stylesheet">
+<link href="/css/basic.css" rel="stylesheet">
+<style type="text/css">
+	.table { margin-bottom: 12px;}
+	.modal-body { padding: 20px 30px 10px; }
+</style>
+</head>
+<body>
+<div class="modal fade" id="saveModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">流程信息填写</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" id="baseForm">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">资源名称</label>
+                <div class="col-sm-10"><input type="text" class="form-control" name="pathName" id="pathName" required="required"></div>
+            </div>
+            
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" id="saveButton">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="saveFileModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">附件信息</h4>
+        <input type="text" id="taskid" style="display: none;"/>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" id="fileManageForm">
+          <div>
+            <table class="table table-bordered" >
+                <thead>
+                    <tr>
+                       <th>附件Id</th>
+                       <th>附件名称</th>
+                       <th>附件类型</th>
+                       <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="fileManageTable" style="border:1px solid #666;"></tbody>
+            </table>
+            
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+      	<div class="text-center">
+            <div class="btn-group" id="pagination"> </div>
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        	<button type="button" class="btn btn-primary" id="saveFileButton">新增</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="worksModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">选择附件</h4>
+      </div>
+      <div class="modal-body">
+       <form>
+        <div class="form-group">
+        <input type="text" id="businessId" style="display: none" />
+         <select multiple class="form-control" id="selectUsers" style="height: 350px;">
+         </select>
+        </div>
+       </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" id="saveUsersButton">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper wrapper-content float-e-margins">
+  	<div class="row" style="margin-top:10px;margin-bottom:10px;">
+      <div class="col-md-12">
+          <button type="button" class="btn btn-primary allFlowButton pull-lift">一键部署</button>
+          <button type="button" class="btn btn-danger deleteAllFlowButton pull-lift">一键删除</button>
+          <button type="button" class="btn btn-primary newFlowButton pull-right">部署流程</button>
+      </div>
+  	</div>
+	<div>
+        <div class="row">
+            <div class="col-md-12">
+            <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>流程部署id</th>
+                    <th>流程定义名称</th>
+                    <th>版本号</th>
+                    <th>流程定义id</th>
+                    <th>流程定义key</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="processDeftable"></tbody> </table>
+            
+            </div>
+        </div>
+    </div>
+</div>
+  
+<#include "script.ftl"/>
+<script src="/js/footable.all.min.js"></script>
+<script src="/js/common.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+    $('.footable').footable();
+    $('.footable2').footable();
+    
+    var url = "/workFlow";
+    var pageSize = 10;
+    var works = new Array();
+    
+    var load = function(pageNum) {
+        pageNum = defaultV(pageNum, 1);
+        var search = $("#searchContent").val();
+        $.ajax({ url: url, method: 'GET', success: function(data){
+            var processDeftable = $("#processDeftable");
+            processDeftable.empty();
+            for (var i = 0;i < data.length; i++)
+            {
+                var rowData = data[i];
+                var row = "<tr><td>" + rowData.deploymentId + "</td><td>" + rowData.name + "</td>"
+                            +"<td>" + rowData.version + "</td><td>" + rowData.id + "</td><td>" + rowData.key + "</td>"
+                            +"<td>"
+                            +"<button type='button' class='btn btn-warning btn-xs fileManageButton'>附件管理</button>"
+                            +"<button type='button' class='btn btn-danger btn-xs deleteDeployButton'>删除</button>"
+                            +"</td></tr>";
+                processDeftable.append(row);
+            }
+        }});
+        
+    };
+    
+    $("#processDeftable").on("click", ".deleteDeployButton", function() {
+        var deploymentId = $(this).parents('tr').children().first().text();
+        var deploymentName = $(this).parents('tr').children().first().next().text();
+        
+        layer.confirm("确定删除部署为(" + deploymentId + "-" + deploymentName + ")的流程？",
+                    {icon: 3, title: "删除流程定义"}, function(index){
+            $.ajax({
+                url:url + "/deleteDeloy?deploymentId=" + encodeURI(deploymentId),
+                success: function(data){
+                    layer.alert("删除成功!", {icon: 1, time : 1500});
+                    load();
+                },
+                error: function(e,xhr,opt){
+                    layer.alert("删除失败! ", {icon: 2});
+                }
+            });
+            
+            layer.close(index);
+        });
+    });
+    
+    $("#processDeftable").on("click", ".fileManageButton", function() {
+        resetForm("fileManageForm");
+        var businessId = $(this).parents('tr').children().last().prev().text();
+        loadFile(businessId);
+        $("#businessId").val(businessId);
+        $('#saveFileModal').modal('show');
+    });
+    
+    var loadFile = function(businessId,pageNum) {
+    	pageNum = defaultV(pageNum, 1);
+    	$.ajax({ url: "/annex/query/byBusinessId?businessId=" + encodeURI(businessId) + "&pageNum=" + pageNum, method: 'GET', success: function(data){
+        	var fileManageTable = $("#fileManageTable");
+        	fileManageTable.empty();
+        	var result = data.data;
+            for (var i = 0;i < result.length; i++)
+            {
+                var rowData = result[i];
+                var filemge = rowData.fileManage;
+                var row = "<tr>"
+              			+"<td>" + rowData.fileManageId + "</td>"
+              			+"<td hidden=>" + rowData.businessId + "</td>"
+              			+"<td style='text-align: left;'>" + filemge.fileName + "</td>"
+              			+"<td>" + filemge.fileType + "</td>"
+                        +"<td>"
+                        +"<button type='button' class='btn btn-danger btn-xs deleteFileMemberButton'>删除</button>"
+                        +"</td></tr>";
+               	works.push(rowData.fileManageId);
+                fileManageTable.append(row);
+            }
+            
+           	pagination(data.count, pageNum, pageSize);
+            
+        }});
+    };
+    
+    $("#pagination").on("click", ".pageBtn", function() {
+    	
+    	loadFile($("#businessId").val(),parseInt($(this).attr("data")));
+    });
+    
+    $("#fileManageTable").on("click", ".deleteFileMemberButton", function() {
+    	var fileManageIdTd = $(this).parents('tr').children().first();
+    	var fileManageId = fileManageIdTd.text();
+    	var businessId = fileManageIdTd.next().text();
+    	var name = fileManageIdTd.next().next().text();
+    	
+        layer.confirm("附件名为" + name, {icon: 3, title: "删除关联附件"}, function(index){
+            $.ajax({
+                type:"DELETE",
+                url: "/manage/annex/" + fileManageId + "/" + businessId + "/business/remove",
+                success: function(data){
+                             layer.alert("删除成功!", {icon: 1, time : 1500});
+                             loadFile(businessId);
+                         },
+                error: function(e,xhr,opt){
+                    layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+            
+            layer.close(index);
+        });
+    });
+    
+    $("#saveFileButton").on("click", function() {
+    	loadSelectWorks();
+        $('#worksModal').modal('show');
+    });
+    
+    var loadSelectWorks = function() {
+        $.ajax({ url: "/annex?pageSize=" + maxPageSize, success: function(data){
+            var select = $("#selectUsers");
+            select.empty();
+            for (var i=0;i<data.length;i++)
+            {
+                var rowData = data[i];
+                if ($.inArray(rowData.id, works) == -1) {
+                    var row = '<option value="' + rowData.id + '">' + '(' +rowData.id + ')&nbsp;&nbsp;&nbsp;' + rowData.fileName + '</option>';
+                    select.append(row);
+                }
+            }
+        }});
+    }
+    
+    $("#saveUsersButton").on("click", function() {
+        var bus = {};
+        var businessId = $("#businessId").val();
+        var selectUsers = $("#selectUsers").val();
+        if(selectUsers == null || selectUsers =='undefined' || undefined == ''){
+            layer.alert("请先选择业务! " + '', {icon: 1});
+            return false;
+        }
+        $.ajax({ 
+            type:"POST",
+            url: "/manage/annex/" + businessId + "/fileManage/add",
+            contentType:"application/json",
+            data:JSON.stringify(selectUsers),
+            success: function(data){
+                         layer.alert("保存成功!", {icon: 1, time : 1500});
+                         $('#worksModal').modal('hide');
+                         loadFile(businessId);
+                     },
+            error: function(e,xhr,opt){
+                layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+            }
+        });
+    })
+    
+    $(".newFlowButton").on("click", function() {  
+        resetForm("baseForm");
+        $('#saveModal').modal('show');
+    });
+    
+    /*点击添加按钮，进行测试管理信息添加操作*/
+    $("#saveButton").on("click", function() {
+        if (!isFormValid("baseForm")) {
+            return;
+        }
+        
+        $.ajax({ url: url + "/deployQuery?deployName=" + encodeURI($("#pathName").val()), 
+            success: function(data){
+                layer.alert("部署完成成功！");
+                $('#saveModal').modal('hide');
+                load();
+            },
+            error: function(e,xhr,opt){
+                layer.alert("部署失败，请选择正确的资源! ", {icon: 2});
+            }
+         });
+    });
+    
+    $(".allFlowButton").on("click", function() {  
+        layer.confirm("确定部署所有的流程？", {icon: 3, title: "部署流程定义"}, function(index){
+            $.ajax({ url: url + '/deployAllFlows',
+                success:function(data){
+                    layer.alert("部署成功!", {icon: 1, time : 1500});
+                    load();
+                },
+                error: function (e,xhr,opt){
+                    layer.alert("部署失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+            layer.close(index);
+        });
+    });
+    
+    $(".deleteAllFlowButton").on("click", function() {  
+        layer.confirm("确定删除所有的流程？", {icon: 3, title: "删除流程定义"}, function(index){
+            $.ajax({url: url + "/delAllDeloy",success: function(data){
+                    layer.alert("删除成功!", {icon: 1, time : 1500});
+                    load();
+                },
+                error: function(e,xhr,opt){
+                    layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+            
+            layer.close(index);
+        });
+    });
+    
+    $("#dataTable").on("click", ".sendButton", function() {
+        var applyBid = $(this).parents('tr').children().first().text();
+        var key = "testaudit";
+        $.ajax({ 
+            url:"/workFlow/startProcessFlow?key=" + key + "&applyBid=" + applyBid,
+            success: function(data){
+               layer.alert("申请成功！", {icon: 1, time : 1500});
+               load();
+           }
+        });
+           
+    });
+    
+    load();
+});
+</script>
+</body>
+</html>

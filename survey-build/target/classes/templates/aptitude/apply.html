@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+</head>
+<body>
+
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row" style="margin-top:10px;margin-bottom:10px;">
+        <div class="col-md-12">
+          <div class="input-group">
+            <input id="searchContent" type="text" class="form-control" placeholder="请输入公司名称">
+            <div class="input-group-btn" style="width:15%">
+              <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+              <button type="button" class="btn btn-primary newButton">申请</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+                <th>申请编号</th>
+                <th>公司名称</th>
+                <th>联系人</th>
+                <th>联系方式</th>
+                <th>测绘资质</th>
+                <th>经营场所</th>
+                <th>审核时间</th>
+                <th>操作/流程环节</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable"></tbody>
+        </table>
+        
+        <div class="hr-line-dashed"></div>
+        <div class="text-center">
+            <div class="btn-group" id="pagination">
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    <#include "script.ftl"/>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            /**初始化事件，加载数据*/
+            var url = "/applyAptitude";
+            var manageUrl = "/manage/applyAptitude";
+            var pageSize = 10;
+            var operationtype = 0;
+            
+            var load = function(pageNum) {
+                pageNum = defaultV(pageNum, 1);
+                var search = $("#searchContent").val();
+                $.ajax({ url: url + "?query=" + encodeURI(search) + "&pageNum=" + pageNum , success: function(data){
+                    
+                    var statusIds = [];
+                    $.each(data, function(i, k) {
+                        statusIds.push(data[i].id);
+                    });
+                    
+                    $.ajax({
+                        url: "/processCommon/statusByids",
+                        type:"POST",
+                        contentType:"application/json",
+                        data: JSON.stringify(statusIds),
+                        success: function(dataStatus){
+                            var table = $("#dataTable");
+                            table.empty();
+                            for (var i=0;i<data.length;i++)
+                            {
+                                var rowData = data[i];
+                                var statusId = dataStatus[rowData.id];
+                                
+                                var row = "<tr><td>" + rowData.id +"</td>"
+                                            +"<td>" + rowData.cname + "</td>"
+                                            +"<td>" + rowData.contacts + "</td>"
+                                            +"<td>" + rowData.phone + "</td>"
+                                            +"<td>" + rowData.aptitude + "</td>"
+                                            +"<td>" + rowData.qyzycs + "</td>"
+                                            +"<td>" + moment(rowData.expiryTime).format("YYYY-MM-DD") + "</td>";
+                                if(statusId == '0'){
+                                    row += "<td><button type='button' class='btn btn-info btn-xs sendButton'>发起申请</button>"
+                                        +"<button type='button' class='btn btn-warning btn-xs updateButton'>编辑</button>"
+                                        +"<button type='button' class='btn btn-danger btn-xs deleteButton'>删除</button></td>"
+                                        +"</tr>";
+                                }else{
+                                    row += "<td><button type='button' class='btn btn-info btn-xs'>" + (statusId == null?"":statusId) + "</button></td></tr>";
+                                }
+                                table.append(row);
+                            }
+                    }});
+                    
+                    $.ajax({ url: url + "/count?query=" + search , success: function(data){
+                        pagination(data, pageNum, pageSize);
+                    }});
+                }});
+            };
+            
+            $("#dataTable").on("click", ".sendButton", function() {
+                var businessId = $(this).parents('tr').children().first().text();
+                var key = "aptitude";
+                $.ajax({ 
+                    url:"/workFlow/startProcessFlow?key=" + key + "&applyBid=" + businessId,
+                    success: function(data){
+                       layer.alert("申请成功！", {icon: 1, time : 1500});
+                       load();
+                   },
+                   error: function(e,xhr,opt){
+                       layer.alert("申请失败,请检查流程部署! " , {icon: 2});
+                   }
+                });
+            });
+            
+            $("#searchButton").on("click", function() {
+                load();
+            });
+            
+            $("#pagination").on("click", ".pageBtn", function() {
+                load(parseInt($(this).attr("data")));
+            });
+           
+            var operationtype = 0 ;    //业务类型 0：正常  1：绿色通道,
+            $(".newButton").on("click", function() {
+                layer.open({
+                    type: 2,
+                    title: '申请信息',
+                    area: ['100%', '100%'],
+                    content: 'edit.html',
+                    scrollbar: false
+                });
+            });
+            
+            $("#dataTable").on("click",".updateButton",function(){
+                var applyId=$(this).parents('tr').children().first().text();
+                var bsname = $(this).parents('tr').children().first().next().text();
+                layer.open({
+                    type: 2,
+                    title: '修改申请',
+                    area: ['100%', '100%'],
+                    content: 'edit.html?applyid=' + applyId,
+                    scrollbar: false,
+                    end: function () {
+                        location.reload();
+                    }
+                });
+            })
+            
+            $("#dataTable").on("click",".deleteButton",function(){
+                var row = $(this).parent().parent();
+                var idTd = row.children().first();
+                var id = idTd.text();
+                var rnameTd = idTd.next();
+                var rname = rnameTd.text();
+                
+                layer.confirm("确定删除名称为" + rname +"的申请？", {icon: 3, title: "删除申请"}, function(index){
+                    $.ajax({
+                        type:"DELETE",
+                        url: manageUrl + "/remove/" + id,
+                        success: function(data){
+                            layer.alert("删除成功!", {icon: 1, time : 1500});
+                            load();
+                        },
+                        error: function(e,xhr,opt){
+                            layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                        }
+                    });
+                    
+                    layer.close(index);
+                });
+            })
+            
+            load();
+        });
+    </script>
+</body>
+</html>

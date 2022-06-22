@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <#include "head.ftl"/>
+    <link href="/css/basic.css" rel="stylesheet">
+    <link href="/css/jquery.steps.css" rel="stylesheet">
+    <link href="/js/lib/fileinput/fileinput.min.css" rel="stylesheet">
+    <link href="/css/accept.css" rel="stylesheet">
+    <style type="text/css">
+        .wizard > .content
+        {
+            background: #eeeeee30;
+        }
+    </style>
+</head>
+<body>
+
+  <!-- 添加房屋信息 -->
+     <div class="modal fade" id="saveUserModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">新增员工信息</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" id="userForm">
+              <div class="form-group">
+                <label for="employeeName" class="col-sm-2 control-label">姓名</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="employeeName" id="employeeName" placeholder="姓名(必填)" required="required">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="sex" class="col-sm-2 control-label">性别</label>
+                <div class="col-sm-4">
+                  <select class="form-control" id="sex">
+                    <option value='男'>男</option>
+                    <option value="女">女</option>
+                  </select>
+                </div>
+                
+                <label for="zzzslx" class="col-sm-2 control-label">证书类型</label>
+                <div class="col-sm-4">
+                  <select class="form-control" id="zzzslx"></select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="email" class="col-sm-2 control-label">电子邮箱</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control email" name="email" id="email" placeholder="电子邮箱(必填)" required="required">
+                </div>
+                
+                <label for="phone" class="col-sm-2 control-label">联系电话</label>
+                <div class="col-sm-4">
+                  <input type="text" class="form-control phone" name="phone" id="phone" placeholder="联系电话(必填)" required="required">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="emplyeeExpiryTime" class="col-sm-2 control-label">有效期限</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control phone" name="emplyeeExpiryTime" id="emplyeeExpiryTime" placeholder="有效期限(必填)" required="required">
+                </div>
+              </div>
+              
+               <div class="form-group">
+                <label for="idCard" class="col-sm-2 control-label">身份证</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="idCard" id="idCard" placeholder="身份证(必填)" pattern="^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$" data-bv-regexp-message="请输入正确的身份证" required="required">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="ygzzNo" class="col-sm-2 control-label">资质编号</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="ygzzNo" id="ygzzNo" placeholder="资质编号(必填)" required="required">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="sex" class="col-sm-2 control-label">登录用户</label>
+                <div class="col-sm-10">
+                  <select class="form-control" id="status">
+                    <option value='0'>否</option>
+                    <option value="1">是</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+              <label for="configFile" class="col-sm-2 control-label">文件上传</label>
+                  <div class="col-sm-10">
+                      <input type="hidden" name="enclosure" id="configFiles" placeholder="请上传.rar、.doc文件">
+                      <a id="configFilesDownload" hidden="hidden">下载</a>
+                      <input id="input-configfiles" multiple type="file" data-show-caption="true"name="file" multiple class="file-loading">
+                  </div>
+              </div>
+              
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveHouserButton">插入列表</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 添加房屋信息 -->
+    <div class="modal fade" id="saveInstrumentModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">新增设备信息</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" id="instrumentForm">
+              <div class="form-group">
+                  <label for="name" class="col-sm-2 control-label">设备名称</label>
+                  <div class="col-sm-4">
+                      <input type="text" class="form-control" name="name" id="name" placeholder="设备名称(必填)" required="required" >
+                      <input type="text" class="form-control" name="id" id="id" style="display: none;" >
+                  </div>
+                  
+                  <label for="mold" class="col-sm-2 control-label">品牌型号</label>
+                  <div class="col-sm-4">
+                      <input type="text" class="form-control" name="model" id="model" placeholder="品牌型号(必填)" required="required" >
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label for="factoryNo" class="col-sm-2 control-label">出厂编号</label>
+                  <div class="col-sm-4">
+                      <input type="text" class="form-control" name="factoryNo" id="factoryNo" placeholder="出厂编号(必填)" required="required" >
+                  </div>
+                  
+                  <label for="number" class="col-sm-2 control-label">数量</label>
+                  <div class="col-sm-4">
+                      <input type="number" class="form-control" name="number" id="number" placeholder="数量(必填)" required="required" >
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label for="verificationDate" class="col-sm-2 control-label">检定日期</label>
+                  <div class="col-sm-4">
+                      <input type="text" class="form-control" name="verificationDate" id="verificationDate" placeholder="检定日期(必填)" required="required" >
+                  </div>
+                  <label for="mechanism" class="col-sm-2 control-label">检定机构</label>
+                  <div class="col-sm-4">
+                      <input type="text" class="form-control" name="mechanism" id="mechanism" placeholder="检定机构(必填)" required="required" >
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label for="certificateNo" class="col-sm-2 control-label">检定证书号</label>
+                  <div class="col-sm-4">
+                      <input type="text" class="form-control" name="certificateNo" id="certificateNo" placeholder="检定证书号(必填)" required="required" >
+                  </div>
+                  <label for="invoiceNo" class="col-sm-2 control-label">发票代码</label>
+                  <div class="col-sm-4">
+                      <input type="text" class="form-control" name="invoiceNo" id="invoiceNo" placeholder="发票代码(必填)" required="required" >
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label for="cognizance" class="col-sm-2 control-label">认定状态</label>
+                  <div class="col-sm-10">
+                      <select class="form-control" id="cognizance"></select>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label for="configFile" class="col-sm-2 control-label">文件上传</label>
+                  <div class="col-sm-10">
+                      <input type="hidden" name="configfs" id="configfs" placeholder="请上传.rar、.doc文件">
+                      <a id="configfsDownload" hidden="hidden">下载</a>
+                      <input id="input-configfs" multiple type="file" data-show-caption="true" name="file" multiple class="file-loading">
+                  </div>
+              </div>
+              
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveInstrumentButton">插入列表</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="ibox-content" id="baseinfo">
+        <form id="form" action="#" class="wizard-big form-horizontal">
+            <h1>权属基本信息</h1>
+            <fieldset>
+                <div class="form-group">
+                    <label for="cname" class="col-sm-3 control-label">公司名称</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" name="cname" id="cname" placeholder="公司名称(必填)" pattern="^(?![0-9]|_)[a-zA-Z0-9_\u4e00-\u9fa5]+$" required="required" data-bv-regexp-message="用户名只能包含数字、字母、汉字、下划线，不能以数字、下划线开头" required="required">
+                        <input name="id" id="id" style="display: none;" type="text" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="phone" class="col-sm-3 control-label">电话</label>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" name="phone" id="phone" placeholder="电话(必填)" pattern="^1[3,4,5,7,8]\d{9}$" data-bv-regexp-message="请输入正确的联系方式" required="required">
+                    </div>
+                    
+                    <label for="contacts" class="col-sm-2 control-label">联系人</label>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" name="contacts" id="contacts" placeholder="联系人(必填)" required="required">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="aptitude" class="col-sm-3 control-label">测绘资质</label>
+                    <div class="col-sm-3">
+                        <select class="form-control" name="aptitude" id="aptitude"></select>
+                    </div>
+                
+                    <label for="expiryTime" class="col-sm-2 control-label">有效期限</label>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" name="expiryTime" id="expiryTime" placeholder="有效期限(必填)" required="required">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="qyyyzhNo" class="col-sm-3 control-label">营业执照</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" name="qyyyzhNo" id="qyyyzhNo" placeholder="企业营业执照号码(必填)" required="required">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="qyzycs" class="col-sm-3 control-label">经营场所</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" name="qyzycs" id="qyzycs" placeholder="经营场所(必填)" required="required">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="qyzzNo" class="col-sm-3 control-label">资质证号</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" name="qyzzNo" id="qyzzNo" placeholder="企业资质证号(必填)" required="required">
+                    </div>
+                </div>
+                <div class="form-group">
+                  <label for="configFile" class="col-sm-3 control-label">文件上传</label>
+                  <div class="col-sm-8">
+                      <input type="hidden" name="files" id="files" placeholder="请上传.rar、.doc文件">
+                      <a id="filesDownload" hidden="hidden">下载</a>
+                      <input id="input-files" multiple type="file" data-show-caption="true" name="file" multiple class="file-loading">
+                  </div>
+              </div>
+            </fieldset>
+            
+            <h1>添加员工</h1>
+            <fieldset>
+                 <div class="row">
+                    <div class="form-group col-md-12">
+                        <div class="bs-example" data-example-id="hoverable-table">
+                        <table class="table table-hover" id="usertable">
+                            <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th>性别</th>
+                                <th>证书类型</th>
+                                <th>资质证号</th>
+                                <th>电子邮件</th>
+                                <th>联系电话</th>
+                                <th>身份证号</th>
+                                <th>登录用户状态</th>
+                                <th>有效期限</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody id="users">
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                </div>
+            </fieldset> 
+            
+            <h1>添加仪器设备</h1>
+            <fieldset>
+                 <div class="row">
+                    <div class="form-group col-md-12">
+                        <div class="bs-example" data-example-id="hoverable-table">
+                        <table class="table table-hover" id="instrumenttable">
+                            <thead>
+                                <tr>
+                                    <th>设备名称</th>
+                                    <th>品牌型号</th>
+                                    <th>出厂编号</th>
+                                    <th>数量</th>
+                                    <th>检定日期</th>
+                                    <th>检定机构</th>
+                                    <th>检定证书号</th>
+                                    <th>发票代码</th>
+                                    <th>认定</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody id="instruments">
+                                </tbody>
+                        </table>
+                        </div>
+                    </div>
+                </div>
+            </fieldset> 
+        </form>
+    </div>
+<#include "script.ftl"/>
+<script src="/js/lib/fileinput/fileinput.min.js"></script>
+<script src="/js/lib/fileinput/fileinput/zh.min.js"></script>
+<script src="/js/jquery.steps.min.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/message_cn.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+   initMesage();
+   var id = getParameterByName('applyid');
+   var users = [];
+   var acceptance = getParameterByName('acceptance');
+   
+   if(acceptance){
+       $('#baseinfo').find('input,textarea,select').attr('disabled',true);
+   }
+   $('#id').val(id);
+   var labelsInfo ;
+   if(acceptance){
+       labelsInfo = {finish:"最后一页",next:"下一步",previous:"上一步",cancel:"取消"};
+   }else{
+       labelsInfo = {finish:"保存",next:"下一步",previous:"上一步",cancel:"取消"};
+   }
+   $("#form").steps({
+        bodyTag: "fieldset",
+        labels: labelsInfo,
+        onStepChanging: function (event, currentIndex, newIndex)
+        {
+            if (currentIndex > newIndex)
+            {
+                return true;
+            }
+            var form = $(this);
+
+            if (currentIndex < newIndex)
+            {
+                $(".body:eq(" + newIndex + ") label.error", form).remove();
+                $(".body:eq(" + newIndex + ") .error", form).removeClass("error");
+            }
+
+            form.validate().settings.ignore = ":disabled,:hidden";
+
+            return form.valid();
+        },
+        onStepChanged: function (event, currentIndex, priorIndex)
+        {
+            
+            if(currentIndex==0){
+                var fileIds = $("#files").val();
+                if(fileIds){
+                    $("div.actions ul").prepend('<li class="viewjpg" aria-disabled="false"><a  id="viewjpg">预览</a></li>');
+                    $("#viewjpg").on("click", function() {
+                        
+                        viewJpgFile(fileIds, "jpg");
+                    });
+                }
+                
+            }else{
+                $("div.actions ul li.viewjpg").remove();
+            }
+            
+            if(acceptance){
+                return ;
+            }
+            
+            if(currentIndex==1){
+                $("div.actions ul").prepend('<li class="adduser" aria-disabled="false"><a  id="adduser">新增员工</a></li>');
+                $("#adduser").on("click", function() {
+                    resetForm("userForm");
+                    loadStype("company.aptitude.type","zzzslx");
+                    //loadSelectUsers(users);
+                    $('#saveUserModal').modal('show');
+                });
+            }else{
+                $("div.actions ul li.adduser").remove();
+            }
+            
+            if(currentIndex==2){
+                $("div.actions ul").prepend('<li class="addDevice" aria-disabled="false"><a  id="addDevice">新增设备</a></li>');
+                $("#addDevice").on("click", function() {
+                    resetForm("instrumentForm");
+                    loadStype("company.cognizance.type","cognizance");
+                    $('#saveInstrumentModal').modal('show');
+                });
+            }else{
+                $("div.actions ul li.addDevice").remove();
+            }
+        },
+        onFinishing: function (event, currentIndex)
+        {
+            
+            var form = $(this);
+
+            form.validate().settings.ignore = ":disabled";
+
+            return form.valid();
+        },
+        onFinished: function (event, currentIndex)
+        {
+            if(acceptance){
+                layer.alert("当前已是最后一页! ", {icon: 1});
+                return ;
+            }
+            
+            var txt=$('#form').serializeObject();
+            
+            var listEmployeeArray = [];
+            var listInstrumentsArray = [];
+            var fileArray = [];
+            txt.expiryTime = new Date($('#expiryTime').val());
+            
+            $('#users').find('tr').each(function(i,v){
+                var listEmployee = {};
+                listEmployee.id = id;
+                listEmployee.cname = $(v).find("td:eq(0)").text();
+                listEmployee.name = $(v).find("td:eq(1)").text();
+                listEmployee.sex = $(v).find("td:eq(2)").text();
+                listEmployee.zzzslx = $(v).find("td:eq(3)").text();
+                listEmployee.ygzzNo = $(v).find("td:eq(4)").text();
+                listEmployee.email = $(v).find("td:eq(5)").text();
+                listEmployee.phone = $(v).find("td:eq(6)").text();
+                listEmployee.idCard = $(v).find("td:eq(7)").text();
+                listEmployee.status = ($(v).find("td:eq(8)").text()=="是"?"1":"0");
+                listEmployee.expiryTime = $(v).find("td:eq(9)").text();
+                listEmployee.files = $(v).find("td:eq(10)").text();
+                
+                listEmployeeArray.push(listEmployee);
+             });
+            
+            $('#instruments').find('tr').each(function(i,v){
+                var instruments = {};
+                instruments.id = id;
+                instruments.name = $(v).find("td:eq(1)").text();
+                instruments.model = $(v).find("td:eq(2)").text();
+                instruments.factoryNo = $(v).find("td:eq(3)").text();
+                instruments.number = $(v).find("td:eq(4)").text();
+                instruments.verificationDate = $(v).find("td:eq(5)").text();
+                instruments.mechanism = $(v).find("td:eq(6)").text();
+                instruments.certificateNo = $(v).find("td:eq(7)").text();
+                instruments.invoiceNo = $(v).find("td:eq(8)").text();
+                instruments.cognizance = $(v).find("td:eq(9)").text();
+                instruments.files = $(v).find("td:eq(10)").text();
+                
+                listInstrumentsArray.push(instruments);
+             });
+            
+            txt.listEmployee = listEmployeeArray;
+            txt.instruments = listInstrumentsArray;
+            
+            $.ajax({
+                type:"POST",
+                url:'/manage/applyAptitude',
+                contentType:"application/json",
+                data:JSON.stringify(txt),
+                success: function(data){
+                    var index=parent.layer.getFrameIndex(window.name);
+                    layer.alert("保存成功!", {icon: 1, closeBtn: 0},
+                        function () {
+                            window.parent.location.reload();
+                            parent.layer.close(index);
+                        } 
+                    );
+                },
+                error: function(e,xhr,opt){
+                    layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+        },
+        onInit:function(event, currentIndex, priorIndex){
+            if(id){
+                if(currentIndex==0){
+                    $.ajax({ url: url+"/selectByApplyId?id="+id, success: function(obj){
+                        var fileIds = obj.files;
+                        if(fileIds){
+                            $("div.actions ul").prepend('<li class="viewjpg" aria-disabled="false"><a  id="viewjpg">预览</a></li>');
+                            $("#viewjpg").on("click", function() {
+                                viewJpgFile(fileIds, "jpg");
+                            });
+                        }
+                    }})
+                    
+                }else{
+                    $("div.actions ul li.viewjpg").remove();
+                }
+            }
+        }
+    }).validate({
+        errorPlacement: function (error, element)
+        {
+            element.before(error); 
+        }
+    }); 
+   
+   $("#saveHouserButton").on("click", function() {
+       var listEmployee = {};
+       listEmployee.id = id;
+       listEmployee.idCard = $("#idCard").val();
+       listEmployee.cname = $("#cname").val();
+       listEmployee.name = $("#employeeName").val();
+       listEmployee.sex = $("#sex").val();
+       listEmployee.zzzslx = $("#zzzslx").val();
+       listEmployee.expiryTime = $("#emplyeeExpiryTime").val();
+       listEmployee.email = $("#email").val();
+       listEmployee.phone = $("#phone").val();
+       listEmployee.sex = $("#sex").val();
+       listEmployee.ygzzNo = $("#ygzzNo").val();
+       listEmployee.status = $("#status").val();
+       listEmployee.files = $("#configFiles").val();
+       
+       if (!isFormValid("userForm")) {
+           return;
+       }
+       
+       var usertable = $("#users");
+       var rowData = listEmployee;
+       
+       var fileType = "jpg";
+       var filebutton = "<button type='button' onclick='viewJpgFile(" + JSON.stringify(rowData.files) + "," + JSON.stringify(fileType) + ");' class='btn btn-info btn-xs viewButton'>预览</button>";
+       
+       var row = "<tr id>= "
+                         + "<td hidden=>" + (rowData.cname == null?"":rowData.cname) + "</td>"
+                         + "<td>" + (rowData.name == null?"":rowData.name) + "</td>"
+                         + "<td>" + (rowData.sex == null?"":rowData.sex) + "</td>"
+                         + "<td>" + (rowData.zzzslx == null?"":rowData.zzzslx) + "</td>"
+                         + "<td>" + (rowData.ygzzNo == null?"":rowData.ygzzNo) + "</td>"
+                         + "<td>" + (rowData.email == null?"":rowData.email) + "</td>"
+                         + "<td>" + (rowData.phone == null?"":rowData.phone) + "</td>"
+                         + "<td>" + (rowData.idCard == null?"":rowData.idCard) + "</td>"
+                         + "<td>" + (rowData.status == 0?"否":"是") + "</td>"
+                         + "<td>" + (rowData.expiryTime == null?"":rowData.expiryTime) + "</td>"
+                         + "<td hidden=>" + (rowData.files == null?"0":rowData.files) + "</td>"
+                   +"<td>" + (rowData.files == null?"":filebutton) + "<button type='button' class='btn btn-danger btn-xs deleteUserButton'>删除</button></td>";
+       usertable.append(row);
+       $('#saveUserModal').modal('hide');
+   })
+   
+   $("#users").on("click", ".deleteUserButton", function() {
+       $(this).parents('tr').remove();
+   });
+   
+   $("#saveInstrumentButton").on("click", function() {
+	   var data = {};
+       data.id = $("#id").val();
+       data.name = $("#name").val();
+       data.model = $("#model").val();
+       data.factoryNo = $("#factoryNo").val();
+       data.number = $("#number").val();
+       data.verificationDate = new Date($('#verificationDate').val());
+       data.mechanism =$("#mechanism").val();
+       data.certificateNo = $("#certificateNo").val();
+       data.invoiceNo = $("#invoiceNo").val();
+       data.cognizance = $("#cognizance").val();
+       data.files = $("#configfs").val();
+
+       if (!isFormValid("instrumentForm")) {
+           return;
+       }
+       
+       var table = $("#instruments");
+       var rowData = data;
+       
+       var fileType = "jpg";
+       var filebutton = "<button type='button' onclick='viewJpgFile(" + JSON.stringify(rowData.files) + "," + JSON.stringify(fileType) + ");' class='btn btn-info btn-xs viewButton'>预览</button>";
+       
+       var row = "<tr id><td hidden=>" + rowData.id + "</td>"
+               + "<td <a onclick='showInstrument(\""+rowData.id+"\");'>" + rowData.name + "</td>"
+               + "<td>" + rowData.model + "</td>"
+               + "<td>" + rowData.factoryNo + "</td>"
+               + "<td>" + rowData.number + "</td>"
+               + "<td>" + moment(rowData.verificationDate).format("L") + "</td>"
+               + "<td>" + rowData.mechanism + "</td>"
+               + "<td>" + rowData.certificateNo + "</td>"
+               + "<td>" + rowData.invoiceNo + "</td>"
+               + "<td>" + rowData.cognizance + "</td>"
+               + "<td hidden=>" + (rowData.files == null?"0":rowData.files) + "</td>"
+               + "<td>" + (rowData.files == null?"":filebutton) + "<button type='button' class='btn btn-danger btn-xs deleteinstButton'>删除</button>"
+               + "</td>";
+       table.append(row);
+       $('#saveInstrumentModal').modal('hide');
+   })
+   
+   $("#instruments").on("click", ".deleteinstButton", function() {
+       $(this).parents('tr').remove();
+   });
+   
+   <#include "control.ftl"/>
+   
+});
+</script>
+<script>
+var url = "/applyAptitude";
+var manageUrl = "/manage/applyAptitude";
+var id = getParameterByName('applyid');
+var acceptance = getParameterByName('acceptance');
+var insertUrl;
+$('#id').val(id);
+var mapfile = {};
+var load = function() {
+
+    loadStype("company.aptitude.type","aptitude");
+    
+    if(id){
+         $.ajax({ url: url+"/selectByApplyId?id="+id, success: function(obj){
+            $('input[name=id]').val(obj.id)
+            $('input[name=cname]').val(obj.cname)
+            $('input[name=contacts]').val(obj.contacts)
+            $('input[name=aptitude]').val(obj.aptitude)
+            $('input[name=phone]').val(obj.phone)
+            $('input[name=aptitude]').val(obj.aptitude)
+            $('input[name=qyyyzhNo]').val(obj.qyyyzhNo)
+            $('input[name=qyzycs]').val(obj.qyzycs)
+            $('input[name=qyzzNo]').val(obj.qyzzNo)
+            $('input[name=files]').val(obj.files)
+            $(".file-caption-name").html('<i class="fa fa-file"></i>'+obj.files);
+            $('input[name=expiryTime]').val(moment(obj.expiryTime).format("YYYY-MM-DD"))
+            loadStype("company.aptitude.type","aptitude",obj.aptitude);
+            
+            var usertable = $("#users");
+            usertable.empty();
+            for (var i=0;i<obj.listEmployee.length;i++)
+            {
+                var rowData = obj.listEmployee[i];
+                var button = "";
+                
+                if(rowData.files != "0" && rowData.files != null){
+                    button = "<button type='button' onclick='viewJpgFile(" + JSON.stringify(rowData.files) + "," + JSON.stringify("jpg") + ");' class='btn btn-info btn-xs viewButton'>预览</button>";
+                }
+                if(!acceptance){
+                    button += "<button type='button' class='btn btn-danger btn-xs deleteUserButton'>删除</button>";
+                }
+                var row = "<tr id>"
+                        + "<td hidden=>" + (rowData.cname == null?"":rowData.cname) + "</td>"
+                        + "<td>" + (rowData.name == null?"":rowData.name) + "</td>"
+                        + "<td>" + (rowData.sex == null?"":rowData.sex) + "</td>"
+                        + "<td>" + (rowData.zzzslx == null?"":rowData.zzzslx) + "</td>"
+                        + "<td>" + (rowData.ygzzNo == null?"":rowData.ygzzNo) + "</td>"
+                        + "<td>" + (rowData.email == null?"":rowData.email) + "</td>"
+                        + "<td>" + (rowData.phone == null?"":rowData.phone) + "</td>"
+                        + "<td>" + (rowData.idCard == null?"":rowData.idCard) + "</td>"
+                        + "<td>" + (rowData.status == null?"否":"是") + "</td>"
+                        + "<td>" + (rowData.expiryTime == null?"":rowData.expiryTime) + "</td>"
+                        + "<td hidden=>" + (rowData.files == null?"0":rowData.files) + "</td>"
+                        + "<td>" + button + "</td>";
+                usertable.append(row);
+            }
+            
+            var table = $("#instruments");
+            table.empty();
+            for (var i=0;i<obj.instruments.length;i++)
+            {
+                var rowData = obj.instruments[i];
+                var button = "";
+                
+                if(rowData.files != "0" && rowData.files != null){
+                    button = "<button type='button' onclick='viewJpgFile(" + JSON.stringify(rowData.files) + "," + JSON.stringify("jpg") + ");' class='btn btn-info btn-xs viewButton'>预览</button>";
+                }
+                if(!acceptance){
+                    button += "<button type='button' class='btn btn-danger btn-xs deleteinstButton'>删除</button>";
+                }
+                var row = "<tr id><td hidden=>" + rowData.id + "</td>"
+                    + "<td>" + rowData.name + "</td>"
+                    + "<td>" + rowData.model + "</td>"
+                    + "<td>" + rowData.factoryNo + "</td>"
+                    + "<td>" + rowData.number + "</td>"
+                    + "<td>" + rowData.verificationDate + "</td>"
+                    + "<td>" + rowData.mechanism + "</td>"
+                    + "<td>" + rowData.certificateNo + "</td>"
+                    + "<td>" + rowData.invoiceNo + "</td>"
+                    + "<td>" + rowData.cognizance + "</td>"
+                    + "<td hidden=>" + (rowData.files == null?"0":rowData.files) + "</td>"
+                    + "<td>" + button + "</td>";
+                table.append(row);
+            }
+        }}); 
+    }
+    
+};
+var loadStype = function(configPrefix,table,aptitude) {
+    $.ajax({ url:"/house/configs/systype?configPrefix=" + configPrefix, success: function(data){
+        var tables = $("#" + table + "");
+        tables.empty();
+        $.each(data,function(index,obj){
+            var arr = obj.value;
+            var strs= new Array();
+            strs = arr.split(",");
+            for(var i=0;i<strs.length ;i++){
+                var rowData = strs[i];
+                if(aptitude == rowData){
+                    tables.append("<option value='"+rowData+"' selected>" + rowData + "</option>");
+                }else{
+                    tables.append("<option value='"+rowData+"'>" + rowData + "</option>");
+                }
+            }
+        });
+    }});
+};
+
+var loadSelectUsers = function(users) {
+    $.get(url + "/users/companys").done(function (member) {
+        $.ajax({ url: "/users?pageSize=" + maxPageSize + "&q=" + encodeURI(""), success: function(data){
+            var select = $("#username");
+            select.empty();
+            for (var i=0;i<data.length;i++)
+            {
+                var rowData = data[i];
+                if ($.inArray(rowData.username, member) == -1) {
+                    if ($.inArray(rowData.username, users) == -1) {
+                        var row = '<option value="' + rowData.username + '">' + rowData.username + '</option>';
+                        select.append(row);
+                    }
+                }
+            }
+        }});
+    });
+}
+
+function viewfile(fileId,fileType) {
+    var configPrefixFileUrl = "house.file.url";
+    var configPrefixServer = "house.file.serverurl";
+    
+    $.ajax({ url:"/house/configs/systype?configPrefix=" + configPrefixServer, success: function(service){
+        $.ajax({ url:"/house/configs/systype?configPrefix=" + configPrefixFileUrl, success: function(downfile){
+            var file = "http://" + downfile[0].value + "/open/files/"+fileId;
+            var url = "http://" + service[0].value + "/onlinePreview?url=" + encodeURIComponent(file) + "&fileType=" + fileType;
+            var winHeight = window.document.documentElement.clientHeight-10;
+            window.open(url, "_blank", "height=" + winHeight
+                    + ",top=80,left=80,toolbar=no, menubar=no, scrollbars=yes, resizable=yes"); 
+        }});
+    }});
+}
+
+function viewJpgFile(fileIds, fileType) {
+    var configPrefixFileUrl = "house.file.url";
+    var configPrefixServer = "house.file.serverurl";
+    
+    if(!fileIds){
+        return;
+    }
+    
+    $.ajax({ url:"/house/configs/systype?configPrefix=" + configPrefixServer, success: function(service){
+        $.ajax({ url:"/house/configs/systype?configPrefix=" + configPrefixFileUrl, success: function(downfile){
+            var urls = '';
+            
+            var arr = fileIds.split(",");
+            
+            for (i=0;i<arr.length ;i++ ) 
+            { 
+                if(i === fileIds.length - 1){
+                    urls += "http://" + downfile[0].value + "/open/files/" + arr[i];
+                }else{
+                    urls += "http://" + downfile[0].value + "/open/files/" + arr[i] + "|";
+                }
+            } 
+            
+            var url = "http://" + service[0].value + "/picturesPreview?urls=" + encodeURIComponent(urls) + "&currentUrl=http://localhost:9080";
+            var winHeight = window.document.documentElement.clientHeight-10;
+            window.open(url, "_blank", "height=" + winHeight
+                    + ",top=80,left=80,toolbar=no, menubar=no, scrollbars=yes, resizable=yes"); 
+        }});
+    }});
+}
+
+load();
+</script>
+</body>
+</html>

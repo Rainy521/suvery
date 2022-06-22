@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+  <style type="text/css">
+        #searchList li{
+            float:left;
+        }
+        #searchList .form-control{
+            display:inline-block;
+            width:180px;
+            margin-left:10px;
+        }
+  </style>
+</head>
+<body>
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row" style="margin-top:10px;margin-bottom:10px;">
+        <div class="col-md-12">
+            <ul class="list-unstyled" id="searchList">
+                <li>
+                    <label for="id" class="control-label">编号</label>
+                    <input type="text" id="id" name="id" class="form-control" placeholder="输入编号"/>
+                </li>
+                <li>
+                    <label for="name" class="control-label" style="margin-left: 15px;">  申请人</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="输入申请人"/>
+                </li>
+                <li>
+                    <label for="certificate" class="control-label" style="margin-left: 15px;">  房产证号</label>
+                    <input type="text" id="certificate" name="certificate" class="form-control" placeholder="输入房产证号"/>
+                </li>
+                <li>
+                    <label for="location" class="control-label" style="margin-left: 15px;">  坐落</label>
+                    <input type="text" id="location" name="location" class="form-control" placeholder="输入坐落"/>
+                </li>
+                <li>
+                    <div class="input-group-btn" style="width:auto;left: 30px;">
+                        <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+                        <button type="button" class="btn btn-primary newButton">新增</button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>案件编号</th>
+              <th>不动产权证号</th>
+              <th>房屋坐落 </th>
+              <th>更新时间</th>
+              <th>操作/流程环节</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable"></tbody>
+        </table>
+        
+        <div class="hr-line-dashed"></div>
+        <div class="text-center">
+            <div class="btn-group" id="pagination">
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    <#include "script.ftl"/>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+             /**初始化事件，加载数据*/
+            var url = "/house";
+            var manageUrl = "/manage/house";
+            var pageSize = 10;
+            var operationtype = 0;
+            
+            var load = function(pageNum) {
+                pageNum = defaultV(pageNum, 1);
+                var id = $("#id").val();
+                var name = $("#name").val();
+                var certificate = $("#certificate").val();
+                var location = $("#location").val();
+                $.ajax({ url: url + "?id=" + encodeURI(id)
+                                  + "&name=" + encodeURI(name)
+                                  + "&certificate=" + encodeURI(certificate)
+                                  + "&location=" + encodeURI(location)
+                                  + "&pageNum=" + pageNum , success: function(data){
+                    
+                    var statusIds = [];
+                    $.each(data, function(i, k) {
+                        statusIds.push(data[i].id);
+                    });
+                    
+                    $.ajax({
+                        url: "/processCommon/statusByids",
+                        type:"POST",
+                        contentType:"application/json",
+                        data: JSON.stringify(statusIds),
+                        success: function(dataStatus){
+                            var table = $("#dataTable");
+                            table.empty();
+                            for (var i=0;i<data.length;i++)
+                            {
+                                var rowData = data[i];
+                                var statusId = dataStatus[rowData.id];
+                                var row = "<tr><td>" + rowData.id +"</td>"
+                                            +"<td>" + rowData.certificate + "</td>"
+                                            +"<td>" + rowData.location + "</td>"
+                                            +"<td>" + moment(rowData.updateTime).format("LLL") + "</td>";
+                                if(statusId == '0'){
+                                    row += "<td><button type='button' class='btn btn-info btn-xs sendButton'>发起申请</button>"
+                                        +"<button type='button' class='btn btn-warning btn-xs updateButton'>编辑</button>"
+                                        +"<button type='button' class='btn btn-danger btn-xs deleteButton'>删除</button></td>"
+                                        +"</tr>";
+                                }else{
+                                    row += "<td><button type='button' class='btn btn-info btn-xs'>" + (statusId == null?"":statusId) + "</button></td></tr>";
+                                }
+                                table.append(row);
+                            }
+                    }});
+                    
+                    $.ajax({ url: url + "/count?id=" + encodeURI(id)
+                                      + "&name=" + encodeURI(name)
+                                      + "&certificate=" + encodeURI(certificate)
+                                      + "&location=" + encodeURI(location) , success: function(data){
+                        pagination(data, pageNum, pageSize);
+                    }});
+                }});
+            };
+            
+            $("#dataTable").on("click", ".sendButton", function() {
+                var businessId = $(this).parents('tr').children().first().text();
+                var key = "stockroom";
+                $.ajax({ 
+                    url:"/workFlow/startProcessFlow?key=" + key + "&applyBid=" + businessId,
+                    success: function(data){
+                       layer.alert("申请成功！", {icon: 1, time : 1500});
+                       load();
+                   },
+                   error: function(e,xhr,opt){
+                       layer.alert("申请失败,请检查流程部署! " , {icon: 2});
+                   }
+                });
+            });
+            
+            $("#searchButton").on("click", function() {
+                load();
+            });
+            
+            $("#pagination").on("click", ".pageBtn", function() {
+                load(parseInt($(this).attr("data")));
+            });
+           
+            var operationtype = 0 ;    //业务类型 0：正常  1：绿色通道,
+            $(".newButton").on("click", function() {
+                layer.open({
+                    type: 2,
+                    title: '申请信息',
+                    area: ['100%', '100%'],
+                    content: 'edit.html',
+                    scrollbar: false
+                });
+            });
+            
+            $("#dataTable").on("click",".updateButton",function(){
+                var applyId=$(this).parents('tr').children().first().text();
+                var bsname = $(this).parents('tr').children().first().next().text();
+                layer.open({
+                    type: 2,
+                    title: '修改申请',
+                    area: ['100%', '100%'],
+                    content: 'edit.html?applyid=' + applyId,
+                    scrollbar: false,
+                    end: function () {
+                        location.reload();
+                    }
+                });
+            })
+            
+            $("#dataTable").on("click",".deleteButton",function(){
+                var row = $(this).parent().parent();
+                var idTd = row.children().first();
+                var id = idTd.text();
+                var rnameTd = idTd.next().next();
+                var rname = rnameTd.text();
+                
+                layer.confirm("确定删除名称为" + rname +"的申请？", {icon: 3, title: "删除申请"}, function(index){
+                    $.ajax({
+                        type:"DELETE",
+                        url: manageUrl + "/remove/" + id,
+                        success: function(data){
+                            layer.alert("删除成功!", {icon: 1, time : 1500});
+                            load();
+                        },
+                        error: function(e,xhr,opt){
+                            layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                        }
+                    });
+                    
+                    layer.close(index);
+                });
+            })
+            
+            load();
+        });
+    </script>
+</body>
+</html>

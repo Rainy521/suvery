@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwch.survey.dao.mapper.StatisticsMapper">
+  <resultMap id="BaseResultMap" type="com.lwch.survey.pojo.StatisticsInfo">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="project_fzr" jdbcType="VARCHAR" property="jsdw" />
+    <result column="sldw" jdbcType="VARCHAR" property="sldw" />
+    <result column="zjzmj" jdbcType="VARCHAR" property="jzmj" />
+    <result column="slsj" jdbcType="VARCHAR" property="slsj" />
+    <result column="chlx" jdbcType="VARCHAR" property="chlx" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  
+  <select id="queryStatistics"  resultMap="BaseResultMap" parameterType="com.lwch.survey.pojo.StatisticsParam">
+    SELECT
+		p.id,
+		p.project_fzr,
+		p.sldw,
+		b.lpzh,
+		b.zjzmj,
+		b.slsj,
+		b.chlx,
+		p.update_time
+	FROM
+		`apply_project` p
+	INNER JOIN process_status s ON p.id = s.id
+	INNER JOIN apply_build b ON p.id = b.slbh 
+	where 1=1 and s.`status`= '3'
+	<if test="type!= null and type!= ''">
+        and p.project_fzr LIKE concat('%',#{type},'%')
+    </if>
+    <if test="activeTab!= null and activeTab!= '' and activeTab == '建设单位'">
+        and p.project_fzr = #{searchType}
+    </if>
+    <if test="activeTab!= null and activeTab!= '' and activeTab == '受理单位'">
+        and p.sldw = #{searchType}
+    </if>
+    <if test="beginTime != null and beginTime !=''">
+	    and p.update_time &gt;= #{beginTime}
+	</if>
+	<if test="endTime != null and endTime !=''">
+	    and p.update_time &lt;= #{endTime}
+	</if>
+	ORDER BY p.update_time
+  </select>
+  
+  <select id="queryStatisticsChlx"  resultMap="BaseResultMap" parameterType="java.lang.String">
+    SELECT
+		p.id,
+		p.project_fzr,
+		p.sldw,
+		b.lpzh,
+		b.zjzmj,
+		b.slsj,
+		b.chlx,
+		p.update_time
+	FROM
+		`apply_project` p
+	INNER JOIN process_status s ON p.id = s.id
+	INNER JOIN apply_build b ON p.id = b.slbh 
+	where 1=1 and s.`status`= '3'
+	<if test="chlx!= null and chlx!= ''">
+        and b.chlx LIKE concat('%',#{chlx},'%')
+    </if>
+	ORDER BY p.update_time
+  </select>
+  
+</mapper>

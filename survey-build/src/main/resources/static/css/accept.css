@@ -1,0 +1,30 @@
+<style>
+        input::-webkit-input-placeholder{
+           color:red;
+        }
+        input::-moz-placeholder{   /* Mozilla Firefox 19+ */
+            color:red;
+        }
+        input:-moz-placeholder{    /* Mozilla Firefox 4 to 18 */
+            color:red;
+        }
+        input:-ms-input-placeholder{  /* Internet Explorer 10-11 */ 
+            color:red;
+        }
+    .txt{text-align:center;}
+    .wizard > .content > .body .txt{display:inline-block;width:100px;border:0;border-bottom:1px solid #333;}
+    .wizard > .content > .body .text{text-align:center;display:inline-block;width:100px;border:0;border-bottom:1px solid #333;}
+    .wizard > .steps > ul > li{width:20%}
+    .wizard-big.wizard > .content{min-height:410px}
+    .wizard > .content > .body{overflow-y:auto;padding:20px;}
+    .chk{padding:8px 0 5px 0;background:#fff;}
+    .software,.software .chk{padding-left:20px;}
+    .software{display:none;}
+    .chk label{margin-left:20px;}
+    .chk p{padding:5px 20px;}
+    .wizard > .steps > ul > li{width:auto;}
+    .ltable{width:100%;border:1px solid #aaa;}
+    .ltable input{margin-bottom:0;}
+    .ltable td{border:1px solid #aaa;padding:5px;}
+    .wizard > .content > .body input[type=radio],.wizard > .content > .body input[type=checkbox]{display:inline-block}
+</style>

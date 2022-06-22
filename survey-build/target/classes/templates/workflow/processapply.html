@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <#include "head.ftl"/>
+    <link href="/css/basic.css" rel="stylesheet">
+    <link href="/js/lib/fileinput/fileinput.min.css" rel="stylesheet">
+    <style>
+        .table caption{
+            text-align:center;
+            background:#C0C0C0;
+            border:1px solid #666;
+            color:#333;
+            font-weight:bold;
+            line-height:30px;
+        }
+        .table-bordered>tbody>tr>td{
+            border:1px solid #666;
+        }
+        .table input[type=text]{
+            width:100%;
+            line-height:25px;
+            border:0;
+        }
+        .label-text{
+            float:left;
+            width:30%;
+            padding:5px 0;
+            text-align:left;
+            font-weight:normal;
+        }
+        .label-text input[type=checkbox]{
+            margin:0 5px 0 0;
+            vertical-align:text-top;
+        }
+        .label-text input[type=text]{
+            width:60%;
+            border-bottom:1px solid #666;
+        }
+        #embedded,#nonembedded{
+            clear:both;
+            display:none;
+        }
+        .file-input .btn{
+            margin-right:0;
+        }
+    </style>
+</head>
+<body>
+   <div class="panel">
+        <div style="width:70%;margin:50px auto;">
+            <table class="table table-bordered" id="baseInfo" style="margin-bottom:0; display: none">
+                <caption>一、申请企业简况</caption>
+                <tr>
+                    <td width="20%">企业名称</td>
+                    <td colspan="3">
+                        <input type="text" name="bsname" value="" disabled/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>企业地址</td>
+                    <td>
+                        <input type="text" name="address" value="" disabled/>
+                    </td>
+                    <td>邮编</td>
+                    <td>
+                        <input type="text" name="zipcode" value="" disabled/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>网址</td>
+                    <td>
+                        <input type="text" name="bsurl" value="" disabled/>
+                    </td>
+                    <td>传真</td>
+                    <td>
+                        <input type="text" name="fax" value="" disabled/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>项目联系人</td>
+                    <td>
+                        <input type="text" name="linkman" value="" disabled/>
+                    </td>
+                    <td>职位</td>
+                    <td>
+                        <input type="text" name="position" value="" disabled/>
+                    </td>
+                </tr>
+                <tr>            
+                    <td>电话</td>
+                    <td>
+                        <input type="text" name="linkmantel" value="" disabled/>
+                    </td>
+                    <td>E-Mail地址</td>
+                    <td>
+                        <input type="text" name="mailbox" value="" disabled/>
+                    </td>
+                 </tr>
+            </table>
+            
+            <table class="table table-bordered" id="baseInfo2" style="margin-bottom:0; display: none">
+                <caption>一、申请企业简况</caption>
+                <tr>
+                    <td colspan="4" align="center">没有登记企业信息</td>
+                </tr>
+                
+            </table>
+            <form class="form-horizontal" id="applyInfo">
+                <table class="table table-bordered">
+                    <caption>二、软件基本情况</caption>
+                    <tr>
+                        <td width="20%">软件名称</td>
+                        <td colspan="3">
+                           <input type="text" name="rname" placeholder="" disabled/>
+                           <input type="hidden" name="bsname" disabled/>
+                           <input type="hidden" name="id" disabled/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>版本号</td>
+                        <td><input type="text" name="version" disabled/></td>
+                        <td>服务对象</td>
+                        <td><input type="text" name="serve" disabled/></td>
+                    </tr>
+                    <tr>
+                        <td>项目来源</td>
+                        <td colspan="3" style="text-align:left">
+                           <div class="chk">
+                               <label class="label-text"><input disabled type="checkbox" name="proscource" value="国家级重点项目"/>国家级重点项目</label>
+                               <label class="label-text"><input disabled type="checkbox" name="proscource" value="省、部、市级项目"/>省、部、市级项目</label>
+                               <label class="label-text"><input disabled type="checkbox" name="proscource" value="区、局级项目"/>区、局级项目</label>
+                               <label class="label-text"><input disabled type="checkbox" name="proscource" value="国内委托开发"/>国内委托开发</label>
+                               <label class="label-text"><input disabled type="checkbox" name="proscource" value="国外委托开发"/>国外委托开发</label>
+                               <label class="label-text"><input disabled type="checkbox" name="proscource" value="自主开发"/>自主开发</label>
+                               <label class="label-text"><input disabled type="checkbox" name="proscource" value="其他"/>其他</label>
+                           </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>软件类型</td>
+                        <td colspan="3">
+                              <div class="software chk">
+                                  <label class="label-text"><input type="checkbox" name="protype" value="嵌入式" disabled/>嵌入式软件</label>
+                                  <label class="label-text"><input type="checkbox" name="protype" value="非嵌入式" disabled/>非嵌入式软件</label>
+                              </div>
+                         </td>
+                    </tr>       
+                    <tr>
+                        <td>软件规模</td>
+                        <td colspan="3" style="text-align:left">
+                           <div class="chk">
+                               <label class="label-text"><input type="checkbox" name="proscale" value="大" disabled/>大(>10万行)</label>
+                               <label class="label-text"><input type="checkbox" name="proscale" value="中" disabled/>中(<10万行)</label>
+                              <label class="label-text"><input type="checkbox" name="proscale" value="小" disabled/>小(<1万行)</label>
+                           </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>预期产值</td>
+                        <td colspan="3" style="text-align:left">
+                             <input type="number" name="expect" style="width:30%;padding:5px 0;border:0;margin-right:15px;" disabled/>万元
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>开发工具</td>
+                        <td colspan="3" style="text-align:left">
+                             <input type="text" name="tool" disabled/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>软件架构</td>
+                        <td colspan="3" style="text-align:left">
+                           <div class="chk">
+                               <label class="label-text"><input type="checkbox" name="struct" value="单机版" disabled/>单机版</label>
+                               <label class="label-text"><input type="checkbox" name="struct" value="C/S" disabled/>C/S</label>
+                               <label class="label-text"><input type="checkbox" name="struct" value="B/S" disabled/>B/S</label>
+                               <label class="label-text" style="width:30%"><input type="checkbox" name="struct" value="其他" disabled/>其他</label>
+                           </div>
+                        </td>
+                    </tr>
+                    <tr>
+                       <td>文件上传</td>
+                       <td colspan="3">
+                            <input type="hidden" name="enclosure" id="configFile" placeholder="请上传.rar、.doc文件" disabled>
+                            <a id="configFileDownload" hidden="hidden">下载</a>
+                            <input id="input-configfile" type="file" name="file" multiple class="file-loading" disabled>
+                       </td>
+                    </tr>
+                </table>
+            </form>
+            
+            <form class="form-horizontal" id="processApplyInfo">
+                <table class="table table-bordered" >
+                    <caption>三、批注信息</caption>
+                    <tr  class="hide_buttons">
+                        <td width="20%">审批建议</td>
+                        <td colspan="3">
+                           <input type="text" name="comMessage" id="comMessage" placeholder="请填写您的审核意见" />
+                        </td>
+                    </tr>
+                    <tr><td colspan="4"></td></tr>
+                   <tr>
+                     <td>任务id</td>
+                     <td>办理人</td>
+                     <td>批注信息</td>
+                     <td>批注时间</td>
+                   </tr>
+                    <tbody id="processbaseInfo" style="border:1px solid #666;"></tbody>
+                    <tfoot style="border:1px solid #666;" class="hide_buttons" id="showbuttons">
+                    
+                       <!-- <tr>
+                            <td colspan="4"><button type="button" class="btn btn-info" id="submitFlowButton">提交</button>
+                            <button type="button" class="btn btn-info" id="rejectButton">驳回</button></td>
+                       </tr> -->
+                    </tfoot>
+                    
+                </table>
+               
+            </form>
+            
+        </div>
+   </div>
+    <#include "script.ftl"/>
+    <script src="/js/lib/fileinput/fileinput.min.js"></script>
+    <script src="/js/lib/fileinput/fileinput/zh.min.js"></script>
+    <script>
+        $(document).ready(function(){ 
+            var url="/registers";
+            var manageUrl="/manage/registers";
+            var applyId=getParameterByName('applyid');
+            var taskId=getParameterByName('taskId');
+            var businessId=getParameterByName('businessId');
+            var bsname=getParameterByName('bsname');
+            var stateComment=getParameterByName('stateComment');
+            var pid=getParameterByName('pid');
+            var insertUrl;
+            (function (fileInputId, fileField, validate) {
+                $("#" + fileInputId).fileinput({
+                    language: 'zh', //设置语言
+                    allowedFileExtensions: ['rar', 'doc','docx'],//接收的文件后缀
+                    showPreview : false, //显示预览 
+                    showUpload: false,
+                    showRemove:true,
+                    maxFileCount: 1,
+                    autoReplace:false,
+                    uploadUrl: '/files'
+                }).on("filebatchselected", function(event, files) {
+                    $(this).fileinput("upload");
+                }).on('filecleared', function(event) {
+                    $("#" + fileField).val("");
+                    $("#" + fileField + "Download").hide();
+                }).on("fileuploaded", function(event, data) {
+                    if(data.response) {
+                        $("#" + fileField).val(data.response.id);
+                        $("#" + fileField + "Download").hide();
+                    }
+                });
+            })("input-configfile", "configFile"); 
+            
+            var load = function() {
+                if(bsname != null && bsname != ""){
+                    $("#baseInfo").show();
+                    $("#baseInfo2").hide();
+                    $.ajax({ url: url+"/"+bsname+"/getBusinessInfo", success: function(data){
+                        $('#applyInfo .table').find('input[name=bsname]').val(data.bsname); 
+                        $('#baseInfo input[name=bsname]').val(data.bsname!="undefined"?data.bsname:""); 
+                        $('#baseInfo input[name=address]').val(data.province+data.city+data.area); 
+                        $('#baseInfo input[name=zipcode]').val(data.zipcode!="undefined"?data.zipcode:"");
+                        $('#baseInfo input[name=bsurl]').val(data.zbsurl!="undefined"?data.zbsurl:"");
+                        $('#baseInfo input[name=fax]').val(data.fax);
+                        $('#baseInfo input[name=linkman]').val(data.linkman);
+                        $('#baseInfo input[name=position]').val(data.position!="undefined"?data.position:"");
+                        $('#baseInfo input[name=linkmantel]').val(data.linkmantel);
+                        $('#baseInfo input[name=mailbox]').val(data.mailbox);                   
+                     }});
+                }else{
+                    $("#baseInfo2").show();
+                    $("#baseInfo1").hide();
+                }
+                
+                 /*如果有申请ID传值，显示已经申请的信息*/
+                if(applyId){
+                    $.ajax({ 
+                        url: url+"/"+applyId+"/getRegister",
+                        contentType:"application/json",
+                        success: function(data){
+                            $('#applyInfo .table').find('input[name=id]').val(data.id);
+                            $('input[name=applyid]').val(applyId);
+                            $('input[name=rname]').val(data.rname);
+                            $('input[name=version]').val(data.version);
+                            $('input[name=serve]').val(data.serve);
+                            $('input[name=expect]').val(data.expect);
+                            $('input[name=tool]').val(data.tool);
+                            $("#configFile").val(data.enclosure)
+                            $(".file-caption-name").html('<i class="fa fa-file"></i>'+data.enclosure);
+                            var chks=$('input:checkbox');
+                            for(var i=0;i<chks.length;i++){
+                                if(chks[i].value==data.protype
+                                        ||(chks[i].value==data.proscource&&chks[i].name=='proscource')
+                                        ||chks[i].value==data.proscale
+                                        ||(chks[i].value==data.struct&&chks[i].name=='struct'))
+                                {
+                                    chks[i].checked=true;
+                                }
+                            }
+                        },
+                        error: function(e,xhr,opt){
+                            layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                        }
+                    });
+                }
+                
+                
+                
+                /**流程加载按钮*/ 
+                if(stateComment != 1){
+                     //  加载按钮
+                     $.ajax({ url: "/workFlow/getOutComeList?taskId=" +taskId, success: function(dat){
+                         var table = $("#showbuttons");
+                         table.empty();
+                         var row = "<tr><td colspan='4'>";
+                         for (var i=0;i<dat.length;i++)
+                         {
+                             var rowData = dat[i];
+                             row += "<button type='button' class='btn btn-info submitFlowButton' >"+rowData+"</button>";
+                         }
+                         row += "</td></tr>";
+                         table.append(row);
+                         
+                    }}); 
+                } 
+                 
+                /**流程批注*/ 
+                 if(stateComment == 1){
+                     $(".hide_buttons").hide();
+                     var key="registration_test";
+                     $.ajax({ url: "/workFlow/findHiComment?pid=" +pid, success: function(dat){
+                         var table = $("#processbaseInfo");
+                         table.empty();
+                         if(dat.length==0){
+                             var row = "<tr><td colspan='4'>暂无批注信息</td></tr>";
+                             table.append(row);
+                         }else{
+                             for (var i=0;i<dat.length;i++)
+                             {
+                                 var rowData = dat[i];
+                                 var row = "<tr><td>" + rowData.taskId + "</td><td>" + rowData.userId + "</td>"
+                                             +"<td>" + rowData.fullMessage + "</td><td>"+(moment(rowData.time).format("LLL"))+"</td></tr>";
+                                 table.append(row);
+                             }
+                         }
+                         
+                    }}); 
+                 }else{
+                     $(".hide_buttons").show();
+                     $.ajax({ url: "/workFlow/findCommentByTaskId?taskId=" +taskId, success: function(dat){
+                         var table = $("#processbaseInfo");
+                         table.empty();
+                         if(dat.length==0){
+                             var row = "<tr><td colspan='4'>暂无批注信息</td></tr>";
+                             table.append(row);
+                         }else{
+                             for (var i=0;i<dat.length;i++)
+                             {
+                                 var rowData = dat[i];
+                                 var row = "<tr><td>" + rowData.taskId + "</td><td>" + rowData.userId + "</td>"
+                                             +"<td>" + rowData.fullMessage + "</td><td>"+(moment(rowData.time).format("LLL"))+"</td></tr>";
+                                 table.append(row);
+                             }
+                         }
+                    }}); 
+                 }
+            };
+            $(":checkbox").click(function(){ 
+                if($(this).attr("checked")!=undefined) 
+                { 
+                    $(this).parents('.chk').find(':checkbox').attr("checked",false); 
+                    $(this).attr("checked",true); 
+                } 
+            }); 
+            
+            
+            $('#showbuttons').on('click','.submitFlowButton',function(){
+                var text=$(this).text();
+                var msg = $("#comMessage").val();
+                if(msg == null){
+                    msg = "无填写审核信息";
+                }
+                var variable = text;
+                 $.ajax({ 
+                      url:"/workFlow/compleTask?taskId="+taskId+"&variable=" +variable+"&msg=" +msg
+                    , success: function(data){
+                        if(data==1){
+                            layer.alert("流程结束！");
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }else{
+                            layer.alert("任务完成成功！");
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        }
+                        
+                    }
+                });
+            });
+            
+            
+            load();
+        }); 
+    </script>
+</body>
+</html>

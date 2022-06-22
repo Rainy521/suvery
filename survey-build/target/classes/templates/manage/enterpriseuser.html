@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  <style type="text/css">
+      .form-horizontal .form-group {
+            margin-right: 0;
+            margin-left: 0; 
+      }
+      #saveModal select{
+        border: 1px solid #e5e6e7;
+        border-radius: 1px;
+        padding:6px;
+        vertical-align:-webkit-baseline-middle;
+      }
+  </style>
+  </head>
+  <body>
+  
+  <div class="modal fade" id="saveModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">用户</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" id="userForm">
+              <div class="form-group">
+                <label for="username" class="col-sm-2 control-label">用户名</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="username" id="username" placeholder="用户名(必填)" required="required" pattern="^[a-zA-Z0-9\u4e00-\u9fa5]+$" data-bv-regexp-message="用户名只能包含数字、字母、汉字">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="realname" class="col-sm-2 control-label">昵称</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="realname" id="realname" placeholder="昵称(必填)" required="required" pattern="^[a-zA-Z0-9\u4e00-\u9fa5]+$" data-bv-regexp-message="昵称只能包含数字、字母、汉字">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="email" class="col-sm-2 control-label">邮箱</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="email" id="email" placeholder="邮箱(必填)" required="required" pattern="^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$" data-bv-regexp-message="邮箱格式不正确">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="phone" class="col-sm-2 control-label">联系方式</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="phone" id="phone" placeholder="联系方式(必填)" required="required" pattern="^1[3,4,5,7,8]\d{9}$" data-bv-regexp-message="请输入正确的联系方式">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveButton">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row" style="margin-top:10px;margin-bottom:10px;">
+        <div class="col-md-12">
+          <div class="input-group">
+            <input id="searchContent" type="text" class="form-control" placeholder="输入用户名">
+            <div class="input-group-btn" style="width:15%">
+              <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+              <button type="button" class="btn btn-primary newButton">新增企业用户</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>用户名</th>
+              <th>昵称</th>
+              <th>邮箱</th>
+              <th>联系方式</th>
+              <th>用户类型</th>
+              <th>是否锁定</th>
+              <th>锁定时间</th>
+              <th>密码是否有效</th>
+              <th>密码设置时间</th>
+              <th>动作</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable">
+          </tbody>
+        </table>
+        
+        <div class="hr-line-dashed"></div>
+        <div class="text-center">
+            <div class="btn-group" id="pagination">
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>  
+    
+    <#include "script.ftl"/>
+    <script src="/js/lib/distpicker/jsAddress.js"></script>
+    <script src="/js/lib/distpicker/industry.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        /**初始化事件，加载数据*/
+        var manageUrl = "/users";
+        var typeText = ["平台", "个人", "企业"];
+        var pageSize = 10;
+        var load = function(pageNum) {
+            pageNum = defaultV(pageNum, 1);
+            var search = $("#searchContent").val();
+            var ret = /^[\u4E00-\u9FA5A-Za-z0-9_]+$/;
+            if(search != ""){
+               if(!ret.test(search)){
+                    var table = $("#dataTable");
+                    table.empty();
+                    pagination(0, pageNum, pageSize);
+                    return ;
+                }
+            }
+            $.ajax({ url: "/businesses/user/enterpriseuser" + "?query=" + search + "&pageNum=" + pageNum, success: function(data){
+                var table = $("#dataTable");
+                table.empty();
+                for (var i = 0; i < data.length; i++) {
+                    var rowData = data[i];
+                    var row = "<tr><td>" + rowData.username + "</td>"
+                    + "<td>" + rowData.realname + "</td>"
+                    + "<td>" + rowData.email + "</td>"
+                    + "<td>" + rowData.phone + "</td>"
+                    + "<td>" + typeText[rowData.userType] + "</td>"
+                    + "<td>" + !rowData.accountNonLocked + "</td>"
+                    + "<td>" + (rowData.accountNonLocked ? "" : moment(rowData.accountLockedTime).format("LLL")) + "</td>"
+                    + "<td>" + rowData.credentialsNonExpired + "</td>"
+                    + "<td>" + (rowData.credentialsNonExpired ? moment(rowData.credentialsEffectiveTime).format("LLL") : "") + "</td>"
+                    + '<td><button type="button" class="btn btn-danger btn-xs deleteButton">删除</button>'
+                    + '<button type="button" class="btn btn-warning btn-xs resetPasswordButton">重置密码</button>'
+                    + '<button type="button" class="btn btn-warning btn-xs resetNicknameButton">修改昵称</button>'
+                    + '<button type="button" class="btn btn-info btn-xs resetViewButton">查看详情</button></td>'
+                    + '</tr>';
+                    table.append(row);
+                }
+                
+                $.ajax({ 
+                    url:"/businesses/count/enterpriseuser?query=" + search,
+                    success: function(data){
+                        pagination(data, pageNum, pageSize);
+                    }
+                });
+            }});
+        };
+        
+        
+        $("#searchButton").on("click", function() {
+            load();
+        });
+        
+        
+        $("#pagination").on("click", ".pageBtn", function() {
+            load(parseInt($(this).attr("data")));
+        });
+        
+        
+        $(".newButton").on("click", function() {
+            resetForm("userForm");
+            
+            $('#saveModal').modal('show');
+        });
+        
+        
+        /**新增企业下的用户*/
+        $("#saveButton").on("click", function() {
+            var datauser = {};
+            datauser.username = $("#username").val();
+            datauser.realname = $("#realname").val();
+            datauser.email = $("#email").val();
+            datauser.phone = $("#phone").val();
+            datauser.userType = 2;
+            
+            if (!isFormValid("userForm")) {
+                return;
+            }
+            
+          //成功之后回调函数
+            $.ajax({ 
+                type:"POST",
+                url: "/manage/businesses/add/user/insertBusinessUsers",
+                contentType:"application/json",
+                data:JSON.stringify(datauser),
+                success: function(data){
+                    $.ajax({ 
+                        type:"POST",
+                        url: manageUrl,
+                        contentType:"application/json",
+                        data:JSON.stringify(datauser),
+                        success: function(data){
+                            layer.alert("保存成功!", {icon: 1, time : 1500}); 
+                            $('#saveModal').modal('hide');
+                            load();
+                        },
+                        error: function(e,xhr,opt){
+                            layer.alert("新增用户保存失败!" + e.responseJSON.message, {icon: 2});
+                        }
+                    });
+                },
+                error: function(e,xhr,opt){
+                  layer.alert(e.responseJSON.message, {icon: 2});
+                }
+            });
+            
+            
+        })
+        
+        
+        /**当用户入库执行成功之后，进行新用户自动绑定*/
+        function callBack(data){
+           
+        }
+        
+        
+        /**删除用户*/
+        $("#dataTable").on("click", ".deleteButton", function() {
+            var row = $(this).parent().parent();
+            var idTd = row.children().first();
+            var id = idTd.text();
+            
+            layer.confirm("确定删除" + id+"的用户？", {icon: 3, title: "删除用户"}, function(index){
+                $.ajax({
+                    type:"DELETE",
+                    url: manageUrl + "/" + id,
+                    success: function(data){
+                        //成功进行回调函数
+                        callDeleteBusUser(id);
+                        layer.alert("删除成功!", {icon: 1, time : 1500});
+                        load();
+                    },
+                    error: function(e,xhr,opt){
+                        layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                    }
+                });
+                
+                layer.close(index);
+            });
+        });
+        
+        
+        /**删除用户的同时，同步删除企业 用户中间表的该用户数据*/
+        function callDeleteBusUser(id){
+            $.ajax({
+                type:"DELETE",
+                url: "/manage/businesses" + "/" + id+"/user/deleteBusinessUsers",
+                success: function(data){
+                },
+                error: function(e,xhr,opt){
+                    layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+        }
+        
+        
+        /**重置密码*/
+        $("#dataTable").on("click", ".resetPasswordButton", function() {
+            var row = $(this).parent().parent();
+            var idTd = row.children().first();
+            var id = idTd.text();
+            
+            layer.confirm("用户名为" + id, {icon: 3, title: "重置密码"}, function(index){
+              $.ajax({
+                  type:"PUT",
+                  url: "/users/" + id + "/restPassword",
+                  success: function(data){
+                      layer.alert("密码重置成功!", {icon: 1, time : 1500});
+                      load();
+                  },
+                  error: function(e,xhr,opt){
+                      layer.alert("密码重置失败! " + e.responseJSON.message, {icon: 2});
+                  }
+              });
+              
+              layer.close(index);
+            });
+        });
+        
+        
+        /**修改昵称*/
+        $("#dataTable").on("click", ".resetNicknameButton", function() {
+            var row = $(this).parent().parent();
+            var nameTd = row.children().first();
+            var name = nameTd.text();
+            var nicknameTd = nameTd.next();
+            var nickname = nicknameTd.text();
+            
+            layer.prompt({
+                formType: 0,
+                value: nickname,
+                title: "为昵称" + nickname + "重命名"
+              }, function(value, index, elem){
+                 var ret = /^[\u4E00-\u9FA5A-Za-z0-9_]+$/;
+                 if(!ret.test(value)){
+                      layer.alert("请重新录入：名称中有特殊符号! " , {icon: 3});
+                      return ;
+                 }
+                $.ajax({
+                    type:"PUT",
+                    url: manageUrl + "/" + name + "/" + $.trim(value) + "/changeNickname/",
+                    success: function(data){
+                       layer.alert("昵称重命名成功!", {icon: 1, time : 1500});
+                       layer.close(index);
+                       load();
+                    },
+                    error: function(e,xhr,opt){
+                        layer.alert("重命名失败! ", {icon: 2});
+                    }
+                });
+              });
+        });
+        
+        
+        /**查看详情*/
+        $("#dataTable").on("click", ".resetViewButton", function() {
+            var row = $(this).parent().parent();
+            var idTd = row.children().first();
+            var id = idTd.text();
+            layer.open({
+                type: 2,
+                title: '企业用户详细信息',
+                area: ['100%', '100%'],
+                content: 'enterpriseuserdetails.html?id='+id,
+                scrollbar: false
+              });
+        });
+        
+        load();
+    });
+    </script>
+  </body>
+</html>

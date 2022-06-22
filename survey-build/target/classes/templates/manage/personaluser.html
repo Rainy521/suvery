@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  <style type="text/css">
+      .form-horizontal .form-group {
+            margin-right: 0;
+            margin-left: 0; 
+      }
+      #saveModal select{
+        border: 1px solid #e5e6e7;
+        border-radius: 1px;
+        padding:6px;
+        vertical-align:-webkit-baseline-middle;
+      }
+  </style>
+  </head>
+  <body>
+  
+    <!-- 数据展示区域 -->
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row" style="margin-top:10px;margin-bottom:10px;">
+        <div class="col-md-12">
+          <div class="input-group">
+            <input id="searchContent" type="text" class="form-control" placeholder="输入用户名">
+            <div class="input-group-btn" style="width:15%">
+              <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+             
+              <button type="button" class="btn btn-primary newbatchButton">批量通过</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th width="50px"><input id="checkAll" type="checkbox" onchange="checkAll(this)"/></th>
+              <th>用户名</th>
+              <th>昵称</th>
+              <th>邮箱</th>
+              <th>联系方式</th>
+              <th>审核结果</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable">
+          </tbody>
+        </table>
+        
+        <div class="hr-line-dashed"></div>
+        <div class="text-center">
+            <div class="btn-group" id="pagination">
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+    <#include "script.ftl"/>
+    <script src="/js/lib/distpicker/jsAddress.js"></script>
+    <script src="/js/lib/distpicker/industry.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        var url = "/personalUser";
+        var pageSize = 10;
+        var load = function(pageNum) {
+            pageNum = defaultV(pageNum, 1);
+            var search = $("#searchContent").val();
+            var ret = /^[\u4E00-\u9FA5A-Za-z0-9_]+$/;
+            if(search != ""){
+               if(!ret.test(search)){
+                    var table = $("#dataTable");
+                    table.empty();
+                    pagination(0, pageNum, pageSize);
+                    return ;
+                }
+            }
+            $.ajax({ url: url +"/personal/user/load"+ "?query=" + encodeURI(search) + "&pageNum=" + pageNum, success: function(data){
+                var table = $("#dataTable");
+                table.empty();
+                for (var i=0;i<data.length;i++)
+                {
+                    var rowData = data[i];
+                    var row = "<tr><td><input type='checkbox' name='checkbox'/></td><td style='display: none;'>"
+                               + rowData.id+"</td><td>" 
+                               + rowData.username + "</td><td>" 
+                               + rowData.realname + "</td><td>"
+                               + rowData.email + "</td><td>"
+                               + rowData.phone+ "</td><td>"
+                               + (rowData.audit == 0 ? '未审核':'通过') + "</td><td>"
+                               + '<button type="button" class="btn btn-warning btn-xs updateButton">通过</button><button type="button" class="btn btn-danger btn-xs deleteButton">删除</button></td></tr>';
+                    table.append(row);
+                }
+                
+                $.ajax({ url: url + "/personal/user/count?query=" + search, success: function(data){
+                    pagination(data, pageNum, pageSize);
+                }});
+            }});
+        };
+        
+        $("#searchButton").on("click", function() {
+            load();
+        });
+        
+        
+        $("#pagination").on("click", ".pageBtn", function() {
+            load(parseInt($(this).attr("data")));
+        });
+        
+        /**清除单个信息操作*/
+        $("#dataTable").on("click", ".deleteButton", function() {
+        	var row = $(this).parents('tr').children().first().next();
+            var id = row.text();
+            var username = row.next().text();
+             layer.confirm("确定清除 " + username +" 的申请信息？", {icon: 3, title: "删除信息"}, function(index){
+                 $.ajax({
+                     url:url + "/personal/user/delete?id="+id,
+                     success: function(data){
+                         layer.alert("删除成功!", {icon: 1, time : 1500});
+                         load();
+                     },
+                     error: function(e,xhr,opt){
+                         layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                     }
+                 });
+                 
+                 layer.close(index);
+             });
+        });
+        
+        /**单个通过审核操作*/
+        $("#dataTable").on("click", ".updateButton", function() {
+             var data = [];
+             var record ={};
+             var row = $(this).parent().parent();
+             var ids = row.find("td:eq(1)");
+             var id = ids.text();
+             var usernames = row.find("td:eq(2)");
+             var username = usernames.text();
+             record.id = id;
+             
+             data.push(record);
+             
+            layer.confirm("确定通过用户名为 " + username +" 的申请信息？", {icon: 3, title: "通过"}, function(index){
+                 $.ajax({
+                     type:"POST",
+                     url: url+"/personal/user/audit",
+                     contentType:"application/json",
+                     data:JSON.stringify(data),
+                     success: function(data){
+                         layer.alert("审核通过!", {icon: 1, time : 1500});
+                         load();
+                     },
+                     error: function(e,xhr,opt){
+                         layer.alert("审核失败! " + e.responseJSON.message, {icon: 2});
+                         load();
+                     }
+                 });
+                 
+                 layer.close(index);
+             });
+       });
+        
+        /**批量审核操作*/
+        $(".newbatchButton").on("click", function() {
+        	
+        	var personalArray = [];
+        	
+        	if ($('#dataTable input:checked').size()<1) {
+                layer.alert('请选择申请信息！', {icon:0})
+            }
+        	else{
+        		$("#dataTable input[type=checkbox]:checked").each(function() {
+                    var personal = {};
+                    personal.id = $.trim($(this).closest("tr").find("td:eq(1)").text());
+                    personalArray.push(personal);
+                    
+                });
+                
+                $.ajax({
+                    type:"POST",
+                    url: url +"/personal/user/audit",
+                    contentType:"application/json",
+                    data:JSON.stringify(personalArray),
+                    success: function(data){
+                        layer.alert("审核通过!", {icon: 1, time : 1500});
+                        load();
+                    },
+                    error: function(e,xhr,opt){
+                        layer.alert("审核失败! " + e.responseJSON.message, {icon: 2});
+                        load();
+                    }
+                });
+        	}
+        })
+        
+        load();
+        
+    });
+    
+    
+    /**多选操作*/
+    var checkAll = function(obj){
+        if($(obj).prop("checked")){
+            $("#dataTable input[type=checkbox]").prop('checked', true)
+        }else{
+            $("#dataTable input[type=checkbox]").prop('checked', false)
+        }
+     };
+    </script>
+  </body>
+</html>

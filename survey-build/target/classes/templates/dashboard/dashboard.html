@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<#include "head.ftl"/>
+<style type="text/css">
+.wrapper-content{padding:3px;}
+</style>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-md-offset-10 col-md-2 col-sm-offset-8 col-sm-4">
+                <select id="layouts" class="form-control m-b-xs" style="display: none">
+                </select>
+            </div>
+        </div>
+        <div class="row" id="columns">
+        </div>
+    </div>
+    <#include "script.ftl"/>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            page.dashboard.dashboard.init();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+</head>
+<style type="text/css">
+    #searchList li{
+        float:left;
+    }
+    #searchList .form-control{
+        display:inline-block;
+        width:180px;
+        margin-left:10px;
+    }
+    .divmatnrdesc{
+       margin-left: 0px;
+       overflow:hidden;
+       white-space:nowrap;
+       text-overflow:ellipsis;
+       max-width: 130px;
+    }
+    #tooltipdiv {
+        position: absolute;
+        border: 1px solid #333;
+        background: #f7f5d1;
+        padding: 3px 3px 3px 3px;
+        color: #333;
+        display: none;
+        font-size: 10px;
+    }
+</style>
+
+<body>
+
+<div class="modal fade" id="saveModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">批注信息</h4>
+        <input type="text" id="taskid" style="display: none;"/>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" id="formulaForm">
+          <div>
+            <table class="table table-bordered" >
+                <thead>
+                    <tr>
+                       <th>任务环节名称</th>
+                       <th>办理人</th>
+                       <th>批注信息</th>
+                       <th>批注时间</th>
+                    </tr>
+                </thead>
+                <tbody id="processbaseInfo" style="border:1px solid #666;"></tbody>
+            </table>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper wrapper-content float-e-margins">
+	
+	<div class="row" style="margin-top:10px;margin-bottom:10px;">
+        <div class="col-md-12">
+          <div class="input-group">
+            <div class="form-inline" style="margin-bottom:10px;">
+               
+                <div class="form-group" style="margin-right:15px;">
+                    <label class="control-label">申请编号</label>
+                    <div class="input-group">
+                       <input type="text" class="form-control" id="qApplyId" style="width:190px;"/>
+                   </div>
+                </div>
+                <div class="form-group" style="margin-right:10px;">
+                    <label class="control-label">项目名称</label>
+                    <div class="input-group">
+                       <input type="text" class="form-control" id="qXmmc" style="width:190px;"/>
+                   </div>
+                </div>
+                <div class="form-group" style="margin-right:10px;">
+                    <label class="control-label">归档位置</label>
+                    <div class="input-group">
+                       <input type="text" class="form-control" id="qGdwz" style="width:190px;"/>
+                   </div>
+                </div>
+                <div class="form-group" style="margin-right:10px;">
+                   <label class="control-label">归档日期</label>
+                   <div class="input-group">
+					  <input type="text" class="form-control layui-input" name="qGdrq" id="qGdrq" 
+					    placeholder="请双击此处,选择年份"  readonly="readonly"
+		                pattern=""  ondblclick="getTime();"
+		                style="width:190px; background-color: white;"></div>
+                </div>
+                <button id="exportFileButton" type="button" class="btn btn-primary btn-sm">导出统计表</button>
+            </div>  
+          </div>
+        </div>
+        
+        <div class="col-md-12">
+          <div class="input-group">
+            <div class="form-inline" style="margin-bottom:10px;">
+                <div class="form-group" style="margin-right:15px;">
+                    <label class="control-label">建设单位</label>
+                    <div class="input-group" style="width:190px;">
+                    	<input type="text" class="form-control" id="qJsdw" style="width:190px;"/>
+                   	</div>
+                </div>
+                <div class="form-group" style="margin-right:10px;">
+                    <label class="control-label">项目坐落</label>
+                    <div class="input-group" style="width:190px;">
+                    	<input type="text" class="form-control" id="qXmzl" style="width:190px;"/>
+                   	</div>
+                </div>
+                <div class="form-group" style="margin-right:10px;">
+                    <label class="control-label">楼盘幢号</label>
+                    <div class="input-group">
+                       <input type="text" class="form-control" id="qLpzh" style="width:190px;"/>
+                   </div>
+                </div>
+                <div class="form-group" style="margin-right:10px;">
+                    <label class="control-label">测绘类型</label>
+                    <div class="input-group">
+                    	<select id="typeSelect" name="typeSelect" class="form-control" style="width:190px;">
+						</select>
+                   </div>
+                </div>
+               	<button id="searchButton" type="button" class="btn btn-primary btn-sm">查询</button>
+               	<button id="cleanButton" type="button" class="btn btn-primary btn-sm">清空</button>
+               	<!-- 
+               	<button id="test2Button" type="button" class="btn btn-primary btn-sm">test</button>
+            	   -->
+            </div>  
+          </div>
+        </div>
+      </div>
+	
+	<div class="row">
+        <div class="col-md-12">
+		    <table class="table table-bordered">
+		      <thead>
+		        <tr>
+		            <th>申请编号</th>
+		            <th>项目名称</th>
+		            <th>幢号</th>
+		            <th>测绘类型</th>
+		            <th>建设单位</th>
+		            <th>申请时间</th>
+		            <th>归档时间</th>
+		            <th>退回次数</th>
+		            <th>归档地址</th>
+		            <th>有效性</th>
+		            <th>操作</th>
+		        </tr>
+		      </thead>
+		      <tbody id="dataTable"></tbody>
+		    </table>
+    
+    		<div class="hr-line-dashed"></div>
+		    <div class="text-center">
+		        <div class="btn-group" id="pagination">
+		        </div>
+		    </div>
+    	</div>
+  	</div>
+</div>
+
+<#include "script.ftl"/>
+<script src="/js/common.js"></script>
+<script src="/js/lib/layui/layui.js"></script>
+<script type="text/javascript">
+layui.use('laydate', function(){
+    var laydate = layui.laydate;
+  	//年选择器
+  	/* 
+    laydate.render({
+      elem: '#qGdrq'
+      ,type: 'datetime'
+      ,range: '~'
+      ,format: 'yyyy-M-d'
+    });
+  	 */
+})
+$(document).ready(function(){
+    /**初始化事件，加载数据*/
+    var url = "/dossier";
+    var manageUrl = "/manage/dossier";
+    var pageSize = 10;
+    var operationtype = 0;
+    var myName='<%=session.getAttribute("menus")%>';
+    console.log(myName)
+
+    loadStype("commodity.house.chlx","typeSelect","")
+    
+    var load = function(pageNum) {
+        pageNum = defaultV(pageNum, 1);
+        
+        var param = {};
+        param.proName = $("#qXmmc").val().trim();
+        param.chlx = $("#typeSelect").val().trim();
+        param.applyId = $("#qApplyId").val().trim();
+        param.ghno = $("#qGdwz").val().trim();
+        param.jsdw = $("#qJsdw").val().trim();
+        param.xmzl = $("#qXmzl").val().trim();
+        param.lpzh = $("#qLpzh").val().trim();
+        
+        if($("#qGdrq").val() != ""){
+        	var rqArr = $("#qGdrq").val().split("~");
+        	param.beginGdrq = rqArr[0].trim();
+            param.endGdrq = rqArr[1].trim();
+        }
+        
+        param.pageNum = pageNum;
+        
+        $.ajax({ type:"POST",
+            url: url,
+            contentType:"application/json",
+            data:JSON.stringify(param),
+            success: function(data){
+	            var table = $("#dataTable");
+	            table.empty();
+	            for (var i=0;i<data.length;i++)
+	            {
+	                var rowData = data[i];
+	                var lpzh = rowData.lpzh==null?"":rowData.lpzh;
+	                var chlx = rowData.chlx==null?"":rowData.chlx;
+	                var yxx = rowData.yxx==0?"有效":"无效";
+	                var gdno = rowData.gdno==null?"":rowData.gdno;
+	                
+	                var row = "<tr><td hidden>" + rowData.id +"</td>"
+	                			+"<td style='text-align: left;'>" + rowData.applyid +"</td>"
+	                            +"<td>" + rowData.proname + "</td>"
+	                            +"<td>" + lpzh + "</td>"
+	                            +"<td>" + chlx + "</td>"
+	                            + getTdText(rowData.jsdw,130)
+	                           // +"<td style='text-align: left;'>" + rowData.jsdw + "</td>"
+	                            +"<td>" + moment(rowData.applytime).format("YYYY-MM-DD") + "</td>"
+	                            +"<td>" + moment(rowData.updatetime).format("YYYY-MM-DD") + "</td>"
+	                            +"<td>" + rowData.backnum + "</td>"
+	                            +"<td>" + gdno + "</td>"
+	                            +"<td>" + yxx + "</td>";
+	                row += "<td><button type='button' class='btn btn-info btn-xs viewButton'>查看</button>"
+	                        +"<button type='button' class='btn btn-warning btn-xs updateDossierButton'>档案库</button>"
+	                        +"<button type='button' class='btn btn-info btn-xs viewPzButton'>批注</button>"
+	                        +"<button type='button' class='btn btn-danger btn-xs deleteButton'>删除</button>"
+                            +"</td>"
+	                        +"</tr>";
+	                table.append(row);
+	            }
+	            
+	            $.ajax({ type:"POST",
+	                url: url + '/count',
+	                contentType:"application/json",
+	                data:JSON.stringify(param),
+	                success: function(data){
+                		pagination(data, pageNum, pageSize);
+            	}});
+        }});
+    };
+    
+    $("#searchButton").on("click", function() {
+        load();
+    });
+    
+    $("#exportFileButton").on("click", function() {
+    	
+    	var contentHtml = '<div class="row" style="width: 420px;  margin-left:7px; margin-top:10px;">'
+    					+ '<div class="col-sm-12">'
+        				+ '<div class="input-group">'
+        				+ '		<span class="input-group-addon"> 归档开始日期:</span>'
+        				+ '		<input id="beginGdrq" type="txt" class="form-control" placeholder="请点击选择归档日期">'
+        				+ '</div>'
+        				+ '</div>'
+        				+ '</div>'
+        				+ '<div class="row" style="width: 420px;  margin-left:7px; margin-top:10px;">'
+        				+ '<div class="col-sm-12">'
+        				+ '<div class="input-group">'
+        				+ '		<span class="input-group-addon"> 归档结束日期:</span>'
+        				+ '		<input id="endGdrq" type="txt" class="form-control" placeholder="请点击选择归档日期">'
+        				+ '</div>'
+        				+ '</div>'
+          +'</div>';
+    	layer.open({
+    		id:1,
+   	        type: 1,
+   	        title:'选择归档日期',
+   	        skin:'layui-layer-rim',
+   	        area:['450px', 'auto'],
+   	     	offset: '80px',
+   	        content: contentHtml ,
+   	        btn:['导出','取消'],
+   	        btn1: function (index,layero) {
+   	        	var beginGdrq = $("#beginGdrq").val();
+   	        	var endGdrq = $("#endGdrq").val();
+   	        	
+   	        	if(beginGdrq == '' || endGdrq == ''){
+   	        		layer.alert("请选择开始结束时间 " , {icon: 2});
+   	        		return;
+	   	        }
+   	        	 
+   	        	self.location.href="/exprot/files/dossier/" + beginGdrq + "/" + endGdrq;
+   	        	layer.close(index);
+   	    	},
+   	        btn2:function (index,layero) {
+ 	        	 layer.close(index);
+   	        }
+   	 
+   	    });
+    	
+    	layui.use('laydate', function(){
+    	    var laydate = layui.laydate;
+    	  //年选择器
+    	    laydate.render({
+    	      elem: '#beginGdrq'
+    	      ,type: 'datetime'
+    	      ,format: 'yyyy-M-d'
+    	    });
+    	    laydate.render({
+      	      elem: '#endGdrq'
+      	      ,type: 'datetime'
+      	      ,format: 'yyyy-M-d'
+      	    });
+    	})
+    });
+    
+    $("#cleanButton").on("click", function() {
+    	$("#qXmmc").val("");
+        $("#typeSelect").val("");
+        $("#qApplyId").val("");
+        $("#qGdwz").val("");
+        $("#qJsdw").val("");
+        $("#qXmzl").val("");
+        $("#qLpzh").val("");
+        $("#qGdrq").val("")
+    });
+    
+    $("#testButton").on("click", function() {
+    	$.ajax({url: manageUrl + "/save?applyId="+encodeURI('20200904000001'), 
+            success: function(data){
+          	  layer.alert("归档成功！", {icon: 1, time : 1500});
+                load();
+            }
+        });
+    });
+    
+    $("#test2Button").on("click", function() {
+    	self.location.href="/dossier/old/getOne/siff?hisId=" +encodeURI('200701531');
+    });
+    
+    $("#test1Button").on("click", function() {
+    	var param = {};
+        param.proName = $("#qXmmc").val().trim();
+        param.chlx = $("#typeSelect").val().trim();
+        param.applyId = $("#qApplyId").val().trim();
+        param.ghno = $("#qGdwz").val().trim();
+        param.jsdw = $("#qJsdw").val().trim();
+        param.xmzl = $("#qXmzl").val().trim();
+        param.lpzh = $("#qLpzh").val().trim();
+        
+        if($("#qGdrq").val() != ""){
+        	var rqArr = $("#qGdrq").val().split("~");
+        	param.beginGdrq = rqArr[0].trim();
+            param.endGdrq = rqArr[1].trim();
+        }
+        
+        param.pageNum = 1;
+        $.ajax({ type:"POST",
+            url: "/dossier/old/dossier",
+            contentType:"application/json",
+            data:JSON.stringify(param),
+            success: function(data){
+            	
+            }
+        })
+    });
+    
+    $("#pagination").on("click", ".pageBtn", function() {
+        load(parseInt($(this).attr("data")));
+    });
+   
+    
+    $("#dataTable").on("click",".viewButton",function(){
+    	var idTd = $(this).parents('tr').children().first();
+        var id = idTd.text();
+        var applyId = idTd.next().text();
+        layer.open({
+            type: 2,
+            title: '查看',
+            area: ['100%', '100%'],
+            content: 'applypool_view.html?id=' + id + "&applyId=" + applyId,
+            scrollbar: false,
+            end: function () {
+                location.reload();
+            }
+        });
+    })
+    
+    $("#dataTable").on("click",".viewPzButton",function(){
+    	var idTd = $(this).parents('tr').children().first();
+        var id = idTd.text();
+        
+        resetForm("formulaForm");
+        $.ajax({ url: url + "/getOne?id=" +id, success: function(data){
+            var table = $("#processbaseInfo");
+            table.empty();
+            var dat = data.comments;
+            if(dat.length==0){
+                var row = "<tr><td colspan='4'>暂无批注信息</td></tr>";
+                table.append(row);
+            }else{
+                for (var i=0;i<dat.length;i++)
+                {
+                    var rowData = dat[i];
+                    var row = "<tr><td style='display: none;'>" + rowData.taskId + "</td><td>" + rowData.taskName + "</td><td>" + rowData.userId + "</td>"
+                                +"<td>" + rowData.fullMessage + "</td><td>"+(moment(rowData.time).format("LLL"))+"</td></tr>";
+                    table.append(row);
+                }
+            }
+       }});
+       $('#saveModal').modal('show');
+    })
+    
+    $("#dataTable").on("click", ".updateDossierButton", function() {
+    	var idTd = $(this).parents('tr').children().first();
+    	var id = idTd.text();
+        var gdnoTd = $(this).parents('tr').children().last().prev().prev();
+        var gdno = gdnoTd.text();
+        
+        var regEn = /[`~!@#$%^&*()_+<>?:"{},.\/;'[\]]/im,
+            regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]]/im;
+        layer.prompt({
+            formType: 0,
+            value: gdno,
+            title: "请填写档案号"
+          }, function(value, index, elem){
+              if(regEn.test(value) || regCn.test(value)) {
+                  layer.alert("请正确填写!!!", {icon: 2});
+                  return false;
+              }else{
+                  var data = {};
+                  data.id = id;
+                  data.gdno = strip_special(value);
+                  
+                  $.ajax({ 
+                      type:"POST",
+                      url: manageUrl + "/update",
+                      contentType:"application/json",
+                      data:JSON.stringify(data),
+                      success: function(data){
+                         layer.alert("保存成功!", {icon: 1,offset: '100px', time : 1500});
+                         load();
+                      },
+                     error: function(e,xhr,opt){
+                         layer.alert("保存失败! " + e.responseJSON.message, {icon: 2});
+                     }
+                 });
+              }
+          });
+    });
+    
+    $("#dataTable").on("click",".deleteButton",function(){
+        var row = $(this).parent().parent();
+        var idTd = row.children().first();
+        var id = idTd.text();
+        var rnameTd = idTd.next().next();
+        var rname = rnameTd.text();
+        
+        layer.confirm("确定删除名称为" + rname +"的信息？", {icon: 3, title: "删除档案"}, function(index){
+            $.ajax({
+                type:"DELETE",
+                url: manageUrl + "/remove/" + id,
+                success: function(data){
+                    layer.alert("删除成功!", {icon: 1, time : 1500});
+                    load();
+                },
+                error: function(e,xhr,opt){
+                    layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                }
+            });
+            
+            layer.close(index);
+        });
+    })
+    
+    load();
+});
+
+function getTime(){
+	var contentHtml = '<div class="row" style="width: 420px;  margin-left:7px; margin-top:10px;">'
+		+ '<div class="col-sm-12">'
+		+ '<div class="input-group">'
+		+ '		<span class="input-group-addon"> 归档开始日期:</span>'
+		+ '		<input id="qBeginGdrq" type="txt" class="form-control" placeholder="请点击选择归档日期">'
+		+ '</div>'
+		+ '</div>'
+		+ '</div>'
+		+ '<div class="row" style="width: 420px;  margin-left:7px; margin-top:10px;">'
+		+ '<div class="col-sm-12">'
+		+ '<div class="input-group">'
+		+ '		<span class="input-group-addon"> 归档结束日期:</span>'
+		+ '		<input id="qEndGdrq" type="txt" class="form-control" placeholder="请点击选择归档日期">'
+		+ '</div>'
+		+ '</div>'
+	+'</div>';
+	layer.open({
+		id:1,
+		type: 1,
+		title:'选择归档日期',
+		skin:'layui-layer-rim',
+		area:['450px', 'auto'],
+		offset: '80px',
+		content: contentHtml ,
+		btn:['确定','取消'],
+		btn1: function (index,layero) {
+			var beginGdrq = $("#qBeginGdrq").val();
+			var endGdrq = $("#qEndGdrq").val();
+			/* 
+			if($("#gdrqlayer").val() != ""){
+		    	var rqArr = $("#gdrqlayer").val().split("~");
+		    	beginGdrq = rqArr[0].trim();
+		    	endGdrq = rqArr[1].trim();
+		    }
+			 */
+			$("#qGdrq").val(beginGdrq + " ~ " + endGdrq);
+			layer.close(index);
+		},
+		btn2:function (index,layero) {
+			 layer.close(index);
+		}
+	
+	});
+	
+	layui.use('laydate', function(){
+	var laydate = layui.laydate;
+	//年选择器
+	laydate.render({
+		elem: '#qBeginGdrq'
+		,type: 'datetime'
+		,format: 'yyyy-M-d'
+	});
+	laydate.render({
+		elem: '#qEndGdrq'
+		,type: 'datetime'
+		,format: 'yyyy-M-d'
+		});
+	})
+}
+
+function getTdText(name,size,align){
+    var nameText = name==null?"":name;
+    var auto = 'left';
+    if(align){
+    	auto = align;
+    }
+    return "<td style='text-align: " + auto + "; width:"+size+"px'><div class='divmatnrdesc'style='max-width:"+size+"px;'>" + nameText + "</div></td>";
+}
+
+var loadStype = function(configPrefix,table,aptitude) {
+    $.ajax({ url:"/house/configs/systype?configPrefix=" + configPrefix,async:false, success: function(data){
+        var tables = $("#" + table + "");
+        tables.empty();
+        $.each(data,function(index,obj){
+            var arr = obj.value;
+            var strs= new Array();
+            strs = arr.split(",");
+            
+            tables.append("<option value=''>-- 请选择 --</option>");
+            for(var i=0;i<strs.length ;i++){
+                var rowData = strs[i];
+               	if(typeof(aptitude) == 'undefined' || aptitude == null){
+               		aptitude = "-fail";
+               	}
+                if(aptitude.search(rowData) != -1){
+                    tables.append("<option value='"+rowData+"' selected>" + rowData + "</option>");
+                }else{
+                    tables.append("<option value='"+rowData+"'>" + rowData + "</option>");
+                }
+            }
+        });
+    }});
+};
+</script>
+</body>
+</html>

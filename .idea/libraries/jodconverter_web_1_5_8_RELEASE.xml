@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jodconverter-web-1.5.8.RELEASE">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/fileView/jodconverter-web/target/jodconverter-web-1.5.8.RELEASE.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

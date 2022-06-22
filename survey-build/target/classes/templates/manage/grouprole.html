@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  </head>
+  <body>
+    <div class="modal fade" id="saveModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">组角色</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal" id="groupRoleForm">
+              <div class="form-group">
+                <label for="name" class="col-sm-2 control-label">组角色名</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="name" id="name" placeholder="组角色名(必填)" required="required" pattern="^[\u4E00-\u9FA5A-Za-z0-9_]+$" data-bv-regexp-message="请输入正确的字符">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" id="saveButton">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row">
+        <div class="col-md-12">
+          <button type="button" class="btn btn-primary newButton pull-right">新增</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>组角色名</th>
+              <th>动作</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable">
+          </tbody>
+        </table>
+        
+        <div class="hr-line-dashed"></div>
+        <div class="text-center">
+            <div class="btn-group" id="pagination">
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+    
+    <#include "script.ftl"/>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        var url = "/grouprole";
+        var manageUrl = "/manage/grouprole";
+        
+        var pageSize = 10;
+        
+        var load = function(pageNum) {
+            pageNum = defaultV(pageNum, 1);
+        
+            var search = $("#searchContent").val()
+            $.ajax({ url: url + "?search=" + search + "&pageNum=" + pageNum, success: function(data){
+                var table = $("#dataTable");
+                table.empty();
+                for (var i=0;i<data.length;i++)
+                {
+                    var rowData = data[i];
+                    
+                    var row = "<tr><td>" + rowData.id + "</td><td>" + rowData.roleName + "</td>"
+                                + '<td><button type="button" class="btn btn-danger btn-xs deleteButton">删除</button></td>'
+                                /* + '<button type="button" class="btn btn-warning btn-xs renameButton">重置命名</button></td>' */
+                                + '</tr>';
+                    table.append(row);
+                }
+                
+                $.ajax({ url: url + "/count?q=" + search, success: function(data){
+                    pagination(data, pageNum, pageSize);
+                }});
+            }});
+        };
+        
+        $("#searchButton").on("click", function() {
+            load();
+        });
+        
+        $("#pagination").on("click", ".pageBtn", function() {
+            load(parseInt($(this).attr("data")));
+        });
+        
+        $(".newButton").on("click", function() {
+            resetForm("groupRoleForm");
+            
+            $('#saveModal').modal('show');
+        });
+        
+        $("#saveButton").on("click", function() {
+            var data = {};
+            data.roleName = $("#name").val();
+            
+            if (!isFormValid("groupRoleForm")) {
+                return;
+            }
+            
+            $.ajax({ 
+                type:"POST",
+                url: manageUrl,
+                contentType:"application/json",
+                data:JSON.stringify(data),
+                success: function(data){
+                             layer.alert("保存成功!", {icon: 1, time : 1500});
+                             $('#saveModal').modal('hide');
+                             load();
+                         },
+                error: function(e,xhr,opt){
+                    layer.alert("保存失败,组角色名有重复! ", {icon: 2});
+                }
+            });
+        })
+        
+        $("#dataTable").on("click", ".deleteButton", function() {
+            var row = $(this).parent().parent();
+            var idTd = row.children().first();
+            var nameTd = idTd.next();
+            var name = nameTd.text();
+            
+            layer.confirm("用户组角色名为" + name, {icon: 3, title: "删除用户组角色"}, function(index){
+                $.ajax({
+                    type:"DELETE",
+                    url: manageUrl + "/" + name,
+                    success: function(data){
+                                 layer.alert("删除成功!", {icon: 1, time : 1500});
+                                 load();
+                             },
+                    error: function(e,xhr,opt){
+                        layer.alert("删除失败! " + e.responseJSON.message, {icon: 2});
+                    }
+                });
+                
+                layer.close(index);
+            });
+        });
+        
+        $("#dataTable").on("click", ".renameButton", function() {
+            var row = $(this).parent().parent();
+            var idTd = row.children().first();
+            var nameTd = idTd.next();
+            var name = nameTd.text();
+            
+            layer.prompt({
+                formType: 0,
+                value: name,
+                title: "为角色名" + name + "重命名"
+            }, function(value, index, elem){
+                var data = {};
+                data.id = idTd.text();
+                data.roleName = value;
+                
+                $.ajax({
+                    type:"POST",
+                    url: manageUrl,
+                    contentType:"application/json",
+                    data:JSON.stringify(data),
+                    success: function(data){
+                                 layer.alert("角色名重命名成功!", {icon: 1, time : 1500});
+                                 layer.close(index);
+                                 
+                                 load();
+                             },
+                    error: function(e,xhr,opt){
+                        layer.alert("组角色名有重复! ", {icon: 2});
+                    }
+                });
+              });
+        });
+        
+        load();
+    });
+    </script>
+  </body>
+</html>

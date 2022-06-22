@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <#include "head.ftl"/>
+  </head>
+  <body>
+  <div class="wrapper wrapper-content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">共享仪表盘汇总</div>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>用户名</th>
+                <th>类型</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="customizations">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    </div>
+    <#include "script.ftl"/>
+    <script type="text/javascript">
+       $(document).ready(function(){
+            page.dashboard.sharemanage.init();
+        });
+    </script>
+  </body>
+</html>

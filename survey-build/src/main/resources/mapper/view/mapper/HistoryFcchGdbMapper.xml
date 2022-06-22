@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HistoryFcchGdbMapper">
+
+<resultMap id="ResultMapWithBLOBs"
+	type="com.lwch.survey.model.FcchGdb">
+	<result column="siffData" jdbcType="LONGVARBINARY"
+		property="siffData" typeHandler="com.lwch.survey.dao.typehandler.LongRawTypeHandler" />
+</resultMap>
+
+<select id="getDataBySiff" parameterType="java.lang.String" 
+	resultMap="ResultMapWithBLOBs">
+	SELECT
+		s.DOCID as hisId,
+		f.DATALEN as datalen,
+		f.ORIGINLEN as originlen,
+		f.SIFFDATA as siffData
+	FROM
+		SURVERCASE s
+	LEFT JOIN FCFH_BLDG f ON s.ZHID = f.ID
+	where 1=1 
+	and s.DOCID = #{hisId}
+</select>
+
+<select id="getDatasCount" parameterType="com.lwch.survey.pojo.DossierParam" 
+	resultType="java.lang.Long">
+SELECT
+	count(*)
+FROM
+	SURVERCASE s
+LEFT JOIN FCFH_BLDG f ON s.ZHID = f.ID
+left join (
+	select * from (
+		SELECT t.BLDGID, min(t.FLATNO) as minFlat,max(t.FLATNO) as maxFlat FROM "FCFH_FLAT" t GROUP BY t.BLDGID
+	)
+) t on t.BLDGID = s.ZHID
+where 1=1 
+<if test="applyId != null and applyId!=''" > 
+and s.DOCID like '%'||#{applyId }||'%'
+</if>
+<if test="proName != null and proName!=''" > 
+and s.APPLYNAME like '%'||#{proName }||'%'
+</if>
+<if test="xmzl != null and xmzl!=''" > 
+and s.LOCATION like '%'||#{xmzl }||'%'
+</if>
+<if test="lpzh != null and lpzh!=''" > 
+and s.BUILDNO like '%'||#{lpzh }||'%'
+</if>
+
+</select>
+
+<!-- f.SIFFDATA as siffData -->
+<select id="getData" parameterType="com.lwch.survey.pojo.DossierParam" 
+	resultType="com.lwch.survey.model.FcchGdb">
+			SELECT
+				s.DOCID as hisId,
+				s.APPLYNAME as proname,
+				s.APPLYDATE as applyDateTime,
+				s.OPERATOR as lxr,
+				s.LOCATION as xmzl,
+				s.ZHID as zhid,
+				s.BUILDNO as lpzh,
+				f.STRUCT as structCode,
+				f.USAGE as usageCode,
+				f.FLATNUM as zcs,
+				t.minFlat as dxcs,
+				t.maxFlat as dscs,
+				s.BUILDAREA as zmj,
+				s.SURVERTYPE as chlx
+				
+			FROM
+				SURVERCASE s
+			LEFT JOIN FCFH_BLDG f ON s.ZHID = f.ID
+			left join (
+				select * from (
+					SELECT t.BLDGID, min(t.FLATNO) as minFlat,max(t.FLATNO) as maxFlat FROM "FCFH_FLAT" t GROUP BY t.BLDGID
+				)
+			) t on t.BLDGID = s.ZHID
+			where 1=1 
+			<if test="applyId != null and applyId!=''" > 
+			and s.DOCID like '%'||#{applyId }||'%'
+			</if>
+			<if test="proName != null and proName!=''" > 
+			and s.APPLYNAME like '%'||#{proName }||'%'
+			</if>
+			<if test="xmzl != null and xmzl!=''" > 
+			and s.LOCATION like '%'||#{xmzl }||'%'
+			</if>
+			<if test="lpzh != null and lpzh!=''" > 
+			and s.BUILDNO like '%'||#{lpzh }||'%'
+			</if>
+	
+
+</select>
+
+
+<select id="getDataByOldId" parameterType="java.lang.String" 
+	resultType="com.lwch.survey.model.FcchGdb">
+	SELECT
+		s.DOCID as hisId,
+		s.APPLYNAME as proname,
+		s.APPLYDATE as applyDateTime,
+		s.OPERATOR as lxr,
+		s.LOCATION as xmzl,
+		s.ZHID as zhid,
+		s.BUILDNO as lpzh,
+		f.STRUCT as structCode,
+		f.USAGE as usageCode,
+		f.FLATNUM as zcs,
+		t.minFlat as dxcs,
+		t.maxFlat as dscs,
+		s.BUILDAREA as zmj
+	FROM
+		SURVERCASE s
+	LEFT JOIN FCFH_BLDG f ON s.ZHID = f.ID
+	left join (
+		select * from (
+			SELECT t.BLDGID, min(t.FLATNO) as minFlat,max(t.FLATNO) as maxFlat FROM "FCFH_FLAT" t GROUP BY t.BLDGID
+		)
+	) t on t.BLDGID = s.ZHID
+	where 1=1 
+	and s.DOCID = #{hisId}
+</select>
+
+<select id="test"  resultType="int" >
+    select count(1) from  SURVERCASE 
+</select>
+</mapper>

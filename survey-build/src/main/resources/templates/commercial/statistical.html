@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+</head>
+<style type="text/css">
+.myTable-container {
+	width: 700px;
+	height: 430px;
+}
+.divmatnrdesc{
+   margin-left: 10px;
+   overflow:hidden;
+   white-space:nowrap;
+   text-overflow:ellipsis;
+}
+
+#tooltipdiv {
+	position: absolute;
+	border: 1px solid #333;
+ 	background: #f7f5d1;
+	padding: 3px 3px 3px 3px;
+	color: #333;
+	display: none;
+	font-size: 10px;
+}
+
+</style>
+<body>
+<!-- <div id="container" style="height: 100%"></div> -->
+<div class="wrapper wrapper-content float-e-margins">
+	<div class="row">
+      	<div class="col-md-12">
+	          <div class="container" style="padding-top: 15px; padding-left: 12px;">
+	          	<div class="input-group" >
+		          	<ul id="myTab" class="nav nav-tabs">
+						<li class="active"><a href="#tab3" data-toggle="tab">月度</a></li>
+						<li><a href="#tab3" data-toggle="tab">季度</a></li>
+						<li><a href="#tab3" data-toggle="tab">年度</a></li>
+						<li><a href="#tab2" data-toggle="tab">建设单位</a></li>
+						<li><a href="#tab2" data-toggle="tab">受理单位</a></li>
+					</ul>
+					<div class="input-group-btn" style="width:19%">
+		              <button id="ycButton"  type="button" class="btn btn-default">预测</button>
+		              <button id="scButton"  type="button" class="btn btn-default">实测</button>
+		            </div>
+				</div>
+				
+				<div id="myTabContent" class="tab-content" style="margin-top: 20px;">
+					<div class="tab-pane active" id="tab3">
+						<div id="tab3-container" class="myTable-container"></div>
+					</div>
+					<div class="tab-pane " id="tab2">
+						<div id="tab2-container" class="myTable-container"></div>
+					</div>
+					<!-- <div class="tab-pane " id="tab3">
+						<div id="tab3-container" class="myTable-container"></div>
+					</div> -->
+				</div>
+			</div>
+      	</div>
+      	
+        <div class="col-md-6" style="display: none;">
+        	<div class="input-group" style="margin-top:10px;margin-bottom:10px;">
+	            <input id="searchContent" type="text" class="form-control" placeholder="请输入建设单位名称">
+	            <input id="searchType" type="text" style="display: none;">
+	            <div class="input-group-btn" style="width:15%">
+	              <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+	            </div>
+	          </div>
+        	<table class="table table-bordered">
+          		<thead>
+            		<tr>
+                		<th width="20%;">项目名称</th>
+                		<th width="10%;">幢号</th>
+		                <th>受理单位</th>
+		                <th width="15%;">测绘类型</th>
+		                <th width="8%;">建筑面积</th>
+		                <th width="17%;">入库时间</th>
+		                <th hidden=>操作</th>
+            		</tr>
+          		</thead>
+          		<tbody id="dataTable"></tbody>
+        	</table>
+	        <div class="hr-line-dashed"></div>
+	        <div class="text-center" style="margin-bottom:25px;">
+	            <div class="btn-group" id="pagination">
+	            </div>
+	        </div>
+    	</div>
+ 	</div>
+</div>
+<#include "script.ftl"/>
+<script src="/js/lib/echarts/echarts.min.js"></script>
+<script type="text/javascript">
+var url = "/commodityHouse";
+var manageUrl = "/manage/commodityHouse";
+
+var $tab1 = document.getElementById('tab1-container');
+var $tab2 = document.getElementById('tab2-container');
+var $tab3 = document.getElementById('tab3-container');
+var tab2DataNames;
+var tab2Data;
+var piedata;
+$(document).ready(function(){
+    /**初始化事件，加载数据*/
+    var pageSize = 15;
+    var operationtype = 0;
+    
+    var load = function(pageNum) {
+        pageNum = defaultV(pageNum, 1);
+        var search = $("#searchContent").val();
+        var searchType = $("#searchType").val();
+        var activeTab=$("li.active").children("a").text();
+        
+        $.ajax({ url: url + "/statistical/tables?type=" + encodeURI(search) 
+        		+ "&activeTab=" + encodeURI(activeTab) + "&searchType=" + encodeURI(searchType) 
+        		+ "&pageNum=" + pageNum , success: function(data){
+            var table = $("#dataTable");
+            table.empty();
+            for (var i=0;i<data.length;i++){
+                var rowData = data[i];
+                var row = "<tr><td hidden>" + rowData.id +"</td>"
+                            +"<td  style='text-align: left;'>" + rowData.jsdw + "</td>"
+                            +"<td>" + (rowData.lpzh==null?"-":rowData.lpzh) + "</td>"
+                            +"<td  style='text-align: left;'>" + (rowData.sldw==null?"-":rowData.sldw) + "</td>"
+                            +"<td>" + (rowData.chlx==null?"-":rowData.chlx) + "</td>"
+                            +"<td>" + (rowData.jzmj==null?"-":rowData.jzmj) + "</td>"
+                            +"<td>" + moment(rowData.updateTime).format("YYYY-MM-DD HH:ss") + "</td>";
+                row += "</tr>";
+                table.append(row);
+            }
+            
+            $.ajax({ url: url + "/statistical/tables/count?type=" + encodeURI(search) 
+            	+ "&activeTab=" + encodeURI(activeTab) + "&searchType=" + encodeURI(searchType) , success: function(data){
+                pagination(data, pageNum, pageSize);
+            }});
+        }});
+    };
+    
+    $("#searchButton").on("click", function() {
+        load();
+    });
+    
+   $('div.divmatnrdesc').live('mouseover', function(e) {
+  		_text=$(this).text();
+  	  _tooltip = "<div id='tooltipdiv'><font style='font-size:13px'> "+_text+"</font></div>";  
+  	      $("body").append(_tooltip);  
+  	      $("#tooltipdiv").show();
+  	   $("#tooltipdiv")
+  	   .css({
+  	   "top": (e.pageY+10) + "px",
+  	   "left":  (e.pageX +10) + "px"
+  	  }).show("fast");    
+ 	});
+  	 
+  	$('div.divmatnrdesc').live('mouseout', function(e) {
+  	  $("#tooltipdiv").remove();
+  	});
+  	 
+  	 
+  	$('div.divmatnrdesc').live('mousemove', function(e) {
+  	  $("#tooltipdiv")
+  	  .css({
+  	   "top": (e.pageY+10 ) + "px",
+  	   "left":  (e.pageX+10)  + "px"
+  	  }).show();    
+  	});
+    
+    $("#ycButton").on("click", function() {
+    	$("#ycButton").removeClass("btn btn-default");
+    	$("#scButton").removeClass("btn btn-default");
+    	$("#ycButton").removeClass("btn btn-primary");
+    	$("#scButton").removeClass("btn btn-primary");
+    	
+    	$("#ycButton").addClass("btn btn-primary");
+    	$("#scButton").addClass("btn btn-default");
+    	querychlx("预测");
+    });
+    
+    $("#scButton").on("click", function() {
+    	$("#ycButton").removeClass("btn btn-default");
+    	$("#scButton").removeClass("btn btn-default");
+    	$("#ycButton").removeClass("btn btn-primary");
+    	$("#scButton").removeClass("btn btn-primary");
+    	
+    	$("#scButton").addClass("btn btn-primary");
+    	$("#ycButton").addClass("btn btn-default");
+    	querychlx("实测");
+    });
+    
+    $("#pagination").on("click", ".pageBtn", function() {
+        load(parseInt($(this).attr("data")));
+    });
+   
+    
+    $("#dataTable").on("click",".updateButton",function(){
+        var applyId=$(this).parents('tr').children().first().text();
+        var bsname = $(this).parents('tr').children().first().next().text();
+        layer.open({
+            type: 2,
+            title: '查看',
+            area: ['100%', '100%'],
+            content: 'applyinfo.html?applyid=' + applyId,
+            scrollbar: false,
+            end: function () {
+                location.reload();
+            }
+        });
+    })
+    
+    
+    load();
+    
+    $.when(a1).done(function(v1) { 
+    	
+    	var data2 = piedata['月度']; 
+    	var data2data = [];
+    	var emps = data2.data;
+        $.each(emps, function (index, item) {
+        	data2data.push(item.value)
+        });
+
+    	echartZht(data2data,data2.dataNames,1);
+    	
+    });
+    
+    
+    /* shown.bs.tab为tab选项卡高亮 */
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+    	/* 获取已激活的标签页的名称 */
+    	var typetab = $(e.target)[0].text;
+    	var activeTab = $(e.target)[0].hash;
+    	
+    	if(piedata){
+    		var pie = piedata[typetab];
+    		tab2DataNames = pie.dataNames;
+    		tab2Data = pie.data;
+    		var data2data = [];
+        	var emps = tab2Data;
+            $.each(emps, function (index, item) {
+            	data2data.push(item.value)
+            });
+    		/* 当相应的标签被点击时，进行对应的图表渲染 */
+    		if (activeTab == "#tab2") {
+    			if(typetab == '建设单位' || typetab == '受理单位'){
+    				tab2DataNames = [];
+    			}
+    			echartPie(typetab, tab2Data, tab2DataNames)
+    		} else if (activeTab == "#tab3") {
+    			echartZht(data2data, tab2DataNames)
+    		}
+    	}
+    });
+
+    function querychlx(chlx){
+    	var idx = $("#myTab .active").text();
+    	$.ajax({ url: url + "/statisticalPie?chlx=" + encodeURI(chlx), success: function(data){
+    		piedata = data;
+    		var typetab = $("#myTab .active").text();
+    		var activeTab = $("#myTab .active").index();
+    		
+    		if($.isEmptyObject(piedata)){
+    			layer.alert(chlx + "无数据! ", {icon: 2});
+    			return ;
+    		}
+    		
+    		if(piedata){
+    			var pie = piedata[typetab];
+    			tab2DataNames = pie.dataNames;
+    			tab2Data = pie.data;
+    			var data2data = [];
+    			var emps = tab2Data;
+    	        $.each(emps, function (index, item) {
+    	        	data2data.push(item.value)
+    	        });
+    	    	
+    			/* 当相应的标签被点击时，进行对应的图表渲染 */
+    			if (activeTab == 3 || activeTab == 4) {
+    				if(typetab == '建设单位' || typetab == '受理单位'){
+    					tab2DataNames = [];
+    				}
+    				echartPie(typetab, tab2Data, tab2DataNames)
+    			} else {
+    				echartZht(data2data, tab2DataNames)
+    			}
+    		}
+    	}});
+    }
+
+    // 柱状图
+    function echartZht(data2data, tab2DataNames, type){
+    	var tab3Option = {
+            	xAxis : {
+            		type : 'category',
+            		data : tab2DataNames
+            	},
+            	yAxis : {
+            		type : 'value'
+            	},
+            	formatter: '{b0}: {c0}<br />{b1}: {c1}',
+            	series : [ {
+            		itemStyle: {
+            				normal: {
+            					color: function(params) {
+            	                	//注意，如果颜色太少的话，后面颜色不会自动循环，最好多定义几个颜色
+            	                    var colorList = ['#2f4554', '#61a0a8', '#2f4554', '#61a0a8', 
+            	                    	'#2f4554', '#61a0a8', '#2f4554', '#61a0a8',
+            	                    	'#2f4554', '#61a0a8', '#2f4554', '#61a0a8',
+            	                    	'#2f4554', '#61a0a8', '#2f4554', '#61a0a8',
+            	                    	'#2f4554', '#61a0a8', '#2f4554', '#61a0a8'];
+            	                    return colorList[params.dataIndex]
+            	                },
+            					label: {
+            						show: true,
+            						position: 'top',
+            						formatter: '{c}'　　　　//这是关键，在需要的地方加上就行了
+            				 	}
+            				}
+         			},
+            		data : data2data,
+            		type : 'bar'
+            	} ]
+            };
+    	
+    		if(type){
+    		 	var tab1Table = echarts.init($tab3);
+    	        tab1Table.setOption(tab3Option);
+    	        
+    	        tab1Table.on('click', function (param) {
+    	        	$("#searchType").val(param.name)
+    	        	load();
+    			});
+    		}else{
+    			echarts.dispose($tab3);
+    			var tab3Table = echarts.init($tab3);
+    			tab3Table.setOption(tab3Option);
+    			
+    			tab3Table.on('click', function (param) {
+    				$("#searchType").val(param.name)
+    				load();
+    			});
+    		}
+    }
+
+    /* 饼图 */
+    function echartPie(typetab, tab2Data, tab2DataNames){
+    	var tab2Option = {
+    		title : {
+    			text : '商品房入库面积统计('+ typetab + ')',
+    			subtext : '数据统计',
+    			x : 'center'
+    		},
+    		tooltip : {
+    			trigger : 'item',
+    			//formatter : "{a} <br/>{b} : {c} ({d}%)"
+    			formatter: function (params, ticket, callback) {
+    	            var showHtm= "";
+    	            showHtm += "数据: ";
+    	            showHtm += "<br/>";
+    	            showHtm += params.data.name;
+    	            showHtm += "  :" + params.data.value;
+    	            showHtm += " (" + params.data.count + "栋)";
+    	            showHtm += " (" + params.percent + "%)";
+    	            return showHtm;
+    	        }
+    		},
+    		legend : {
+    			icon: "circle", 
+    			orient : 'vertical',
+    			//bottom : 0,
+    			x: 'left',
+    			y: 'bottom',
+    			data : tab2DataNames
+    		},
+    		series : [ {
+    			name : '数据',
+    			type : 'pie',
+    			radius : '55%',
+    			center : [ '50%', '60%' ],
+    			data : tab2Data,
+    			itemStyle : {
+    				emphasis : {
+    					shadowBlur : 10,
+    					shadowOffsetX : 0,
+    					shadowColor : 'rgba(0, 0, 0, 0.5)'
+    				}
+    			}
+    		} ]
+    	};
+    	
+    	echarts.dispose($tab2);
+    	var tab2Table = echarts.init($tab2);
+    	tab2Table.setOption(tab2Option);
+    	
+    	tab2Table.on('click', function (param) {
+    		$("#searchType").val(param.name);
+    		load();
+    	});
+    }
+    
+});
+    
+
+
+var a1 = $.ajax({ url: url + "/statisticalPie", success: function(data){piedata = data;}});
+
+
+/* 折线图 
+var tab1Option = {
+	xAxis : {
+		type : 'category',
+		data : [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
+	},
+	yAxis : {
+		type : 'value'
+	},
+	series : [ {
+		data : [ 820, 932, 901, 934, 1290, 1330, 1320 ],
+		type : 'line'
+	} ]
+};
+*/
+</script>
+</body>
+</html>

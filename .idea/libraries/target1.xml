@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="target1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/survey-build/target/survey-build-1.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/survey-build/target/survey-build.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

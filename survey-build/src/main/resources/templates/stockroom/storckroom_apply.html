@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Access-Control-Allow-Origin" content="*">
+<#include "head.ftl"/>
+</head>
+<body>
+
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row" style="margin-top:10px;margin-bottom:10px;">
+        <div class="col-md-12">
+          <div class="input-group">
+            <input id="searchContent" type="text" class="form-control" placeholder="请输入案件编号">
+            <div class="input-group-btn" style="width:15%">
+              <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>案件编号</th>
+              <th>申请人</th>
+              <th>房屋坐落 </th>
+              <th>申请时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable"></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+<#include "script.ftl"/>
+<script src="/js/lib/treegrid/treegrid.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        /**初始化事件，加载数据*/
+        $.ajax({ url:"/house/configs/systype?configPrefix=commodity.synchronize.url", success: function(service){
+            var url = "http://" + service[0].value +"/synchrodata";
+            var pageSize = 10;
+            var operationtype = 0;
+            
+            var load = function() {
+                var search = $("#searchContent").val();
+                $.ajax({ url: url + "/queryHouse/" + "?query=" + encodeURI(search), success: function(data){
+                    if(JSON.stringify(data) !== '{}'){
+                        var table = $("#dataTable");
+                        table.empty();
+                        var rowData = data;
+                        var row = "<tr><td>" + rowData.serialNo +"</td>"
+                                  +"<td>" + rowData.applicant + "</td>"
+                                  +"<td>" + rowData.houseLocation + "</td>"
+                                  +"<td>" + moment(rowData.applicationDate).format("LLL") + "</td>";
+                        row += "<td><button type='button' class='btn btn-info btn-xs addButton' data-loading-text='提交中...'>申请</button></td></tr>"
+                        table.append(row);
+                    }
+                }});
+            };
+            
+            $("#dataTable").on("click", ".addButton", function() {
+                var serialNo = $(this).parents('tr').children().first().text();
+                
+                var $btn = $(this).button('loading');
+                
+                $.ajax({ 
+                    url: url + "/synchrodataHouse/" + serialNo ,success: function(txt){
+                        $.ajax({
+                            type:"POST",
+                            url:'/manage/house',
+                            contentType:"application/json",
+                            data:JSON.stringify(txt),
+                            success: function(data){
+                                var index=parent.layer.getFrameIndex(window.name);
+                                layer.alert("保存成功!", {icon: 1, closeBtn: 0},
+                                    function () {
+                                        window.parent.location.reload();
+                                        parent.layer.close(index);
+                                    } 
+                                );
+                                $btn.button('reset')
+                            },
+                            error: function(e,xhr,opt){
+                                layer.alert("保存失败! ", {icon: 2});
+                                $btn.button('reset')
+                            }
+                        }); 
+                   },
+                   error: function(e,xhr,opt){
+                       layer.alert("申请失败! " , {icon: 2});
+                       $btn.button('reset')
+                   }
+                });
+            });
+            
+            $("#addButton").on("click", function() {
+                var selectProjectIds = [];
+                var houseNos = [];
+
+                $('input:checkbox[name=houseno]:checked').each(function(i){
+                    var row = $(this).parent().parent().attr('data');
+                    row = eval("("+row+")");
+                    houseNos.push(row.houseNo);
+                    selectProjectIds.push(row.projectId);
+                });
+                
+                selectProjectIds.sort();//排序
+                jQuery.unique(selectProjectIds);//去重
+                
+                if(!$('input:checkbox[name=houseno]:checked').length){
+                    layer.alert('请选择申请的幢户！');
+                    return;
+                }
+                
+                if(selectProjectIds.length > 1){
+                    layer.alert('只能申请一个项目下的幢户信息！');
+                    return;
+                }
+                
+                
+            });
+            
+            $("#searchButton").on("click", function() {
+                load();
+            });
+            
+            $("#pagination").on("click", ".pageBtn", function() {
+                load(parseInt($(this).attr("data")));
+            });
+            
+            load();
+        
+        }});
+    });
+    
+function customCheckBox(row, col){
+    return "<input name='houseno' type='checkbox'>";
+}
+
+function itemClickEvent(id, index, data){
+    jQuery("#currentRow").val(id + ", " + index + ", " + TreeGrid.json2str(data));
+}
+
+function expandAll(isOpen){
+    treeGrid.expandAll(isOpen);
+}
+</script>
+</body>
+</html>

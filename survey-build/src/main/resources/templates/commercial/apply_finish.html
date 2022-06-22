@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<#include "head.ftl"/>
+<link href="/css/basic.css" rel="stylesheet">
+<link href="/js/lib/fileinput/fileinput.min.css" rel="stylesheet">
+<style type="text/css">
+    .wizard > .content
+    {
+        background: #eeeeee30;
+    }
+</style>
+</head>
+<body>
+
+    <div class="wrapper wrapper-content float-e-margins">
+      <div class="row" style="margin-top:10px;margin-bottom:10px;">
+        <div class="col-md-12">
+          <div class="input-group">
+            <input id="searchContent" type="text" class="form-control" placeholder="请输入项目名称">
+            <div class="input-group-btn" style="width:15%">
+              <button id="searchButton" type="button" class="btn btn-primary">查询</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+                <th>申请编号</th>
+                <th hidden=>项目编号</th>
+                <th>项目名称</th>
+                <th>楼盘幢号</th>
+                <th>项目类型</th>
+                <th>项目坐落</th>
+                <th>项目概况</th>
+                <th>申请时间</th>
+                <th width="200px;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable"></tbody>
+        </table>
+        
+        <div class="hr-line-dashed"></div>
+        <div class="text-center">
+            <div class="btn-group" id="pagination">
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+<#include "script.ftl"/>
+<script src="/js/lib/fileinput/fileinput.min.js"></script>
+<script src="/js/lib/fileinput/fileinput/zh.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+	
+	/**初始化事件，加载数据*/
+	var url = "/dossier";
+	var manageUrl = "/manage/dossier";
+	var pageSize = 10;
+	var operationtype = 0;
+            
+    var load = function(pageNum) {
+	    pageNum = defaultV(pageNum, 1);
+	    var search = $("#searchContent").val();
+	    $.ajax({ url: url + "/applyFinish/query?query=" + encodeURI(search) + "&pageNum=" + pageNum , success: function(obj){
+		    
+	    	console.log(obj)
+	    	var data = obj.data;
+	        var table = $("#dataTable");
+	        table.empty();
+	        for (var i=0;i<data.length;i++)
+	        {
+		        var rowData = data[i];
+		        var building = rowData.applyBuild;
+		        var chlx = building.chlx == null?"":building.chlx;
+		        var lpzh = building.lpzh == null?"":building.lpzh;
+		        
+		        var row = "<tr><td>" + rowData.id +"</td>"
+		                    +"<td hidden>" + rowData.projectNo + "</td>"
+		                    +"<td style='text-align: left;'>" + rowData.projectName + "</td>"
+		                    +"<td>" + lpzh + "</td>"
+		                    +"<td>" + chlx + "</td>"
+		                    +"<td style='text-align: left;'>" + (rowData.projectXmzl == null?"":rowData.projectXmzl) + "</td>"
+		                    +"<td>" + (rowData.projectGk == null?"":rowData.projectGk) + "</td>"
+		                    +"<td>" + moment(rowData.updateTime).format("YYYY-MM-DD HH:mm") + "</td>";
+	            row += "<td><button type='button' class='btn btn-info btn-xs sendButton'>归档</button>"
+		                //+"<button type='button' class='btn btn-warning btn-xs updateButton'>重新申请</button>"
+		                +"</td></tr>";
+		        table.append(row);
+	         }
+	                    
+	       	 pagination(obj.total, pageNum, pageSize);
+		}});
+	};
+	
+	$("#dataTable").on("click", ".sendButton", function() {
+		var businessId = $(this).parents('tr').children().first().text();
+    	$.ajax({url: manageUrl + "/save?applyId="+encodeURI(businessId), 
+            success: function(data){
+          	  layer.alert("归档成功！", {icon: 1, time : 1500});
+                load();
+            }
+        });
+    });
+            
+	$("#dataTable").on("click", ".sendButton11", function() {
+	    var businessId = $(this).parents('tr').children().first().text();
+	    var key = "commercial";
+	    $.ajax({ 
+	        url:"/workFlow/startProcessFlow?key=" + encodeURI(key) + "&applyBid=" + encodeURI(businessId),
+	        success: function(data){
+	           layer.alert("申请成功！", {icon: 1, time : 1500});
+	           load();
+	       },
+	       error: function(e,xhr,opt){
+	           layer.alert("申请失败,请检查流程部署! " , {icon: 2});
+	       }
+	    });
+	});
+            
+    $("#searchButton").on("click", function() {
+        load();
+    });
+            
+    $("#pagination").on("click", ".pageBtn", function() {
+        load(parseInt($(this).attr("data")));
+    });
+           
+            
+    load();
+});
+</script>
+</body>
+</html>

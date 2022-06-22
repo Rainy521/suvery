@@ -1,0 +1,26 @@
+span.table-sort.table-default-icon {
+  display: inline;
+  padding: 0 13px 0 0;
+  background: url('../img/datagrid_icons.png') no-repeat -64px center;
+}
+
+span.table-sort.table-asc-icon {
+  display: inline;
+  padding: 4px 13px 0 0;
+  background: url('../img/datagrid_icons.png') no-repeat 0px center;
+}
+
+span.table-sort.table-desc-icon {
+  display: inline;
+  padding: 0 13px 0 0;
+  background: url('../img/datagrid_icons.png') no-repeat -15px center;
+}
+
+.tablesorter-default .tablesorter-header {
+    background-image: url(data:image/gif;base64,R0lGODlhFQAJAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==);
+    background-position: left;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    white-space: normal;
+    padding: 4px 20px 4px 20px;
+}
